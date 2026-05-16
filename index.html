@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eureka Math Tutor - Step-by-Step Division Guide</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Eureka Math Tutor</h1>
+            <p class="subtitle">Step-by-step long division practice - Grade 5 Module 2 Lesson 23</p>
+        </div>
+
+        <div class="main-content">
+            <div class="lesson-info">
+                <h2>Step-by-step: 2,456 ÷ 14</h2>
+                <p>Learn the long division process one step at a time</p>
+            </div>
+
+            <div class="step-container">
+                <div class="step-header">
+                    <div class="step-number-section">
+                        <p class="label">Current Step</p>
+                        <p class="step-number" id="step-number">Step 1 of 6</p>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                </div>
+
+                <div class="step-content-area" id="step-content"></div>
+
+                <div class="step-question-box" id="step-question">
+                    <p class="question-text" id="question-text"></p>
+                    <div id="input-container"></div>
+                    <div class="step-feedback" id="step-feedback"></div>
+                </div>
+
+                <div class="button-group">
+                    <button id="prev-btn" class="btn" onclick="previousStep()">Previous</button>
+                    <button id="next-btn" class="btn" onclick="nextStep()">Next</button>
+                </div>
+            </div>
+
+            <div class="working-area-container">
+                <p class="label">Your working area - work along with the steps:</p>
+                <textarea 
+                    id="work-area" 
+                    placeholder="Write your long division work here..."
+                    class="working-area"
+                ></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

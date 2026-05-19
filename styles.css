@@ -340,6 +340,10 @@ body {
   flex-shrink: 0;
 }
 
+.test-topbar {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 100%);
+}
+
 .back-btn,
 .new-problem-btn {
   padding: 8px 14px;
@@ -358,6 +362,15 @@ body {
 .back-btn:hover,
 .new-problem-btn:hover {
   background: rgba(255,255,255,0.3);
+}
+
+.finish-test-btn {
+  background: rgba(22, 163, 74, 0.3);
+  border-color: rgba(22, 163, 74, 0.5);
+}
+
+.finish-test-btn:hover {
+  background: rgba(22, 163, 74, 0.5) !important;
 }
 
 .chat-info {
@@ -588,6 +601,418 @@ body {
   color: var(--gray-600);
 }
 
+/* ── LOGIN SCREEN ── */
+.login-toggle-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: var(--gray-100);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.toggle-mode-btn {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--gray-600);
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.toggle-mode-btn.active {
+  background: white;
+  color: var(--purple);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.login-error {
+  font-size: 14px;
+  color: var(--red);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+/* ── GRADE SELECTION ── */
+.grade-btn-row {
+  display: flex;
+  gap: 10px;
+}
+
+.grade-select-btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--gray-50);
+  color: var(--gray-600);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.grade-select-btn:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.grade-select-btn.active {
+  border-color: var(--purple);
+  background: var(--purple-light);
+  color: var(--purple-dark);
+}
+
+/* ── STUDENT HEADER ── */
+.student-header {
+  background: linear-gradient(135deg, var(--purple-light) 0%, var(--blue-light) 100%);
+  border: 2px solid var(--purple-light);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 28px;
+}
+
+.student-header-top {
+  margin-bottom: 14px;
+}
+
+.student-avatar-name {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.student-avatar-emoji {
+  font-size: 48px;
+  line-height: 1;
+}
+
+.student-avatar-name h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--purple-dark);
+  margin-bottom: 4px;
+}
+
+.grade-badge {
+  display: inline-block;
+  background: var(--purple);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.student-action-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.student-action-btn {
+  flex: 1;
+  min-width: 80px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  background: white;
+  border: 2px solid var(--purple-light);
+  border-radius: var(--radius-sm);
+  color: var(--purple-dark);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.student-action-btn:hover {
+  background: var(--purple);
+  color: white;
+  border-color: var(--purple);
+}
+
+.student-action-btn.logout-btn {
+  border-color: var(--gray-200);
+  color: var(--gray-600);
+}
+
+.student-action-btn.logout-btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: white;
+}
+
+.retest-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--yellow-light), var(--orange-light));
+  border: 2px solid var(--yellow);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #92400e;
+  flex-wrap: wrap;
+}
+
+.retest-now-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--orange);
+  color: white;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.retest-now-btn:hover {
+  background: #ea6c00;
+}
+
+/* ── REPORT CARD SCREEN ── */
+.report-card-container {
+  max-width: 640px;
+}
+
+.report-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.report-header h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--purple);
+  margin-bottom: 6px;
+}
+
+.report-date {
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+.overall-score-block {
+  text-align: center;
+  border: 3px solid;
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 28px;
+  background: var(--gray-50);
+}
+
+.overall-score-num {
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.overall-level {
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.overall-label {
+  font-size: 14px;
+  color: var(--gray-600);
+  font-weight: 600;
+}
+
+.report-topics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.report-topic-card {
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  transition: box-shadow 0.2s;
+}
+
+.report-topic-card:hover {
+  box-shadow: var(--shadow);
+}
+
+.report-topic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.report-topic-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-800);
+  flex: 1;
+}
+
+.report-topic-score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.score-pct {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.level-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 10px;
+  background: var(--gray-200);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  width: 0%;
+  transition: width 1s ease-out;
+}
+
+.report-topic-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.correct-count {
+  font-size: 13px;
+  color: var(--gray-600);
+  font-weight: 600;
+}
+
+.retake-module-btn {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  background: none;
+  border: 2px solid var(--purple);
+  border-radius: var(--radius-sm);
+  color: var(--purple);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.retake-module-btn:hover {
+  background: var(--purple);
+  color: white;
+}
+
+.suggested-problems {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-200);
+}
+
+.suggested-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-600);
+  margin-bottom: 8px;
+}
+
+.problem-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.problem-list li {
+  font-size: 14px;
+  color: var(--gray-800);
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 8px 12px;
+  line-height: 1.4;
+}
+
+.problem-list li::before {
+  content: "✏️ ";
+}
+
+.report-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.report-action-btn {
+  flex: 1;
+  min-width: 160px;
+  font-size: 16px;
+  padding: 16px;
+}
+
+.secondary-btn {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 100%);
+}
+
+.report-empty {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.report-empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.report-empty h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--purple);
+  margin-bottom: 10px;
+}
+
+.report-empty p {
+  font-size: 16px;
+  color: var(--gray-600);
+  margin-bottom: 24px;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 500px) {
   .setup-card {
@@ -622,5 +1047,26 @@ body {
 
   .chat-title {
     font-size: 14px;
+  }
+
+  .student-action-row {
+    gap: 6px;
+  }
+
+  .student-action-btn {
+    font-size: 11px;
+    padding: 8px 8px;
+  }
+
+  .overall-score-num {
+    font-size: 48px;
+  }
+
+  .report-actions {
+    flex-direction: column;
+  }
+
+  .report-action-btn {
+    min-width: unset;
   }
 }

@@ -1,3 +1,6 @@
+// Module lesson counts — must match server LESSON_MAP
+const MODULE_LESSON_COUNTS = { 1: 19, 2: 5, 3: 43, 4: 16, 5: 41, 6: 7, 7: 4 };
+
 // ── State ──
 let selectedModule = null;
 let selectedLesson = null;
@@ -23,6 +26,21 @@ const photoInput = document.getElementById('photo-input');
 const photoPreview = document.getElementById('photo-preview');
 const photoPlaceholder = document.getElementById('photo-placeholder');
 const clearPhotoBtn = document.getElementById('clear-photo-btn');
+
+// ── Module → lesson range ──
+moduleSelect.addEventListener('change', () => {
+  const mod = parseInt(moduleSelect.value);
+  const maxLessons = MODULE_LESSON_COUNTS[mod];
+  const hint = document.getElementById('lesson-range-hint');
+  if (maxLessons) {
+    lessonInput.max = maxLessons;
+    hint.textContent = `(1–${maxLessons})`;
+    if (parseInt(lessonInput.value) > maxLessons) lessonInput.value = '';
+  } else {
+    lessonInput.max = 43;
+    hint.textContent = '';
+  }
+});
 
 // ── Tab switching ──
 document.querySelectorAll('.method-tab').forEach(tab => {

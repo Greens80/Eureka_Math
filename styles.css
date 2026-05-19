@@ -124,6 +124,13 @@ body {
   width: 100%;
 }
 
+.lesson-range-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--gray-400);
+  margin-left: 4px;
+}
+
 /* Input method tabs */
 .input-method-tabs {
   display: flex;

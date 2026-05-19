@@ -1,219 +1,673 @@
-const steps = [
-  {
-    title: "Step 1: Set up the division problem",
-    content: `Look at: 2,456 ÷ 14
-
-In long division, we write it like this:
-    ___
-14 | 2456
-
-The 14 is outside (the divisor)
-The 2456 is inside (the dividend)
-We'll write the answer (quotient) on top
-
-Start from the LEFT. Can 14 go into 2? No.
-Can 14 go into 24? Yes!`,
-    question: "How many times does 14 go into 24?",
-    correctAnswer: 1,
-    isFinalStep: false
+// ── Lesson data (mirrors server.js LESSON_MAP) ──
+const LESSON_MAP = {
+  1: {
+    name: "Place Value, Rounding, and Algorithms for Addition and Subtraction",
+    totalLessons: 19,
+    moduleOverview: `Tools: place value chart, vertical number line, tape diagram.
+Key vocabulary: digit, period, place value, standard form, expanded form, word form, round, estimate, sum, difference, algorithm.
+Parent tip: Ask "What digit is in the _____ place?" and "What are the two nearest multiples of _____ that this number falls between?"`,
+    lessons: {
+      1:  "Understanding that a digit in one place represents ten times the value of the same digit one place to its right. Use place value charts and place value disks to show 10 ones = 1 ten, 10 tens = 1 hundred, etc. up to 1,000,000.",
+      2:  "Reading and writing numbers to 1,000,000 in standard form, expanded form, and word form. Recognizing the structure of number periods (ones, thousands, millions) separated by commas.",
+      3:  "Naming numbers within 1,000,000 using place value language. Identifying the value of each digit. Writing numbers in all three forms given any one form.",
+      4:  "Comparing multi-digit numbers up to 1,000,000 using >, <, and = symbols. Aligning digits by place value to compare. Ordering a set of numbers from least to greatest.",
+      5:  "Finding 1,000 more/less and 10,000 more/less and 100,000 more/less than a given number mentally using the place value chart.",
+      6:  "Rounding to the nearest ten thousand and hundred thousand using a vertical number line. Finding the two nearest multiples, identifying the midpoint, and deciding which multiple the number is closer to.",
+      7:  "Rounding to any place value (hundreds, thousands, ten-thousands, hundred-thousands) using the vertical number line strategy. Applying rounding in context.",
+      8:  "Rounding multi-digit numbers to any place value — extended practice and application including real-world contexts. Justifying rounding decisions.",
+      9:  "Solving addition word problems using the standard algorithm with regrouping. Modeling with tape diagrams. Estimating with rounding to check reasonableness.",
+      10: "Using the standard addition algorithm to add numbers up to 1,000,000, including problems requiring multiple regroups. Assessing reasonableness of answers.",
+      11: "Solving multi-step addition word problems. Using tape diagrams to model, the standard algorithm to compute, and rounding to estimate.",
+      12: "Introduction to the standard subtraction algorithm. Decomposing (regrouping) once. Connecting the algorithm to place value disks and tape diagrams.",
+      13: "Subtracting with decomposing (regrouping) in up to two places. Understanding that when a digit is not large enough, you regroup from the next larger place.",
+      14: "Subtracting with decomposing across zeros (e.g., 4,000 − 1,364). Breaking apart the minuend to make regrouping possible.",
+      15: "Fluently applying the standard subtraction algorithm with multiple regroups including across zeros. Solving word problems with tape diagrams.",
+      16: "Solving two-step word problems with addition and subtraction using tape diagrams. Writing equations with a letter for the unknown. Assessing reasonableness.",
+      17: "Solving additive comparison word problems (how many more/fewer) using tape diagrams and the standard algorithms.",
+      18: "Solving multi-step word problems requiring both addition and subtraction. Determining which operations are needed. Writing statements to answer questions.",
+      19: "Creating and solving multi-step word problems from given tape diagrams and equations. Explaining reasoning.",
+    },
   },
-  {
-    title: "Step 2: Multiply and subtract",
-    content: `We found that 14 goes into 24 one time.
-
-Now multiply: 14 × 1 = 14
-
-      1
-14 | 2456
-    -14↓`,
-    question: "What is 24 - 14?",
-    correctAnswer: 10,
-    isFinalStep: false
+  2: {
+    name: "Unit Conversions and Problem Solving with Metric Measurement",
+    totalLessons: 5,
+    moduleOverview: `Conversion rule: larger unit → smaller unit = MULTIPLY; smaller unit → larger unit = DIVIDE.
+Conversions: 1 km = 1,000 m; 1 m = 100 cm; 1 m = 1,000 mm; 1 kg = 1,000 g; 1 L = 1,000 mL.
+Tools: place value chart, tape diagram, number line.
+Parent tip: Ask "Are we going to a bigger or smaller unit? Smaller unit = multiply."`,
+    lessons: {
+      1: "Expressing metric length measurements in terms of a smaller unit (km→m, m→cm, m→mm). Adding and subtracting mixed unit length measurements. Using tape diagrams and the standard algorithm.",
+      2: "Expressing metric mass measurements in terms of a smaller unit (kg→g). Solving addition and subtraction word problems involving mass with mixed units.",
+      3: "Expressing metric capacity measurements in terms of a smaller unit (L→mL). Solving word problems involving capacity with mixed units.",
+      4: "Knowing and relating metric units to place value units. Expressing measurements given in a larger unit in terms of a smaller unit. Connecting the metric system's base-10 structure to place value.",
+      5: "Solving multi-step word problems involving length, mass, and capacity. Choosing the correct operation. Using tape diagrams and letters for unknowns.",
+    },
   },
-  {
-    title: "Step 3: Bring down and divide again",
-    content: `We subtracted 14 from 24 and got 10.
-
-Now bring down the next digit (5):
-      1
-14 | 2456
-    -14↓
-      105
-
-We now have 105 to divide by 14.`,
-    question: "How many times does 14 go into 105?",
-    correctAnswer: 7,
-    isFinalStep: false
+  3: {
+    name: "Multi-Digit Multiplication and Division",
+    totalLessons: 43,
+    moduleOverview: `Tools: place value disks, area model, partial products, tape diagram, DMSB (Divide-Multiply-Subtract-Bring down).
+Key vocabulary: factor, product, quotient, remainder, divisor, dividend, area model, partial product, multiplicative comparison, prime, composite.
+Parent tip: "Estimate first — about how many?" and "Can you draw an area model?"`,
+    lessons: {
+      1:  "Investigating the formula for area of a rectangle (Area = length × width) and perimeter (P = 2l + 2w). Distinguishing area (square units) from perimeter (linear units).",
+      2:  "Solving multiplicative comparison word problems using area and perimeter formulas. Drawing and labeling diagrams.",
+      3:  "Solving multi-step real-world problems requiring area and perimeter. Writing equations with letters for unknowns.",
+      4:  "Interpreting and representing patterns when multiplying by 10, 100, and 1,000. Using place value charts to show how digits shift left.",
+      5:  "Multiplying multiples of 10, 100, and 1,000 by single-digit numbers (e.g., 40 × 6, 300 × 7, 5,000 × 8). Using place value understanding and basic facts.",
+      6:  "Multiplying two-digit multiples of 10 by two-digit multiples of 10 using the area model (e.g., 30 × 40).",
+      7:  "Using place value disks to represent two-digit by one-digit multiplication. Understanding regrouping at each place value.",
+      8:  "Using place value disks to represent three- and four-digit by one-digit multiplication. Recording with the standard algorithm alongside the disks.",
+      9:  "Connecting the area model (partial products) to the standard multiplication algorithm for 3-digit × 1-digit.",
+      10: "Multiplying 3- and 4-digit numbers by 1-digit numbers using the standard algorithm. Estimating first, then computing, then checking reasonableness.",
+      11: "Connecting the area model to partial products for 2-digit × 2-digit multiplication. Writing all four partial products.",
+      12: "Explaining how the area model relates to the standard algorithm for two-digit by two-digit multiplication. Transitioning from four partial products to two.",
+      13: "Solving multi-step word problems using multiplication. Writing equations with a letter for the unknown.",
+      14: "Understanding division with remainders using equal-group models and number lines. Interpreting what the remainder means in context.",
+      15: "Solving division problems with remainders using array and area models. Relating division to multiplication.",
+      16: "Dividing two-digit dividends by one-digit divisors with a remainder in the ones place using place value disks and the standard algorithm.",
+      17: "Dividing two-digit dividends requiring decomposing a remainder in the tens place.",
+      18: "Finding whole number quotients and remainders for two-digit ÷ one-digit. Recording using DMSB steps: Divide, Multiply, Subtract, Bring down.",
+      19: "Explaining remainders by using place value understanding. Connecting the algorithm steps to the meaning of division.",
+      20: "Solving division problems with three-digit dividends and no remainders using the area model.",
+      21: "Solving division problems with three-digit dividends and remainders using the area model and standard long division algorithm.",
+      22: "Finding factor pairs for numbers to 100. Defining factor and understanding that every number has at least two factors (1 and itself).",
+      23: "Using division and the associative property to test for factors. Identifying numbers with exactly two factors (prime) vs. more than two (composite).",
+      24: "Determining whether a whole number is a multiple of another number. Listing multiples and identifying patterns.",
+      25: "Exploring properties of prime and composite numbers to 100 using the Sieve of Eratosthenes.",
+      26: "Dividing multiples of 10, 100, and 1,000 by single-digit numbers mentally (e.g., 320 ÷ 8, 4,200 ÷ 6).",
+      27: "Dividing three-digit dividends by one-digit divisors using place value disks and the standard algorithm, including decomposing a remainder in the hundreds place.",
+      28: "Dividing three-digit dividends by divisors of 2, 3, 4, and 5 using the standard long division algorithm. Recording all DMSB steps clearly.",
+      29: "Dividing four-digit dividends by one-digit divisors (2–5) using the standard algorithm, with up to three decompositions.",
+      30: "Solving division problems with a zero in the dividend (e.g., 3,045 ÷ 5) or a zero in the quotient.",
+      31: "Interpreting division word problems as either 'number of groups unknown' or 'group size unknown.' Drawing tape diagrams to model both types.",
+      32: "Finding whole number quotients and remainders with divisors 6, 7, 8, and 9.",
+      33: "Explaining how the area model of division connects to the steps of the long division algorithm for three- and four-digit dividends.",
+      34: "Solving multi-step word problems with larger divisors. Interpreting remainders in context.",
+      35: "Solving multi-step word problems that combine multiplication and division.",
+      36: "Solving mixed multi-step word problems with all four operations. Assessing reasonableness using estimation.",
+      37: "Transitioning from four partial products to two partial products (the standard two-line form) for two-digit × two-digit multiplication.",
+      38: "Multiplying two-digit by two-digit numbers using four partial products and the area model.",
+      39: "Multiplying two-digit by two-digit numbers — extended practice with the area model and connecting to the standard algorithm.",
+      40: "Multiplying two-digit multiples of 10 by two-digit numbers (e.g., 30 × 47). Using the area model.",
+      41: "Multiplying by two-digit numbers where one factor has a zero in the ones place. Connecting area model to algorithm notation.",
+      42: "Multiplying two-digit by two-digit numbers — moving from area model to standard algorithm.",
+      43: "Fluently multiplying two-digit by two-digit numbers using the standard algorithm. Solving word problems.",
+    },
   },
-  {
-    title: "Step 4: Multiply and subtract again",
-    content: `We found that 14 goes into 105 seven times.
-
-Now multiply: 14 × 7 = 98
-
-      17
-14 | 2456
-    -14↓
-      105
-      -98↓`,
-    question: "What is 105 - 98?",
-    correctAnswer: 7,
-    isFinalStep: false
+  4: {
+    name: "Angle Measure and Plane Figures",
+    totalLessons: 16,
+    moduleOverview: `Tools: protractor, ruler, straightedge.
+Key vocabulary: point, line, line segment, ray, angle, vertex, degree, acute, right, obtuse, straight, reflex, parallel, perpendicular, polygon, triangle, quadrilateral, symmetry, line of symmetry.
+Parent tip: "Estimate first — is it bigger or smaller than 90°?" and "Do any sides look like railroad tracks (parallel)?"`,
+    lessons: {
+      1:  "Identifying and drawing points, lines, line segments, and rays. Understanding that a line goes on forever in both directions; a ray in one direction; a line segment has two endpoints.",
+      2:  "Defining angles as two rays sharing a common endpoint (vertex). Identifying angles in shapes and real-world objects. Using correct notation (∠ABC).",
+      3:  "Classifying angles by type: acute (less than 90°), right (exactly 90°), obtuse (more than 90° but less than 180°), and straight (exactly 180°).",
+      4:  "Measuring and sketching angles using a protractor. Aligning the center hole with the vertex and one ray along the baseline. Reading the correct scale.",
+      5:  "Measuring angles that require reading the inner or outer scale of the protractor accurately. Sketching angles of a given measure.",
+      6:  "Using angle addition: when two angles share a vertex and a ray, their measures add. Finding an unknown angle measure when the whole angle and one part are known.",
+      7:  "Solving problems involving unknown angle measures using addition and subtraction. Applying the angle addition concept in context.",
+      8:  "Identifying parallel lines (never intersect) and perpendicular lines (intersect at exactly 90°). Using symbols ∥ and ⊥.",
+      9:  "Drawing parallel and perpendicular lines. Identifying parallel and perpendicular sides in polygons and real-world objects.",
+      10: "Classifying triangles by the measure of their angles: acute (all angles acute), right (one right angle), obtuse (one obtuse angle).",
+      11: "Classifying triangles by side length: equilateral (all equal), isosceles (at least two equal), scalene (no sides equal). Combining angle and side classifications.",
+      12: "Defining and classifying quadrilaterals: trapezoid, parallelogram, rectangle, rhombus, square. Understanding the hierarchy.",
+      13: "Understanding the hierarchy of quadrilaterals: every square is a rectangle and a rhombus; every rectangle is a parallelogram. Using a Venn diagram.",
+      14: "Defining line symmetry: a line of symmetry divides a figure into two mirror-image halves. Identifying lines of symmetry in shapes and letters.",
+      15: "Drawing lines of symmetry and completing symmetric figures. Folding to test for symmetry.",
+      16: "Identifying symmetric figures in real-world contexts. Reviewing and connecting all angle and shape concepts from the module.",
+    },
   },
-  {
-    title: "Step 5: Bring down and divide one more time",
-    content: `We subtracted 98 from 105 and got 7.
-
-Now bring down the next digit (6):
-      17
-14 | 2456
-    -14↓
-      105
-      -98↓
-       76
-
-We now have 76 to divide by 14.`,
-    question: "How many times does 14 go into 76?",
-    correctAnswer: 5,
-    isFinalStep: false
+  5: {
+    name: "Fraction Equivalence, Ordering, and Operations",
+    totalLessons: 41,
+    moduleOverview: `Tools: fraction strips, area models, number lines, tape diagrams.
+Key vocabulary: numerator, denominator, equivalent fractions, simplest form, benchmark, common denominator, mixed number, improper fraction, like fractions, unlike fractions.
+Parent tip: "If I split each piece into ___ equal parts, how many total?" and "Is this fraction closer to 0, 1/2, or 1?"`,
+    lessons: {
+      1:  "Decomposing fractions into unit fractions and sums of unit fractions (e.g., 3/4 = 1/4 + 1/4 + 1/4). Using fraction strips and area models.",
+      2:  "Decomposing fractions into sums of fractions in more than one way. Recording decompositions with equations.",
+      3:  "Decomposing and composing fractions greater than 1. Understanding mixed numbers and improper fractions as representations of the same quantity.",
+      4:  "Converting between mixed numbers and improper fractions using number lines and area models (e.g., 2 3/4 = 11/4).",
+      5:  "Adding and subtracting fractions with like denominators. The denominator stays the same; only numerators are added or subtracted.",
+      6:  "Adding and subtracting fractions with like denominators in word problems. Using tape diagrams.",
+      7:  "Adding fractions to make a whole number or a number greater than 1.",
+      8:  "Comparing fractions using benchmarks (0, 1/2, 1). Deciding whether a fraction is closer to 0, 1/2, or 1.",
+      9:  "Comparing fractions with the same numerator but different denominators (e.g., 3/4 vs. 3/8). Larger denominator = smaller pieces = smaller fraction.",
+      10: "Comparing fractions with the same denominator but different numerators.",
+      11: "Creating equivalent fractions by multiplying BOTH the numerator AND denominator by the same number. Using area models and number lines.",
+      12: "Explaining why multiplying numerator and denominator by the same number gives an equivalent fraction (multiplying by n/n = 1).",
+      13: "Generating equivalent fractions. Finding simplest form by dividing numerator and denominator by their greatest common factor.",
+      14: "Comparing fractions with unlike denominators by finding equivalent fractions with a common denominator.",
+      15: "Comparing two fractions by converting both to the same denominator. Recording with >, <, =.",
+      16: "Ordering 3 or more fractions with unlike denominators from least to greatest. Justifying the order.",
+      17: "Finding and using equivalent fractions to add fractions with unlike denominators (denominators that are multiples of each other).",
+      18: "Adding fractions with unlike denominators where one denominator is a multiple of the other.",
+      19: "Subtracting fractions with unlike denominators (one is a multiple of the other).",
+      20: "Adding and subtracting fractions with unlike denominators in word problems. Using tape diagrams, number lines, and equations.",
+      21: "Adding mixed numbers with like denominators. Adding whole numbers and fractional parts separately.",
+      22: "Subtracting mixed numbers with like denominators — no regrouping needed.",
+      23: "Subtracting mixed numbers with like denominators requiring regrouping (renaming one whole as a fraction).",
+      24: "Adding mixed numbers with unlike denominators where one denominator is a multiple of the other.",
+      25: "Subtracting mixed numbers with unlike denominators. Converting to common denominators, with regrouping as needed.",
+      26: "Solving multi-step word problems with mixed numbers involving both addition and subtraction.",
+      27: "Multiplying a unit fraction by a whole number (e.g., 4 × 1/3 = 4/3). Understanding as repeated addition.",
+      28: "Multiplying a non-unit fraction by a whole number (e.g., 4 × 2/5 = 8/5). Writing the answer as a mixed number when greater than 1.",
+      29: "Solving word problems involving multiplying a fraction by a whole number. Modeling with tape diagrams.",
+      30: "Multiplying a whole number by a fraction — extended practice.",
+      31: "Solving multi-step word problems with fraction multiplication and addition or subtraction.",
+      32: "Adding and subtracting fractions with denominators that are not multiples of each other. Finding the LCD.",
+      33: "Adding mixed numbers with unlike denominators where neither denominator is a multiple of the other.",
+      34: "Subtracting mixed numbers with unlike denominators, with regrouping as needed.",
+      35: "Solving word problems requiring adding and subtracting fractions with unlike denominators.",
+      36: "Multi-step fraction word problems — combining multiplication, addition, and subtraction of fractions.",
+      37: "Adding and subtracting fractions on number lines. Locating fractions and mixed numbers precisely.",
+      38: "Interpreting a fraction as division (e.g., 3 ÷ 4 = 3/4). Solving word problems where the quotient is a fraction.",
+      39: "Solving word problems where the solution is a fraction representing division.",
+      40: "Line plots with fractional data. Reading and interpreting line plots with fractions of a unit (1/2, 1/4, 1/8).",
+      41: "Creating and interpreting line plots with fractional data. Solving multi-step questions using line plot data. Module review.",
+    },
   },
-  {
-    title: "Step 6: Final answer",
-    content: `We found that 14 goes into 76 five times.
+  6: {
+    name: "Decimal Fractions",
+    totalLessons: 7,
+    moduleOverview: `Tools: place value chart (extended to hundredths), 10-column strip (tenths), 10×10 grid (hundredths), number line.
+Key vocabulary: tenth, hundredth, decimal point, decimal fraction, equivalent decimal, compare.
+Parent tip: Ask "How many tenths? How many hundredths?" and trace the place value chart to the right of the decimal point.`,
+    lessons: {
+      1: "Exploring tenths: 1 whole = 10 tenths; 1/10 = 0.1. Using the place value chart extended to tenths. Writing fractions with denominator 10 as decimals.",
+      2: "Using the area model (10-column strip) to show tenths. Locating tenths on the number line. Adding tenths.",
+      3: "Exploring hundredths: 1 tenth = 10 hundredths; 1/100 = 0.01. Extending the place value chart. Writing fractions with denominator 100 as decimals.",
+      4: "Using the 10×10 grid to model hundredths. Identifying tenths and hundredths in the same decimal (e.g., 0.43 = 4 tenths 3 hundredths).",
+      5: "Comparing decimals to hundredths using place value. Comparing digit by digit from left to right. Recording with >, <, =.",
+      6: "Relating fractions and decimals: converting tenths to hundredths (e.g., 3/10 = 30/100 = 0.30). Recognizing 1/4 = 0.25, 1/2 = 0.50, 3/4 = 0.75.",
+      7: "Adding and comparing decimal fractions to hundredths. Solving word problems with decimals. Connecting to money (dollars and cents). Module review.",
+    },
+  },
+  7: {
+    name: "Exploring Measurement with Multiplication",
+    totalLessons: 4,
+    moduleOverview: `Customary conversions: 1 ft = 12 in; 1 yd = 3 ft; 1 lb = 16 oz; 1 gal = 4 qt; 1 qt = 2 pt; 1 pt = 2 c; 1 min = 60 sec; 1 hr = 60 min.
+Tools: tape diagram, conversion table, area model, standard algorithm.
+Parent tip: "How many of the smaller unit fit into one bigger unit? So if we have ___ bigger units, we multiply by ___."`,
+    lessons: {
+      1: "Converting larger customary units to smaller using multiplication: feet to inches (× 12), yards to feet (× 3), pounds to ounces (× 16). Using the area model and standard algorithm.",
+      2: "Converting customary capacity units: gallons to quarts (× 4), quarts to pints (× 2), pints to cups (× 2). Also hours to minutes (× 60) and minutes to seconds (× 60).",
+      3: "Solving multi-step word problems involving customary measurement conversions. Identifying the correct conversion factor. Using tape diagrams.",
+      4: "Solving mixed-unit multi-step word problems combining length, weight, and capacity. Synthesizing multiplication and measurement concepts. Module review.",
+    },
+  },
+};
 
-Now multiply: 14 × 5 = 70
-Then subtract: 76 - 70 = 6
+const MODULE_LESSON_COUNTS = Object.fromEntries(
+  Object.entries(LESSON_MAP).map(([k, v]) => [k, v.totalLessons])
+);
 
-      17_
-14 | 2456
-    -14↓
-      105
-      -98↓
-       76
-      -70
-        6
+// ── Build system prompt ──
+function buildSystemPrompt(module, lesson) {
+  const mod = LESSON_MAP[module];
+  let moduleText;
 
-What is your final answer?`,
-    question: "Enter your quotient and remainder:",
-    correctAnswer: null,
-    isFinalStep: true
-  }
-];
+  if (mod) {
+    const lessonDetail = lesson && mod.lessons[lesson]
+      ? `\nTHIS SPECIFIC LESSON (Lesson ${lesson} of ${mod.totalLessons}):\n${mod.lessons[lesson]}`
+      : lesson
+        ? `\nLesson ${lesson} of ${mod.totalLessons}. Focus on concepts appropriate to this point in the module sequence.`
+        : '';
 
-let currentStep = 0;
+    moduleText = `The student is working on Grade 4 Module ${module}: "${mod.name}"${lesson ? `, Lesson ${lesson}` : ''}.
 
-function showStep(stepNum) {
-  const step = steps[stepNum];
-  document.getElementById('step-number').textContent = `Step ${stepNum + 1} of ${steps.length}`;
-  
-  // Set step content
-  const contentHTML = `
-    <p style="font-size: 15px; font-weight: 500; color: #333; margin: 0 0 16px;">${step.title}</p>
-    <p style="font-size: 14px; color: #666; line-height: 1.6; margin: 0; white-space: pre-wrap; font-family: 'Courier New', monospace;">${step.content}</p>
-  `;
-  document.getElementById('step-content').innerHTML = contentHTML;
-  
-  document.getElementById('question-text').textContent = step.question;
-  document.getElementById('step-feedback').textContent = '';
-  
-  const inputContainer = document.getElementById('input-container');
-  
-  if (step.isFinalStep) {
-    inputContainer.innerHTML = `
-      <div style="flex: 1;">
-        <input type="number" id="step-answer" placeholder="Quotient" style="width: 100%; padding: 8px 12px; font-size: 14px; border-radius: 4px; border: 1px solid #90caf9; margin-bottom: 8px;"/>
-        <input type="number" id="step-remainder" placeholder="Remainder" style="width: 100%; padding: 8px 12px; font-size: 14px; border-radius: 4px; border: 1px solid #90caf9;"/>
-      </div>
-      <button onclick="checkStepAnswer()" style="padding: 8px 16px; font-size: 14px; border-radius: 4px; border: 1px solid #90caf9; background: white; cursor: pointer; color: #1976d2; font-weight: 500; height: fit-content;">Check</button>
-    `;
-    document.getElementById('step-answer').focus();
+MODULE OVERVIEW AND PARENT GUIDANCE:
+${mod.moduleOverview}
+${lessonDetail}`;
   } else {
-    inputContainer.innerHTML = `
-      <input type="number" id="step-answer" placeholder="Enter your answer" style="flex: 1; padding: 8px 12px; font-size: 14px; border-radius: 4px; border: 1px solid #90caf9;"/>
-      <button onclick="checkStepAnswer()" style="padding: 8px 16px; font-size: 14px; border-radius: 4px; border: 1px solid #90caf9; background: white; cursor: pointer; color: #1976d2; font-weight: 500;">Check</button>
-    `;
-    document.getElementById('step-answer').focus();
+    moduleText = `The student is working on Grade 4 Eureka Math. No specific module was selected — ask the student what topic they are working on.`;
   }
-  
-  document.getElementById('step-question').style.display = 'block';
-  
-  const progress = ((stepNum + 1) / steps.length) * 100;
-  document.getElementById('progress-bar').style.width = progress + '%';
-  
-  document.getElementById('prev-btn').disabled = stepNum === 0;
-  document.getElementById('next-btn').disabled = stepNum === steps.length - 1;
-  
-  document.getElementById('prev-btn').style.opacity = stepNum === 0 ? '0.5' : '1';
-  document.getElementById('next-btn').style.opacity = stepNum === steps.length - 1 ? '0.5' : '1';
+
+  return `You are a warm, encouraging, and patient Eureka Math tutor for a 4th grade student (approximately 9-10 years old). Your name is "Math Buddy."
+
+${moduleText}
+
+CORE TUTORING PHILOSOPHY — SOCRATIC METHOD:
+You NEVER give the answer directly. Instead, you guide the student to discover the answer themselves through questions, hints, and encouragement. This builds real understanding, not just answer-getting.
+
+YOUR TUTORING FLOW:
+1. UNDERSTAND: First ask what the problem is asking and what the student already knows
+2. CONNECT: Ask what strategy or tool from class might help (place value chart, area model, number line, protractor, fraction strips, etc.)
+3. GUIDE: Ask leading questions step by step — one question at a time
+4. ENCOURAGE: Celebrate every correct step with genuine praise ("Yes! You've got it!" "That's exactly right!")
+5. REDIRECT: If wrong, never say "wrong" — say "Hmm, let me ask you this..." or "Interesting! Let's check that together..." then give a hint
+6. CHECK: After solving, ask the student to explain WHY the method works and then give a similar practice problem
+
+QUESTIONING STRATEGIES BY MODULE:
+- Place value: "What digit is in the _____ place?" "What are the two nearest multiples of _____?"
+- Multiplication: "What's a good estimate first?" "Can you draw an area model for this?"
+- Division: "What's the first step in D-M-S-B?" "About how many times does ___ go into ___?"
+- Fractions: "Is this fraction closer to 0, to one-half, or to 1?" "What do we multiply top AND bottom by?"
+- Angles: "Estimate first — is this angle bigger or smaller than 90°?"
+- Measurement/conversion: "Are we going to a bigger or smaller unit?"
+- Decimals: "How many tenths? How many hundredths?"
+
+LANGUAGE AND TONE RULES:
+- Use simple, clear language a 4th grader can understand
+- Be warm, patient, and encouraging — never frustrating or condescending
+- Use short sentences and short paragraphs
+- Use emojis sparingly to keep it fun (✨ 🌟 👍 🤔 💡)
+- When a student struggles, reassure them: "This is a tricky one! Let's figure it out together."
+- Keep each response SHORT — one question or hint at a time, not a wall of text
+- NEVER show the full solution in one response
+
+COMPREHENSION CHECK (after solving):
+Once the problem is solved, say "Awesome work! 🌟 Now let me check if you REALLY understand this." Then:
+1. Ask them to explain the concept in their own words
+2. Give them a similar but slightly different practice problem
+3. Guide them through it with fewer hints than the first one
+
+EUREKA MATH APPROACH:
+- Honor the Concrete → Pictorial → Abstract progression
+- Reference tools students use in class: place value charts, area models, number lines, fraction strips, protractors, 10-frames
+- Use Eureka Math vocabulary students know from class
+- Reference the Read-Draw-Write (RDW) strategy for word problems
+
+Remember: Your goal is for the student to feel confident and capable. Every child can do math — they just need the right questions.`;
 }
 
-function checkStepAnswer() {
-  const step = steps[currentStep];
-  const feedback = document.getElementById('step-feedback');
-  
-  if (step.isFinalStep) {
-    const quotient = parseInt(document.getElementById('step-answer').value);
-    const remainder = parseInt(document.getElementById('step-remainder').value);
-    
-    if (isNaN(quotient) || isNaN(remainder)) {
-      feedback.textContent = 'Please enter both the quotient and remainder';
-      feedback.style.color = '#d32f2f';
-      return;
-    }
-    
-    if (quotient === 175 && remainder === 6) {
-      feedback.innerHTML = '✓ Perfect! You got it! 2,456 ÷ 14 = 175 R 6';
-      feedback.style.color = '#388e3c';
-      feedback.style.fontWeight = '500';
-    } else {
-      feedback.innerHTML = `Not quite. The correct answer is 175 R 6. Check your work!`;
-      feedback.style.color = '#d32f2f';
-    }
+// ── API Key management ──
+const KEY_STORAGE = 'mathbuddy_apikey';
+
+function getApiKey() {
+  return localStorage.getItem(KEY_STORAGE) || '';
+}
+
+function saveApiKey(key) {
+  localStorage.setItem(KEY_STORAGE, key.trim());
+}
+
+function clearApiKey() {
+  localStorage.removeItem(KEY_STORAGE);
+}
+
+// ── State ──
+let selectedModule = null;
+let selectedLesson = null;
+let inputMethod = 'type';
+let photoBase64 = null;
+let photoMediaType = null;
+let conversationHistory = [];
+let isStreaming = false;
+
+// ── DOM refs ──
+const keyScreen = document.getElementById('key-screen');
+const setupScreen = document.getElementById('setup-screen');
+const chatScreen = document.getElementById('chat-screen');
+const apiKeyInput = document.getElementById('api-key-input');
+const saveKeyBtn = document.getElementById('save-key-btn');
+const changeKeyBtn = document.getElementById('change-key-btn');
+const moduleSelect = document.getElementById('module-select');
+const lessonInput = document.getElementById('lesson-input');
+const startBtn = document.getElementById('start-btn');
+const backBtn = document.getElementById('back-btn');
+const newProblemBtn = document.getElementById('new-problem-btn');
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const sendBtn = document.getElementById('send-btn');
+const chatSubtitle = document.getElementById('chat-subtitle');
+const photoInput = document.getElementById('photo-input');
+const photoPreview = document.getElementById('photo-preview');
+const photoPlaceholder = document.getElementById('photo-placeholder');
+const clearPhotoBtn = document.getElementById('clear-photo-btn');
+
+// ── Startup: show key screen or setup screen ──
+(function init() {
+  if (getApiKey()) {
+    showScreen(setupScreen);
   } else {
-    const userAnswer = parseInt(document.getElementById('step-answer').value);
-    const correctAnswer = step.correctAnswer;
-    
-    if (isNaN(userAnswer)) {
-      feedback.textContent = 'Please enter a number';
-      feedback.style.color = '#f57f17';
-      return;
-    }
-    
-    if (userAnswer === correctAnswer) {
-      feedback.innerHTML = '✓ Correct! Great job!';
-      feedback.style.color = '#388e3c';
-      feedback.style.fontWeight = '500';
-    } else {
-      feedback.textContent = `Not quite. The answer is ${correctAnswer}. Try again or move to the next step.`;
-      feedback.style.color = '#d32f2f';
-    }
+    showScreen(keyScreen);
   }
-}
+})();
 
-function nextStep() {
-  if (currentStep < steps.length - 1) {
-    currentStep++;
-    showStep(currentStep);
+// ── Key screen ──
+saveKeyBtn.addEventListener('click', () => {
+  const key = apiKeyInput.value.trim();
+  if (!key.startsWith('sk-')) {
+    alert('That doesn\'t look like a valid API key. It should start with "sk-".');
+    return;
   }
-}
+  saveApiKey(key);
+  apiKeyInput.value = '';
+  showScreen(setupScreen);
+});
 
-function previousStep() {
-  if (currentStep > 0) {
-    currentStep--;
-    showStep(currentStep);
-  }
-}
+apiKeyInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveKeyBtn.click();
+});
 
-document.addEventListener('keypress', function(event) {
-  if (event.key === 'Enter') {
-    const activeElement = document.activeElement;
-    if (activeElement.id === 'step-answer' || activeElement.id === 'step-remainder') {
-      checkStepAnswer();
-    }
+changeKeyBtn.addEventListener('click', () => {
+  clearApiKey();
+  showScreen(keyScreen);
+});
+
+// ── Module → lesson range ──
+moduleSelect.addEventListener('change', () => {
+  const mod = parseInt(moduleSelect.value);
+  const maxLessons = MODULE_LESSON_COUNTS[mod];
+  const hint = document.getElementById('lesson-range-hint');
+  if (maxLessons) {
+    lessonInput.max = maxLessons;
+    hint.textContent = `(1–${maxLessons})`;
+    if (parseInt(lessonInput.value) > maxLessons) lessonInput.value = '';
+  } else {
+    lessonInput.max = 43;
+    hint.textContent = '';
   }
 });
 
-// Initialize first step
-document.addEventListener('DOMContentLoaded', function() {
-  showStep(0);
+// ── Tab switching ──
+document.querySelectorAll('.method-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.method-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.method-panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    inputMethod = tab.dataset.method;
+    document.getElementById(`method-${inputMethod}`).classList.add('active');
+  });
 });
+
+// ── Photo upload ──
+photoInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const dataUrl = ev.target.result;
+    photoBase64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
+    photoMediaType = file.type || 'image/jpeg';
+    photoPreview.src = dataUrl;
+    photoPreview.style.display = 'block';
+    photoPlaceholder.style.display = 'none';
+    clearPhotoBtn.style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+});
+
+clearPhotoBtn.addEventListener('click', () => {
+  photoBase64 = null;
+  photoMediaType = null;
+  photoPreview.style.display = 'none';
+  photoPlaceholder.style.display = 'block';
+  clearPhotoBtn.style.display = 'none';
+  photoInput.value = '';
+});
+
+// ── Start session ──
+startBtn.addEventListener('click', startSession);
+
+function startSession() {
+  selectedModule = parseInt(moduleSelect.value) || null;
+  selectedLesson = parseInt(lessonInput.value) || null;
+
+  let initialUserMessage = null;
+  let imageData = null;
+
+  if (inputMethod === 'type') {
+    const text = document.getElementById('problem-text').value.trim();
+    if (!text) { alert('Please type your math problem first! ✏️'); return; }
+    initialUserMessage = `I need help with this problem: ${text}`;
+  } else if (inputMethod === 'photo') {
+    if (!photoBase64) { alert('Please take or upload a photo of your problem first! 📷'); return; }
+    imageData = { base64: photoBase64, mediaType: photoMediaType };
+  } else if (inputMethod === 'number') {
+    const page = document.getElementById('page-number').value.trim();
+    const num = document.getElementById('problem-number').value.trim();
+    if (!page || !num) { alert('Please enter the page number and problem number! 🔢'); return; }
+    initialUserMessage = `I need help with page ${page}, problem number ${num}. I'll describe it to you.`;
+  }
+
+  showScreen(chatScreen);
+
+  const moduleNames = {
+    1: 'Module 1 – Place Value', 2: 'Module 2 – Metric Measurement',
+    3: 'Module 3 – Multiplication & Division', 4: 'Module 4 – Angles & Shapes',
+    5: 'Module 5 – Fractions', 6: 'Module 6 – Decimals', 7: 'Module 7 – Measurement',
+  };
+  const modLabel = selectedModule ? moduleNames[selectedModule] : 'Grade 4 Eureka Math';
+  chatSubtitle.textContent = modLabel + (selectedLesson ? `, Lesson ${selectedLesson}` : '');
+
+  conversationHistory = [];
+  chatMessages.innerHTML = '';
+  appendBuddyMessage("Hi! I'm Math Buddy! 🦉 I'm so excited to work on math with you today!\n\nI'll never just give you the answer — we'll figure it out together, step by step. You've got this! 💪");
+
+  if (imageData) {
+    appendUserImageMessage(imageData.base64, imageData.mediaType);
+    streamToAnthropic(buildImageMessages(imageData.base64, imageData.mediaType), true);
+  } else if (inputMethod === 'number') {
+    appendBuddyMessage("Great! Can you describe what the problem says? Tell me the numbers and what it's asking you to find.");
+  } else {
+    appendUserMessage(initialUserMessage);
+    conversationHistory.push({ role: 'user', content: initialUserMessage });
+    streamToAnthropic(conversationHistory, false);
+  }
+}
+
+function buildImageMessages(base64, mediaType) {
+  return [{
+    role: 'user',
+    content: [
+      { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+      { type: 'text', text: "I took a photo of my homework problem. Please read it and guide me through it step by step — but don't give me the answer! Ask me questions to help me figure it out." },
+    ],
+  }];
+}
+
+// ── Navigation ──
+backBtn.addEventListener('click', () => showScreen(setupScreen));
+
+newProblemBtn.addEventListener('click', () => {
+  showScreen(setupScreen);
+  document.getElementById('problem-text').value = '';
+  clearPhotoBtn.click();
+  document.getElementById('page-number').value = '';
+  document.getElementById('problem-number').value = '';
+});
+
+// ── Send message ──
+sendBtn.addEventListener('click', sendMessage);
+
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+});
+
+chatInput.addEventListener('input', () => {
+  chatInput.style.height = 'auto';
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+});
+
+function sendMessage() {
+  if (isStreaming) return;
+  const text = chatInput.value.trim();
+  if (!text) return;
+  appendUserMessage(text);
+  conversationHistory.push({ role: 'user', content: text });
+  chatInput.value = '';
+  chatInput.style.height = 'auto';
+  streamToAnthropic(conversationHistory, false);
+}
+
+// ── Direct Anthropic API streaming ──
+async function streamToAnthropic(messages, isImageRequest) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    appendBuddyMessage("Oops! I can't find your API key. Let me take you back to set it up.");
+    setTimeout(() => { clearApiKey(); showScreen(keyScreen); }, 1500);
+    return;
+  }
+
+  isStreaming = true;
+  sendBtn.disabled = true;
+  const typingEl = appendTypingIndicator();
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-7',
+        max_tokens: 1024,
+        stream: true,
+        system: buildSystemPrompt(selectedModule, selectedLesson),
+        messages,
+      }),
+    });
+
+    typingEl.remove();
+
+    if (!response.ok) {
+      const errBody = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        appendBuddyMessage("❌ That API key doesn't seem to work. Let me take you back to fix it.");
+        setTimeout(() => { clearApiKey(); showScreen(keyScreen); }, 1800);
+      } else {
+        appendBuddyMessage(`Hmm, something went wrong (${response.status}: ${errBody.error?.message || 'unknown error'}). Please try again!`);
+      }
+      return;
+    }
+
+    const buddyBubble = appendBuddyMessage('', true);
+    let fullText = '';
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const json = line.slice(6).trim();
+        if (json === '[DONE]' || !json) continue;
+        try {
+          const evt = JSON.parse(json);
+          // Only render text_delta events; skip thinking blocks
+          if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+            fullText += evt.delta.text;
+            buddyBubble.innerHTML = formatMessage(fullText);
+            scrollToBottom();
+          }
+        } catch {}
+      }
+    }
+
+    // Save assistant turn to history
+    if (isImageRequest) {
+      conversationHistory.push(...messages);
+    }
+    if (fullText) {
+      conversationHistory.push({ role: 'assistant', content: fullText });
+    }
+
+    checkForComprehensionTrigger(fullText);
+  } catch (err) {
+    typingEl?.remove();
+    appendBuddyMessage("Oops! I had trouble connecting. Check your internet and try again. 🔄");
+    console.error(err);
+  } finally {
+    isStreaming = false;
+    sendBtn.disabled = false;
+    chatInput.focus();
+  }
+}
+
+// ── Screen helper ──
+function showScreen(screen) {
+  [keyScreen, setupScreen, chatScreen].forEach(s => {
+    s.classList.remove('active');
+    s.style.display = '';
+  });
+  screen.classList.add('active');
+  if (screen === chatScreen) {
+    screen.style.display = 'flex';
+  }
+}
+
+// ── UI helpers ──
+function appendUserMessage(text) {
+  const el = document.createElement('div');
+  el.className = 'message user';
+  el.innerHTML = `<div class="message-avatar">😊</div><div class="message-bubble">${escapeHtml(text)}</div>`;
+  chatMessages.appendChild(el);
+  scrollToBottom();
+}
+
+function appendUserImageMessage(base64, mediaType) {
+  const el = document.createElement('div');
+  el.className = 'message user';
+  el.innerHTML = `
+    <div class="message-avatar">😊</div>
+    <div class="message-bubble">
+      <img src="data:${mediaType};base64,${base64}" class="message-image" alt="Homework photo" />
+      <div>Here's my homework problem!</div>
+    </div>`;
+  chatMessages.appendChild(el);
+  scrollToBottom();
+}
+
+function appendBuddyMessage(text, streaming = false) {
+  const el = document.createElement('div');
+  el.className = 'message buddy';
+  el.innerHTML = `<div class="message-avatar">🦉</div><div class="message-bubble">${streaming ? '' : formatMessage(text)}</div>`;
+  chatMessages.appendChild(el);
+  scrollToBottom();
+  return el.querySelector('.message-bubble');
+}
+
+function appendTypingIndicator() {
+  const el = document.createElement('div');
+  el.className = 'message buddy';
+  el.innerHTML = `<div class="message-avatar">🦉</div><div class="message-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+  chatMessages.appendChild(el);
+  scrollToBottom();
+  return el;
+}
+
+function appendComprehensionBanner() {
+  const el = document.createElement('div');
+  el.className = 'comprehension-banner';
+  el.textContent = "🌟 Comprehension Check Time! Let's make sure you really understand! 🌟";
+  chatMessages.appendChild(el);
+  scrollToBottom();
+}
+
+function checkForComprehensionTrigger(text) {
+  const lower = text.toLowerCase();
+  const triggers = ['comprehension check','check your understanding','let me check if you really understand',
+    'try a similar problem','practice problem',"you've solved it","you got it","great work! now","awesome work!"];
+  if (triggers.some(t => lower.includes(t))) appendComprehensionBanner();
+}
+
+function formatMessage(text) {
+  let html = escapeHtml(text);
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\n/g, '<br>');
+  return html;
+}
+
+function escapeHtml(text) {
+  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function scrollToBottom() {
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}

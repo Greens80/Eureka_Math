@@ -1,60 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eureka Math Tutor - Step-by-Step Division Guide</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Buddy - Eureka Math Helper</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Eureka Math Tutor</h1>
-            <p class="subtitle">Step-by-step long division practice - Grade 5 Module 2 Lesson 23</p>
-        </div>
 
-        <div class="main-content">
-            <div class="lesson-info">
-                <h2>Step-by-step: 2,456 ÷ 14</h2>
-                <p>Learn the long division process one step at a time</p>
-            </div>
-
-            <div class="step-container">
-                <div class="step-header">
-                    <div class="step-number-section">
-                        <p class="label">Current Step</p>
-                        <p class="step-number" id="step-number">Step 1 of 6</p>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar" id="progress-bar"></div>
-                    </div>
-                </div>
-
-                <div class="step-content-area" id="step-content"></div>
-
-                <div class="step-question-box" id="step-question">
-                    <p class="question-text" id="question-text"></p>
-                    <div id="input-container"></div>
-                    <div class="step-feedback" id="step-feedback"></div>
-                </div>
-
-                <div class="button-group">
-                    <button id="prev-btn" class="btn" onclick="previousStep()">Previous</button>
-                    <button id="next-btn" class="btn" onclick="nextStep()">Next</button>
-                </div>
-            </div>
-
-            <div class="working-area-container">
-                <p class="label">Your working area - work along with the steps:</p>
-                <textarea 
-                    id="work-area" 
-                    placeholder="Write your long division work here..."
-                    class="working-area"
-                ></textarea>
-            </div>
-        </div>
+  <!-- API KEY SCREEN (shown on first visit) -->
+  <div id="key-screen" class="screen">
+    <div class="setup-card">
+      <div class="buddy-header">
+        <div class="buddy-avatar">🔑</div>
+        <h1>Welcome to Math Buddy!</h1>
+        <p class="buddy-subtitle">One quick setup, then let's do math! 🌟</p>
+      </div>
+      <div class="setup-section">
+        <label class="setup-label">Your Anthropic API Key</label>
+        <input
+          type="password"
+          id="api-key-input"
+          class="setup-input"
+          placeholder="sk-ant-api03-..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <p class="key-hint">
+          Get your key at <strong>console.anthropic.com</strong> → API Keys.<br/>
+          Your key is saved only on <em>this device</em> — never sent anywhere except directly to Anthropic.
+        </p>
+      </div>
+      <button id="save-key-btn" class="start-btn">Save &amp; Start! 🚀</button>
     </div>
+  </div>
 
-    <script src="script.js"></script>
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen" class="screen">
+    <div class="setup-card">
+      <div class="buddy-header">
+        <div class="buddy-avatar">🦉</div>
+        <h1>Hi! I'm Math Buddy!</h1>
+        <p class="buddy-subtitle">Let's do some math together! 🌟</p>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Which module are you working on?</label>
+        <select id="module-select" class="setup-select">
+          <option value="">-- Pick your module --</option>
+          <option value="1">Module 1 – Place Value &amp; Addition/Subtraction (19 lessons)</option>
+          <option value="2">Module 2 – Metric Measurement (5 lessons)</option>
+          <option value="3">Module 3 – Multiplication &amp; Division (43 lessons)</option>
+          <option value="4">Module 4 – Angles &amp; Shapes (16 lessons)</option>
+          <option value="5">Module 5 – Fractions (41 lessons)</option>
+          <option value="6">Module 6 – Decimals (7 lessons)</option>
+          <option value="7">Module 7 – Measurement with Multiplication (4 lessons)</option>
+        </select>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Which lesson? <span id="lesson-range-hint" class="lesson-range-hint"></span></label>
+        <input
+          type="number"
+          id="lesson-input"
+          class="setup-input"
+          placeholder="e.g. 5"
+          min="1"
+          max="43"
+        />
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">How do you want to show me your problem?</label>
+        <div class="input-method-tabs">
+          <button class="method-tab active" data-method="type">
+            ✏️ Type it
+          </button>
+          <button class="method-tab" data-method="photo">
+            📷 Take a photo
+          </button>
+          <button class="method-tab" data-method="number">
+            🔢 Problem number
+          </button>
+        </div>
+
+        <!-- Type method -->
+        <div id="method-type" class="method-panel active">
+          <textarea
+            id="problem-text"
+            class="problem-textarea"
+            placeholder="Type your math problem here...&#10;Example: 346 × 27 = ?"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <!-- Photo method -->
+        <div id="method-photo" class="method-panel">
+          <div class="photo-upload-area" id="photo-drop-area">
+            <div class="photo-placeholder" id="photo-placeholder">
+              <span class="photo-icon">📸</span>
+              <p>Take a photo or upload your homework</p>
+              <label class="photo-btn" for="photo-input">
+                Choose Photo
+              </label>
+              <input
+                type="file"
+                id="photo-input"
+                accept="image/*"
+                capture="environment"
+                style="display:none"
+              />
+            </div>
+            <img id="photo-preview" class="photo-preview" alt="Your homework" style="display:none" />
+          </div>
+          <button class="clear-photo-btn" id="clear-photo-btn" style="display:none">
+            Remove photo
+          </button>
+        </div>
+
+        <!-- Problem number method -->
+        <div id="method-number" class="method-panel">
+          <div class="number-inputs">
+            <div class="number-input-group">
+              <label>Page number</label>
+              <input
+                type="number"
+                id="page-number"
+                class="setup-input small"
+                placeholder="e.g. 47"
+                min="1"
+              />
+            </div>
+            <div class="number-input-group">
+              <label>Problem number</label>
+              <input
+                type="number"
+                id="problem-number"
+                class="setup-input small"
+                placeholder="e.g. 3"
+                min="1"
+              />
+            </div>
+          </div>
+          <p class="number-hint">I'll ask you to describe the problem so I can help! 📖</p>
+        </div>
+      </div>
+
+      <button id="start-btn" class="start-btn">
+        Let's Go! 🚀
+      </button>
+      <p class="change-key-row">
+        <button id="change-key-btn" class="change-key-btn">🔑 Change API Key</button>
+      </p>
+    </div>
+  </div>
+
+  <!-- CHAT SCREEN -->
+  <div id="chat-screen" class="screen">
+    <div class="chat-layout">
+
+      <div class="chat-topbar">
+        <button class="back-btn" id="back-btn">← Back</button>
+        <div class="chat-info">
+          <span class="chat-owl">🦉</span>
+          <div>
+            <div class="chat-title">Math Buddy</div>
+            <div class="chat-subtitle" id="chat-subtitle">Grade 4 Eureka Math</div>
+          </div>
+        </div>
+        <button class="new-problem-btn" id="new-problem-btn">New Problem</button>
+      </div>
+
+      <div class="chat-messages" id="chat-messages">
+        <!-- Messages appear here -->
+      </div>
+
+      <div class="chat-input-area">
+        <textarea
+          id="chat-input"
+          class="chat-textarea"
+          placeholder="Type your answer or question here..."
+          rows="2"
+        ></textarea>
+        <button id="send-btn" class="send-btn">Send ✈️</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

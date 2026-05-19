@@ -557,6 +557,37 @@ body {
   animation: fadeIn 0.3s ease;
 }
 
+/* API key hint */
+.key-hint {
+  font-size: 13px;
+  color: var(--gray-600);
+  margin-top: 10px;
+  line-height: 1.5;
+  background: var(--yellow-light);
+  border: 1px solid var(--yellow);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+}
+
+.change-key-row {
+  text-align: center;
+  margin-top: 14px;
+}
+
+.change-key-btn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: underline;
+}
+
+.change-key-btn:hover {
+  color: var(--gray-600);
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 500px) {
   .setup-card {

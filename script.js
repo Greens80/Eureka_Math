@@ -202,34 +202,61 @@ Parent tip: "How many of the smaller unit fit into one bigger unit? So if we hav
 };
 
 // ── Grade 5 lesson map ──
+// Module 1 data is sourced directly from the official Eureka Math Grade 5 Module 1
+// Teacher Edition, Student Workbook, and Additional Student Materials.
 const LESSON_MAP_G5 = {
   1: {
     name: "Place Value and Decimal Fractions",
     totalLessons: 16,
-    moduleOverview: `Tools: place value chart (through millionths), area model, number line.
-Key vocabulary: thousandths, ten-thousandths, millionths, standard form, expanded form, word form, round.
-Parent tip: Ask "What is the value of each digit?" and "Which place value are we rounding to?"`,
+    moduleOverview: `Standards: 5.NBT.1, 5.NBT.2, 5.NBT.3, 5.NBT.4, 5.NBT.7, 5.MD.1
+Topics: A (L1-4) Multiplicative Patterns on the Place Value Chart | B (L5-6) Decimal Fractions and Place Value Patterns | C (L7-8) Place Value and Rounding Decimal Fractions | D (L9-10) Adding and Subtracting Decimals | E (L11-12) Multiplying Decimals | F (L13-16) Dividing Decimals
+Tools: place value chart (millions → thousandths), place value disks, area model, vertical number line, personal white board, tape diagram
+Key vocabulary: thousandths, exponent, base, power, exponential form (e.g. 10³), expanded form (fraction and decimal versions), unit form, word form, decimal fraction, compose/decompose, rename/regroup, standard algorithm, RDW (Read-Draw-Write)
+Parent tips from curriculum:
+• READ DECIMALS BY THEIR UNIT — say "seven tenths," not "zero point seven." This mirrors whole-number language and builds understanding. "7 tenths + 8 tenths = 15 tenths = 1 and 5 tenths" is correct thinking.
+• PLACE VALUE DISKS BRIDGE CONCRETE AND ABSTRACT — if a child struggles, return to drawing disks on the place value chart. A disk labeled "1/10" in the tenths column is more concrete than a digit alone.
+• EXPONENTS ARE NOT MULTIPLICATION — 10⁵ = 100,000, NOT 10×5. A common mistake: 10⁴ = 40,000. The exponent tells how many times 10 is used as a factor.
+• METRIC CONVERSIONS USE POWERS OF 10 — to convert meters → centimeters multiply by 10² (=100); meters → millimeters multiply by 10³ (=1,000).
+• ESTIMATION CONFIRMS DECIMAL PLACEMENT — before computing, estimate by rounding. If 5.1 × 2 ≈ 10, an answer of 1.02 or 102 is unreasonable.`,
+    lessons: {
+      1:  "Reason concretely and pictorially using place value understanding to relate adjacent base ten units from millions to thousandths. Use place value disks on a chart spanning millions–thousandths to show that each place is 10 times the unit to its right and 1/10 the unit to its left. Tools: place value chart, place value disks. Vocab: thousandths (NEW). Fluency Sprint: Multiply by 10.",
+      2:  "Reason abstractly using place value understanding to relate adjacent base ten units from millions to thousandths. Move from concrete disks to abstract place value reasoning; express relationships as equations (e.g., 32.1 × 10 = 321; 3,632.1 ÷ 10 = 363.21). Tools: place value chart. Vocab: 10 times as large, 1/10 as large. Fluency: Multiply and Divide by 10.",
+      3:  "Use exponents to name place value units and explain patterns in the placement of the decimal point. Write powers of 10 in exponential form (10¹ through 10⁶); explain why multiplying by 10ⁿ shifts digits n places left and dividing by 10ⁿ shifts digits n places right. Tools: powers-of-10 chart. Vocab: exponent (NEW), base, power, exponential form. Fluency Sprint: Multiply by 3.",
+      4:  "Use exponents to denote powers of 10 with application to metric conversions. Convert metric length units using exponents: 1 m = 10² cm = 10³ mm; 1 km = 10³ m. Write conversion equations in exponential form. Tools: meter strip template, place value chart. Vocab: millimeter, centimeter, meter, kilometer, convert/rename. Fluency: Convert Units.",
+      5:  "Name decimal fractions in expanded, unit, and word forms by applying place value reasoning. Write decimals (to thousandths) in standard form, expanded form using fractions (3 × 1/10 + 6 × 1/100), expanded form using decimals (3 × 0.1 + 6 × 0.01), unit form (3 tenths 6 hundredths), and word form. Tools: thousands–thousandths place value chart. Vocab: expanded form (fraction and decimal), unit form, word form, decimal fraction. Fluency Sprint: Multiply Decimals by 10, 100, and 1,000.",
+      6:  "Compare decimal fractions to the thousandths using like units, and express comparisons with >, <, =. Align decimals by place value; convert to like units to compare (e.g., compare 0.4 and 0.38 by renaming 0.4 as 0.40 = 40 hundredths > 38 hundredths). Order sets of decimals from least to greatest. Tools: place value chart. Vocab: like units, >, <, =.",
+      7:  "Round a given decimal to any place using place value understanding and the vertical number line. Identify the two benchmark values (nearest multiples) above and below, find the midpoint, and determine which benchmark is closer. Round to tenths, hundredths, or any specified place. Tools: vertical number line, hundreds–thousandths place value chart. Vocab: round, benchmark, midpoint, approximate. Fluency Sprint: Find the Midpoint.",
+      8:  "Round a given decimal to any place using place value understanding and the vertical number line — extended practice with multi-step rounding and real-world measurement contexts. Decompose numbers to find the exact endpoints. Tools: vertical number line, place value chart. Vocab: same as Lesson 7.",
+      9:  "Add decimals using place value strategies and relate those strategies to a written method. Connect unit-form language to the standard algorithm ('4 hundredths + 8 hundredths = 12 hundredths = 1 tenth 2 hundredths'). Compose (regroup) across decimal places. Tools: place value chart, place value disks. Vocab: sum, compose, regroup/rename, standard algorithm, like units. Fluency Sprint: Round to the Nearest One.",
+      10: "Subtract decimals using place value strategies and relate those strategies to a written method. Decompose (unbundle) across decimal places when the top digit is smaller than the bottom digit. Solve multi-digit decimal subtraction including subtraction from a whole number (e.g., 7 – 0.35). Tools: place value chart, place value disks. Vocab: difference, decompose, unbundle, standard algorithm.",
+      11: "Multiply a decimal fraction by single-digit whole numbers using place value disks and the area model, and relate to a written method. Think in units: '4 copies of 3 tenths = 12 tenths = 1.2.' Draw place value disks; record using the area model; connect to the standard algorithm. Tools: place value disks, area model. Vocab: partial products, area model, factor, product.",
+      12: "Multiply a decimal fraction by single-digit whole numbers including using estimation to confirm decimal point placement. Estimate first by rounding (e.g., 7.13 × 6 ≈ 7 × 6 = 42), then compute precisely. Check that the exact answer is close to the estimate. Tools: area model. Vocab: estimate, reasonable, decimal point placement. Fluency Sprint: Add Decimals.",
+      13: "Divide decimals by single-digit whole numbers involving easily identifiable multiples using place value understanding and relate to a written method. Use unit-form division: '1.8 ÷ 2 = 18 tenths ÷ 2 = 9 tenths = 0.9.' Solve 4.5 ÷ 5 and 6.12 ÷ 6 in unit form. Tools: place value chart, place value disks. Vocab: quotient, divisor, dividend, unit-form division. Fluency Sprint: Subtract Decimals.",
+      14: "Divide decimals with a remainder using place value understanding and relate to a written method. When a unit cannot be divided evenly, decompose/unbundle to the next smaller unit (e.g., 5 tenths ÷ 2 — unbundle to 50 hundredths, then divide). Draw place value disks; record with the standard algorithm. Tools: place value disks. Vocab: remainder, decompose/unbundle to next smaller unit.",
+      15: "Divide decimals using place value understanding including remainders in the smallest unit. Extend to situations where the remainder appears at the hundredths or thousandths place. Use the standard algorithm alongside place value disks. Tools: place value disks. Vocab: remainder in the smallest unit. Fluency Sprint: Multiply by Exponents.",
+      16: "Solve word problems using decimal operations. Apply all four decimal operations (+, –, ×, ÷) to solve multi-step real-world problems. Use the RDW (Read-Draw-Write) strategy: Read the problem, Draw a tape diagram or place value model, Write a number sentence and statement of the solution. Tools: tape diagrams. Vocab: RDW process, tape diagram, multi-step. Fluency Sprint: Multiply and Divide by Exponents.",
+    },
   },
   2: {
     name: "Multi-Digit Whole Number and Decimal Fraction Operations",
     totalLessons: 29,
-    moduleOverview: `Tools: area model, place value chart, standard algorithm.
-Key vocabulary: decimal, multiply, divide, estimate, product, quotient, remainder.
-Parent tip: "Estimate first using rounding." and "Does your answer make sense?"`,
+    moduleOverview: `Tools: area model, place value chart, standard algorithm, tape diagram.
+Key vocabulary: decimal, multiply, divide, estimate, product, quotient, remainder, standard algorithm.
+Parent tip: "Estimate first using rounding — does your answer make sense?" and "Use the area model to check your multiplication."`,
   },
   3: {
     name: "Addition and Subtraction of Fractions",
     totalLessons: 16,
-    moduleOverview: `Tools: fraction strips, number lines, area models.
-Key vocabulary: unlike denominators, least common denominator, equivalent fractions, mixed numbers.
-Parent tip: "Find a common denominator first." and "Can you simplify your answer?"`,
+    moduleOverview: `Tools: fraction strips, number lines, area models, tape diagrams.
+Key vocabulary: unlike denominators, least common denominator, equivalent fractions, mixed numbers, benchmark.
+Parent tip: "Find a common denominator first by listing multiples." and "Use a number line to check whether your answer is reasonable."`,
   },
   4: {
     name: "Multiplication and Division of Fractions and Decimal Fractions",
     totalLessons: 38,
-    moduleOverview: `Tools: area models, tape diagrams, number lines.
-Key vocabulary: multiply fractions, divide fractions, unit fraction, reciprocal, scaling.
-Parent tip: "Multiply numerators and denominators." and "Dividing by a fraction is the same as multiplying by its reciprocal."`,
+    moduleOverview: `Tools: area models, tape diagrams, number lines, place value charts.
+Key vocabulary: multiply fractions, divide fractions, unit fraction, scaling, fraction as division.
+Parent tip: "Multiplying by a fraction less than 1 makes the number smaller." and "Dividing by a unit fraction: how many halves are in 3 wholes? Use a tape diagram."`,
   },
   5: {
     name: "Addition and Multiplication with Volume and Area",
@@ -294,14 +321,15 @@ const TEST_TOPICS_G4 = [
 ];
 
 // ── Grade 5 test topic areas ──
+// Topic names and question guidance derived from the official Eureka Math G5 M1 curriculum.
 const TEST_TOPICS_G5 = [
-  { module: 1, name: "Decimal Place Value" },
-  { module: 2, name: "Multi-Digit Multiplication & Division" },
-  { module: 3, name: "Adding & Subtracting Fractions with Unlike Denominators" },
-  { module: 4, name: "Multiplying Fractions" },
-  { module: 4, name: "Dividing Fractions" },
-  { module: 5, name: "Volume of Rectangular Prisms" },
-  { module: 6, name: "Coordinate Plane" },
+  { module: 1, name: "Place Value Chart & Powers of 10 (Topics A–B)", hint: "Ask about the ×10/÷10 relationship between adjacent places, reading a digit's value, and using exponents. Example questions: 'What is the value of the 7 in 3.074?' and 'What is 4.13 × 10²?'" },
+  { module: 1, name: "Decimal Forms — Expanded, Unit, and Word Form (Topic B)", hint: "Ask students to write a decimal in expanded form using fractions AND decimals, and to read a decimal aloud correctly. Example: 'Write 24.357 in expanded form using fractions.' Remind them to say tenths/hundredths, not just digits." },
+  { module: 1, name: "Comparing and Rounding Decimals (Topic C)", hint: "Ask students to compare two decimals to the thousandths using like units, and to round to a specified place using the vertical number line strategy. Example: 'Is 0.4 greater or less than 0.38? Explain how you know.' and 'Round 8.546 to the nearest hundredth.'" },
+  { module: 1, name: "Adding and Subtracting Decimals (Topic D)", hint: "Ask students to add and subtract using unit-form thinking and the standard algorithm. Example: '4 hundredths + 8 hundredths = ?' and 'Solve 36.25 + 8.67' and '7 – 0.35.' Check regrouping/composing." },
+  { module: 1, name: "Multiplying Decimals (Topic E)", hint: "Ask students to multiply a decimal by a single-digit whole number using place value thinking and estimation. Example: '3 × 9.63 = ?' Ask them to estimate first, then compute. Check they say '3 copies of 9 ones 6 tenths 3 hundredths.'" },
+  { module: 1, name: "Dividing Decimals (Topic F)", hint: "Ask students to divide a decimal by a single-digit whole number using unit-form thinking. Example: '1.8 ÷ 2 = ?' (think: 18 tenths ÷ 2 = 9 tenths = 0.9). Also try a problem with a remainder: '0.9 ÷ 4.'" },
+  { module: 1, name: "Metric Conversions with Exponents (Topic A)", hint: "Ask students to convert metric units using powers of 10. Example: 'Yi Ting is 1.49 m tall — how many centimeters is that? Write your equation using exponents.' and 'A ladybug is 2 cm long — how many meters is that?'" },
 ];
 
 // ── Build homework system prompt ──
@@ -379,39 +407,58 @@ Remember: Your goal is for the student to feel confident and capable. Every chil
 function buildTestSystemPrompt(grade) {
   grade = grade || 4;
   const topics = grade === 5 ? TEST_TOPICS_G5 : TEST_TOPICS_G4;
-  const topicList = topics.map(t => `- ${t.name} (Module ${t.module})`).join('\n');
+  const topicList = topics.map((t, i) =>
+    `${i + 1}. ${t.name} (Module ${t.module})${t.hint ? '\n   Guidance: ' + t.hint : ''}`
+  ).join('\n');
 
-  const exampleJson = grade === 4
-    ? `{"grade":4,"overallScore":75,"topics":[{"module":1,"name":"Place Value & Rounding","score":85,"level":"proficient","correct":2,"total":2,"suggestedProblems":["Round 234,567 to the nearest ten-thousand","Write 45,008 in expanded form"]},{"module":2,"name":"Metric Measurement","score":60,"level":"developing","correct":1,"total":2,"suggestedProblems":["Convert 3 km 400 m to meters"]}]}`
-    : `{"grade":5,"overallScore":75,"topics":[{"module":1,"name":"Decimal Place Value","score":85,"level":"proficient","correct":2,"total":2,"suggestedProblems":["Write 3.047 in expanded form","Round 4.836 to the nearest hundredth"]},{"module":3,"name":"Adding & Subtracting Fractions with Unlike Denominators","score":60,"level":"developing","correct":1,"total":2,"suggestedProblems":["Add 2/3 + 3/4"]}]}`;
+  const g5Example = `{"grade":5,"overallScore":71,"topics":[{"module":1,"name":"Place Value Chart & Powers of 10 (Topics A-B)","score":100,"level":"proficient","correct":2,"total":2,"suggestedProblems":[]},{"module":1,"name":"Decimal Forms — Expanded, Unit, and Word Form (Topic B)","score":50,"level":"needs support","correct":1,"total":2,"suggestedProblems":["Write 24.357 in expanded form using fractions (e.g. 2×10 + 4×1 + 3×1/10...)","Write 0.408 in unit form (__ tenths __ hundredths) and word form"]},{"module":1,"name":"Comparing and Rounding Decimals (Topic C)","score":50,"level":"needs support","correct":1,"total":2,"suggestedProblems":["Round 8.546 to the nearest hundredth using a vertical number line","Compare 0.4 and 0.38: rename 0.4 as 40 hundredths to compare"]},{"module":1,"name":"Adding and Subtracting Decimals (Topic D)","score":100,"level":"proficient","correct":2,"total":2,"suggestedProblems":[]},{"module":1,"name":"Multiplying Decimals (Topic E)","score":50,"level":"needs support","correct":1,"total":2,"suggestedProblems":["Estimate first, then solve: 7.13 × 6","Draw an area model to solve 3 × 9.63"]},{"module":1,"name":"Dividing Decimals (Topic F)","score":50,"level":"needs support","correct":1,"total":2,"suggestedProblems":["Solve 4.5 ÷ 5 by thinking in units (45 tenths ÷ 5)","Draw place value disks to solve 0.9 ÷ 4"]},{"module":1,"name":"Metric Conversions with Exponents (Topic A)","score":100,"level":"proficient","correct":2,"total":2,"suggestedProblems":[]}]}`;
 
-  return `You are Math Buddy, conducting a Grade ${grade} Eureka Math assessment. Your goal is to evaluate the student's understanding across all major topic areas in a fun and encouraging way.
+  const g4Example = `{"grade":4,"overallScore":75,"topics":[{"module":1,"name":"Place Value & Rounding","score":85,"level":"proficient","correct":2,"total":2,"suggestedProblems":["Round 234,567 to the nearest ten-thousand","Write 45,008 in expanded form"]},{"module":2,"name":"Metric Measurement","score":60,"level":"developing","correct":1,"total":2,"suggestedProblems":["Convert 3 km 400 m to meters","If you have 4,500 g, how many kilograms is that?"]}]}`;
+
+  const g5CurriculumContext = grade === 5 ? `
+GRADE 5 MODULE 1 CURRICULUM CONTEXT (use this to write accurate questions):
+- Topic A (L1-4): The place value chart extends from millions to thousandths. Moving one place LEFT multiplies value by 10; moving one place RIGHT divides by 1/10. Powers of 10: 10¹=10, 10²=100, 10³=1,000. Metric: 1m = 10²cm = 10³mm.
+- Topic B (L5-6): Decimals have THREE forms: expanded form with fractions (3×1/10 + 6×1/100), unit form (3 tenths 6 hundredths), word form (thirty-six hundredths). Compare by renaming to like units.
+- Topic C (L7-8): Round using a vertical number line — find the two nearest benchmarks, locate the midpoint, choose the closer one.
+- Topic D (L9-10): Add/subtract using unit language. 4 hundredths + 8 hundredths = 12 hundredths = 1 tenth 2 hundredths. Standard algorithm aligns by place value.
+- Topic E (L11-12): Multiply decimals by a single digit. Think in units: 3 × 1.2 = 3 copies of 1 tenth 2 hundredths. Estimate first to check decimal placement.
+- Topic F (L13-16): Divide decimals by a single digit using unit-form thinking. 1.8 ÷ 2 = 18 tenths ÷ 2 = 9 tenths = 0.9. When a unit doesn't divide evenly, unbundle to the next smaller unit.
+- Sprint-type facts: multiplying/dividing by 10, 100, 1,000 and by exponents; finding midpoints; rounding to the nearest one; adding/subtracting single decimal units.` : '';
+
+  return `You are Math Buddy, conducting a Grade ${grade} Eureka Math assessment. Your goal is to evaluate the student's understanding across all major topic areas in a fun, friendly quiz-game format.
+${g5CurriculumContext}
 
 ASSESSMENT STRUCTURE:
-Ask 2 questions per topic area. The topics are:
+Ask exactly 2 questions per topic area (${topics.length} topics = ${topics.length * 2} questions total). Work through them in order.
+
+TOPIC AREAS AND QUESTION GUIDANCE:
 ${topicList}
 
-RULES:
-- Ask questions one at a time. After the student answers, give brief encouraging feedback ("Great try!" or "Almost — the answer was X. Let's keep going!") and move to the next question.
-- Keep the tone warm and encouraging, like a friendly quiz game.
-- Do NOT use the Socratic method here — this is an assessment, so tell them if they got it right or wrong after each answer.
-- Keep questions age-appropriate for Grade ${grade} students.
-- After ALL questions are done, thank the student and tell them their report card is being generated.
+QUESTION-ASKING RULES:
+- Ask one question at a time and wait for the student's answer.
+- After each answer: briefly say whether it was correct or not and give the right answer if they were wrong. Then immediately move to the next question.
+- Keep feedback short (1-2 sentences max) — this is a quiz, not a tutoring session.
+- Keep the tone warm and encouraging: "Nice try!" / "You nailed it! 🌟" / "Almost — the answer is X. You'll get it next time!"
+- Do NOT use the Socratic method — tell them the answer if they're wrong, then move on.
+- Keep questions age-appropriate for Grade ${grade}.
 
-SCORING:
-- Score each topic out of 100% based on how many questions they got correct (0/2 = 0%, 1/2 = 50%, 2/2 = 100%).
-- Levels: score >= 80 = "proficient", score 60-79 = "developing", score < 60 = "needs support"
-- Overall score = average of all topic scores.
-- For suggestedProblems: provide 2 practice problems for any topic where score < 100%.
+SCORING RULES:
+- Full credit (100%): both questions correct.
+- Partial credit (50%): one correct.
+- No credit (0%): neither correct.
+- Levels: ≥80% = "proficient", 60–79% = "developing", <60% = "needs support".
+- Overall score = average of all topic scores (rounded to nearest whole number).
+- suggestedProblems: include 2 specific practice problems for any topic with score < 100%; empty array [] if score = 100%.
 
-FINAL STEP — VERY IMPORTANT:
-After all questions are answered and you've thanked the student, output the report card data EXACTLY in this format (on its own lines, with no extra text around it):
+WHEN ALL QUESTIONS ARE DONE:
+1. Say "Amazing work finishing the whole assessment! 🎉 Your report card is ready!"
+2. On the very next lines, output EXACTLY this block (no extra text before or after the markers):
 
 ===REPORT_CARD_START===
-${exampleJson}
+${grade === 5 ? g5Example : g4Example}
 ===REPORT_CARD_END===
 
-The JSON must include ALL ${topics.length} topics with their scores.`;
+Replace the example JSON with the actual results from this assessment. Include ALL ${topics.length} topics.`;
 }
 
 // ── API Key management ──

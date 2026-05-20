@@ -739,16 +739,53 @@ changeKeyBtn.addEventListener('click', () => {
 });
 
 // ── Login screen ──
-const AVATARS = [
-  '🦉', '🐐', '🦊', '🐼', '🦁', '🐯', '🐸', '🦋',
-  '🐬', '🦄', '🐙', '🦅', '🐻', '🐨', '🦖', '🐲',
-  '🐧', '🦜', '🦩', '🐺', '🦝', '🐮', '🐷', '🐸',
-  '🦔', '🐢', '🦈', '🐳', '🦭', '🦕',
+// DiceBear adventurer seeds — each generates a unique forward-facing cartoon character
+const AVATAR_SEEDS = [
+  'Buddy','Nova','Blaze','Luna','Storm','Pixel','Echo','Sunny',
+  'Comet','River','Sage','Felix','Zara','Rocket','Frost','Maple',
+  'Dune','Spark','Jade','Ember','Wren','Cruz','Bowie','Indigo',
+  'Ziggy','Reef','Koda','Lumi','Axel','Orion',
 ];
+
+const AVATAR_ACCESSORIES = [
+  { id: '', label: 'None' },
+  { id: 'glasses01', label: '👓 Glasses' },
+  { id: 'glasses02', label: '🕶️ Shades' },
+  { id: 'glasses03', label: '🤓 Big Glasses' },
+  { id: 'glasses04', label: '😎 Cool Shades' },
+  { id: 'glasses05', label: '🥽 Goggles' },
+];
+
+function dicebearUrl(seed, accessory) {
+  const base = `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+  return accessory ? `${base}&glasses=${accessory}` : base;
+}
 
 let loginMode = 'login'; // 'login' or 'register'
 let registerGrade = 4;
-let registerAvatar = AVATARS[0]; // default to 🦉
+let registerAvatarSeed = AVATAR_SEEDS[0];
+let registerAvatarAccessory = '';
+
+function getAvatarSeed(user) {
+  // Returns {seed, accessory} for DiceBear, or {emoji} for legacy emoji avatars
+  if (!user) return { seed: AVATAR_SEEDS[0], accessory: '' };
+  if (user.avatarSeed) return { seed: user.avatarSeed, accessory: user.avatarAccessory || '' };
+  // Legacy: emoji stored in user.avatar — keep showing as fallback
+  if (user.avatar) return { emoji: user.avatar };
+  // Deterministic fallback from username
+  const username = user.username || '';
+  let sum = 0;
+  for (let i = 0; i < username.length; i++) sum += username.charCodeAt(i);
+  return { seed: AVATAR_SEEDS[sum % AVATAR_SEEDS.length], accessory: '' };
+}
+
+function avatarImgHtml(user, size) {
+  const av = getAvatarSeed(user);
+  if (av.emoji) {
+    return `<span style="font-size:${size}px;line-height:1">${av.emoji}</span>`;
+  }
+  return `<img src="${dicebearUrl(av.seed, av.accessory)}" width="${size}" height="${size}" style="border-radius:50%;display:block" alt="avatar" loading="lazy">`;
+}
 
 const toggleLoginBtn = document.getElementById('toggle-login-btn');
 const toggleRegisterBtn = document.getElementById('toggle-register-btn');
@@ -793,25 +830,78 @@ function setLoginMode(mode) {
   }
 }
 
-// Build avatar picker grid (lazy — called on first switch to register mode)
+// Build avatar picker (lazy — called on first switch to register mode)
 let avatarPickerBuilt = false;
 function ensureAvatarPicker() {
   if (avatarPickerBuilt) return;
   avatarPickerBuilt = true;
   const picker = document.getElementById('avatar-picker');
   if (!picker) return;
-  AVATARS.forEach((emoji, idx) => {
+
+  // ── Character grid ──
+  const gridLabel = document.createElement('p');
+  gridLabel.className = 'avatar-section-label';
+  gridLabel.textContent = 'Choose your character';
+  picker.appendChild(gridLabel);
+
+  const grid = document.createElement('div');
+  grid.className = 'avatar-grid';
+  picker.appendChild(grid);
+
+  AVATAR_SEEDS.forEach((seed, idx) => {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'avatar-option' + (idx === 0 ? ' selected' : '');
-    btn.textContent = emoji;
+    const img = document.createElement('img');
+    img.src = dicebearUrl(seed, '');
+    img.width = 56;
+    img.height = 56;
+    img.alt = seed;
+    img.loading = 'lazy';
+    btn.appendChild(img);
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+      grid.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      registerAvatar = emoji;
+      registerAvatarSeed = seed;
+      updatePreview();
     });
-    picker.appendChild(btn);
+    grid.appendChild(btn);
   });
+
+  // ── Accessory row ──
+  const accLabel = document.createElement('p');
+  accLabel.className = 'avatar-section-label';
+  accLabel.textContent = 'Add an accessory';
+  picker.appendChild(accLabel);
+
+  const accRow = document.createElement('div');
+  accRow.className = 'avatar-accessory-row';
+  picker.appendChild(accRow);
+
+  AVATAR_ACCESSORIES.forEach((acc, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'acc-option' + (idx === 0 ? ' selected' : '');
+    btn.textContent = acc.label;
+    btn.addEventListener('click', () => {
+      accRow.querySelectorAll('.acc-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      registerAvatarAccessory = acc.id;
+      updatePreview();
+    });
+    accRow.appendChild(btn);
+  });
+
+  // ── Live preview ──
+  const previewWrap = document.createElement('div');
+  previewWrap.className = 'avatar-preview-wrap';
+  previewWrap.innerHTML = `<p class="avatar-section-label">Your avatar</p><div class="avatar-preview-circle"><img id="avatar-preview-img" src="${dicebearUrl(AVATAR_SEEDS[0], '')}" width="80" height="80" alt="preview"></div>`;
+  picker.appendChild(previewWrap);
+
+  function updatePreview() {
+    const img = document.getElementById('avatar-preview-img');
+    if (img) img.src = dicebearUrl(registerAvatarSeed, registerAvatarAccessory);
+  }
 }
 
 toggleLoginBtn.addEventListener('click', () => setLoginMode('login'));
@@ -865,7 +955,8 @@ async function handleLoginSubmit() {
       displayName,
       passwordHash,
       grade: registerGrade,
-      avatar: registerAvatar,
+      avatarSeed: registerAvatarSeed,
+      avatarAccessory: registerAvatarAccessory,
       reportCard: null,
       homeworkSessions: {},
       retestSuggested: [],
@@ -899,14 +990,6 @@ function showLoginError(msg) {
 }
 
 // ── Student header ──
-function getAvatarForUser(user) {
-  if (user && user.avatar) return user.avatar;
-  // fallback: deterministic pick from username
-  const username = typeof user === 'string' ? user : (user && user.username) || '';
-  let sum = 0;
-  for (let i = 0; i < username.length; i++) sum += username.charCodeAt(i);
-  return AVATARS[sum % AVATARS.length];
-}
 
 function setupStudentHeader(user) {
   if (!user) {
@@ -918,7 +1001,7 @@ function setupStudentHeader(user) {
   studentHeader.style.display = 'block';
   genericHeader.style.display = 'none';
 
-  studentAvatar.textContent = getAvatarForUser(user);
+  studentAvatar.innerHTML = avatarImgHtml(user, 56);
   studentGreeting.textContent = `Hi, ${user.displayName}! 🎉`;
   const grade = user.grade || 4;
   studentGradeBadge.textContent = `${user.displayName}'s Grade ${grade}`;
@@ -1728,7 +1811,7 @@ function scoreToColor(score) {
 function appendTestUserMessage(text) {
   const el = document.createElement('div');
   el.className = 'message user';
-  el.innerHTML = `<div class="message-avatar">${getAvatarForUser(getCurrentUser())}</div><div class="message-bubble">${escapeHtml(text)}</div>`;
+  el.innerHTML = `<div class="message-avatar">${avatarImgHtml(getCurrentUser(), 36)}</div><div class="message-bubble">${escapeHtml(text)}</div>`;
   testMessages.appendChild(el);
   scrollToBottom(testMessages);
 }
@@ -1746,7 +1829,7 @@ function appendTestBuddyMessage(text, streaming = false) {
 function appendUserMessage(text) {
   const el = document.createElement('div');
   el.className = 'message user';
-  el.innerHTML = `<div class="message-avatar">${getAvatarForUser(getCurrentUser())}</div><div class="message-bubble">${escapeHtml(text)}</div>`;
+  el.innerHTML = `<div class="message-avatar">${avatarImgHtml(getCurrentUser(), 36)}</div><div class="message-bubble">${escapeHtml(text)}</div>`;
   chatMessages.appendChild(el);
   scrollToBottom(chatMessages);
 }
@@ -1755,7 +1838,7 @@ function appendUserImageMessage(base64, mediaType) {
   const el = document.createElement('div');
   el.className = 'message user';
   el.innerHTML = `
-    <div class="message-avatar">${getAvatarForUser(getCurrentUser())}</div>
+    <div class="message-avatar">${avatarImgHtml(getCurrentUser(), 36)}</div>
     <div class="message-bubble">
       <img src="data:${mediaType};base64,${base64}" class="message-image" alt="Homework photo" />
       <div>Here's my homework problem!</div>

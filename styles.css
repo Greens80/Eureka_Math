@@ -456,6 +456,13 @@ body {
   flex-shrink: 0;
   line-height: 1;
   margin-top: 4px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .message-bubble {
@@ -700,33 +707,106 @@ body {
 
 /* ── AVATAR PICKER ── */
 .avatar-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.avatar-section-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 4px 0 2px;
+}
+
+.avatar-grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
   gap: 8px;
 }
 
 .avatar-option {
-  font-size: 26px;
-  padding: 8px;
+  padding: 4px;
   border: 2px solid var(--gray-200);
-  border-radius: var(--radius-sm);
+  border-radius: 50%;
   background: var(--gray-50);
   cursor: pointer;
   transition: all 0.15s;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+}
+
+.avatar-option img {
+  border-radius: 50%;
+  display: block;
 }
 
 .avatar-option:hover {
   border-color: var(--purple);
   background: var(--purple-light);
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .avatar-option.selected {
   border-color: var(--purple);
   background: var(--purple-light);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
-  transform: scale(1.15);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+  transform: scale(1.12);
+}
+
+.avatar-accessory-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.acc-option {
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 2px solid var(--gray-200);
+  border-radius: 999px;
+  background: var(--gray-50);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  color: var(--gray-600);
+}
+
+.acc-option:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.acc-option.selected {
+  border-color: var(--purple);
+  background: var(--purple-light);
+  color: var(--purple-dark);
+}
+
+.avatar-preview-wrap {
+  text-align: center;
+}
+
+.avatar-preview-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid var(--purple);
+  background: var(--purple-light);
+  overflow: hidden;
+}
+
+.avatar-preview-circle img {
+  border-radius: 50%;
+  display: block;
 }
 
 /* ── STUDENT HEADER ── */
@@ -751,6 +831,14 @@ body {
 .student-avatar-emoji {
   font-size: 48px;
   line-height: 1;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .student-avatar-name h2 {

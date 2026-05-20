@@ -626,6 +626,8 @@ let conversationHistory = [];
 let testConversationHistory = [];
 let isStreaming = false;
 let isTestStreaming = false;
+let testTimerInterval = null;
+let testSecondsLeft = 0;
 let currentMode = 'homework'; // 'homework' or 'test'
 
 // ── DOM refs ──
@@ -1309,6 +1311,41 @@ async function streamToAnthropic(messages, isImageRequest) {
 }
 
 // ── Test mode ──
+function startTestTimer() {
+  const timerEl = document.getElementById('test-timer');
+  testSecondsLeft = 15 * 60;
+  clearInterval(testTimerInterval);
+
+  function tick() {
+    const m = Math.floor(testSecondsLeft / 60);
+    const s = testSecondsLeft % 60;
+    const display = `⏱ ${m}:${String(s).padStart(2, '0')}`;
+    timerEl.textContent = display;
+
+    if (testSecondsLeft <= 60) {
+      timerEl.classList.add('timer-warning');
+    }
+    if (testSecondsLeft <= 0) {
+      stopTestTimer();
+      timerEl.textContent = '⏱ 0:00';
+      appendTestBuddyMessage("⏰ Time's up! Let me wrap up your results...");
+      finishTestBtn.click();
+      return;
+    }
+    testSecondsLeft--;
+  }
+
+  tick();
+  testTimerInterval = setInterval(tick, 1000);
+}
+
+function stopTestTimer() {
+  clearInterval(testTimerInterval);
+  testTimerInterval = null;
+  const timerEl = document.getElementById('test-timer');
+  if (timerEl) timerEl.classList.remove('timer-warning');
+}
+
 function startTestMode() {
   if (!getApiKey()) { showScreen(keyScreen); return; }
   const user = getCurrentUser();
@@ -1320,6 +1357,7 @@ function startTestMode() {
   testSubtitle.textContent = `Grade ${grade} Assessment`;
 
   showScreen(testScreen);
+  startTestTimer();
 
   appendTestBuddyMessage(`Hi! I'm Math Buddy in Assessment Mode! 🦉📝\n\nI'm going to ask you some math questions to see how you're doing. There are no tricks here — just answer your best and I'll give you feedback along the way.\n\nLet's get started! Ready? 🚀`);
 
@@ -1330,11 +1368,13 @@ function startTestMode() {
 }
 
 testBackBtn.addEventListener('click', () => {
+  stopTestTimer();
   showScreen(setupScreen);
 });
 
 finishTestBtn.addEventListener('click', async () => {
   if (isTestStreaming) return;
+  stopTestTimer();
   await generateReportCardNow();
 });
 

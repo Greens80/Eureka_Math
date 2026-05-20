@@ -373,6 +373,31 @@ body {
   background: rgba(22, 163, 74, 0.5) !important;
 }
 
+.test-timer {
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.test-timer.timer-warning {
+  background: rgba(220, 38, 38, 0.4);
+  border-color: rgba(220, 38, 38, 0.6);
+  animation: pulse-timer 1s ease-in-out infinite;
+}
+
+@keyframes pulse-timer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 .chat-info {
   display: flex;
   align-items: center;

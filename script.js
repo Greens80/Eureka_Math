@@ -936,11 +936,6 @@ function startSession() {
   } else if (inputMethod === 'photo') {
     if (!photoBase64) { alert('Please take or upload a photo of your problem first! 📷'); return; }
     imageData = { base64: photoBase64, mediaType: photoMediaType };
-  } else if (inputMethod === 'number') {
-    const page = document.getElementById('page-number').value.trim();
-    const num = document.getElementById('problem-number').value.trim();
-    if (!page || !num) { alert('Please enter the page number and problem number! 🔢'); return; }
-    initialUserMessage = `I need help with page ${page}, problem number ${num}. I'll describe it to you.`;
   }
 
   currentMode = 'homework';
@@ -968,8 +963,6 @@ function startSession() {
   if (imageData) {
     appendUserImageMessage(imageData.base64, imageData.mediaType);
     streamToAnthropic(buildImageMessages(imageData.base64, imageData.mediaType), true);
-  } else if (inputMethod === 'number') {
-    appendBuddyMessage("Great! Can you describe what the problem says? Tell me the numbers and what it's asking you to find.");
   } else {
     appendUserMessage(initialUserMessage);
     conversationHistory.push({ role: 'user', content: initialUserMessage });
@@ -1010,8 +1003,6 @@ newProblemBtn.addEventListener('click', () => {
   showScreen(setupScreen);
   document.getElementById('problem-text').value = '';
   clearPhotoBtn.click();
-  document.getElementById('page-number').value = '';
-  document.getElementById('problem-number').value = '';
 });
 
 // ── Track homework sessions for retest suggestion ──

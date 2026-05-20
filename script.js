@@ -691,16 +691,12 @@ function showScreen(screen) {
 
 // ── Startup ──
 (function init() {
-  if (!getApiKey()) {
-    showScreen(keyScreen);
+  const user = getCurrentUser();
+  if (user) {
+    setupStudentHeader(user);
+    showScreen(setupScreen);
   } else {
-    const user = getCurrentUser();
-    if (!user) {
-      showScreen(loginScreen);
-    } else {
-      setupStudentHeader(user);
-      showScreen(setupScreen);
-    }
+    showScreen(loginScreen);
   }
 })();
 
@@ -713,8 +709,13 @@ saveKeyBtn.addEventListener('click', () => {
   }
   saveApiKey(key);
   apiKeyInput.value = '';
-  // Go to login screen after saving
-  showScreen(loginScreen);
+  const user = getCurrentUser();
+  if (user) {
+    setupStudentHeader(user);
+    showScreen(setupScreen);
+  } else {
+    showScreen(loginScreen);
+  }
 });
 
 apiKeyInput.addEventListener('keydown', e => {
@@ -1053,6 +1054,7 @@ clearPhotoBtn.addEventListener('click', () => {
 startBtn.addEventListener('click', startSession);
 
 function startSession() {
+  if (!getApiKey()) { showScreen(keyScreen); return; }
   selectedModule = parseInt(moduleSelect.value) || null;
   selectedLesson = parseInt(lessonInput.value) || null;
 
@@ -1294,6 +1296,7 @@ async function streamToAnthropic(messages, isImageRequest) {
 
 // ── Test mode ──
 function startTestMode() {
+  if (!getApiKey()) { showScreen(keyScreen); return; }
   const user = getCurrentUser();
   const grade = user ? (user.grade || 4) : selectedGrade || 4;
 

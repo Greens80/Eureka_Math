@@ -729,6 +729,7 @@ changeKeyBtn.addEventListener('click', () => {
 // ── Login screen ──
 let loginMode = 'login'; // 'login' or 'register'
 let registerGrade = 4;
+let registerAvatar = AVATARS[0]; // default to 🦉
 
 const toggleLoginBtn = document.getElementById('toggle-login-btn');
 const toggleRegisterBtn = document.getElementById('toggle-register-btn');
@@ -745,11 +746,14 @@ function setLoginMode(mode) {
 
   loginError.style.display = 'none';
 
+  const registerAvatarSection = document.getElementById('register-avatar-section');
+
   if (mode === 'login') {
     toggleLoginBtn.classList.add('active');
     toggleRegisterBtn.classList.remove('active');
     registerNameSection.style.display = 'none';
     registerGradeSection.style.display = 'none';
+    registerAvatarSection.style.display = 'none';
     registerConfirmSection.style.display = 'none';
     loginTitle.textContent = 'Welcome Back!';
     loginSubtitle.textContent = 'Log in to continue your math journey! 🌟';
@@ -760,6 +764,7 @@ function setLoginMode(mode) {
     toggleRegisterBtn.classList.add('active');
     registerNameSection.style.display = 'block';
     registerGradeSection.style.display = 'block';
+    registerAvatarSection.style.display = 'block';
     registerConfirmSection.style.display = 'block';
     loginTitle.textContent = 'New Student!';
     loginSubtitle.textContent = 'Create your account to start learning! 🌟';
@@ -767,6 +772,23 @@ function setLoginMode(mode) {
     document.getElementById('login-password').autocomplete = 'new-password';
   }
 }
+
+// Build avatar picker grid
+(function buildAvatarPicker() {
+  const picker = document.getElementById('avatar-picker');
+  AVATARS.forEach((emoji, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'avatar-option' + (idx === 0 ? ' selected' : '');
+    btn.textContent = emoji;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      registerAvatar = emoji;
+    });
+    picker.appendChild(btn);
+  });
+})();
 
 toggleLoginBtn.addEventListener('click', () => setLoginMode('login'));
 toggleRegisterBtn.addEventListener('click', () => setLoginMode('register'));
@@ -819,6 +841,7 @@ async function handleLoginSubmit() {
       displayName,
       passwordHash,
       grade: registerGrade,
+      avatar: registerAvatar,
       reportCard: null,
       homeworkSessions: {},
       retestSuggested: [],
@@ -852,9 +875,17 @@ function showLoginError(msg) {
 }
 
 // ── Student header ──
-const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐸', '🦋', '🐬', '🦄', '🐙', '🦅'];
+const AVATARS = [
+  '🦉', '🐐', '🦊', '🐼', '🦁', '🐯', '🐸', '🦋',
+  '🐬', '🦄', '🐙', '🦅', '🐻', '🐨', '🦖', '🐲',
+  '🐧', '🦜', '🦩', '🐺', '🦝', '🐮', '🐷', '🐸',
+  '🦔', '🐢', '🦈', '🐳', '🦭', '🦕',
+];
 
-function getAvatarForUser(username) {
+function getAvatarForUser(user) {
+  if (user && user.avatar) return user.avatar;
+  // fallback: deterministic pick from username
+  const username = typeof user === 'string' ? user : (user && user.username) || '';
   let sum = 0;
   for (let i = 0; i < username.length; i++) sum += username.charCodeAt(i);
   return AVATARS[sum % AVATARS.length];
@@ -870,7 +901,7 @@ function setupStudentHeader(user) {
   studentHeader.style.display = 'block';
   genericHeader.style.display = 'none';
 
-  studentAvatar.textContent = getAvatarForUser(user.username);
+  studentAvatar.textContent = getAvatarForUser(user);
   studentGreeting.textContent = `Hi, ${user.displayName}! 🎉`;
   const grade = user.grade || 4;
   studentGradeBadge.textContent = `${user.displayName}'s Grade ${grade}`;
@@ -1640,7 +1671,7 @@ function scoreToColor(score) {
 function appendTestUserMessage(text) {
   const el = document.createElement('div');
   el.className = 'message user';
-  el.innerHTML = `<div class="message-avatar">😊</div><div class="message-bubble">${escapeHtml(text)}</div>`;
+  el.innerHTML = `<div class="message-avatar">${getAvatarForUser(getCurrentUser())}</div><div class="message-bubble">${escapeHtml(text)}</div>`;
   testMessages.appendChild(el);
   scrollToBottom(testMessages);
 }
@@ -1658,7 +1689,7 @@ function appendTestBuddyMessage(text, streaming = false) {
 function appendUserMessage(text) {
   const el = document.createElement('div');
   el.className = 'message user';
-  el.innerHTML = `<div class="message-avatar">😊</div><div class="message-bubble">${escapeHtml(text)}</div>`;
+  el.innerHTML = `<div class="message-avatar">${getAvatarForUser(getCurrentUser())}</div><div class="message-bubble">${escapeHtml(text)}</div>`;
   chatMessages.appendChild(el);
   scrollToBottom(chatMessages);
 }
@@ -1667,7 +1698,7 @@ function appendUserImageMessage(base64, mediaType) {
   const el = document.createElement('div');
   el.className = 'message user';
   el.innerHTML = `
-    <div class="message-avatar">😊</div>
+    <div class="message-avatar">${getAvatarForUser(getCurrentUser())}</div>
     <div class="message-bubble">
       <img src="data:${mediaType};base64,${base64}" class="message-image" alt="Homework photo" />
       <div>Here's my homework problem!</div>

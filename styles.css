@@ -673,6 +673,37 @@ body {
   color: var(--purple-dark);
 }
 
+/* ── AVATAR PICKER ── */
+.avatar-picker {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.avatar-option {
+  font-size: 26px;
+  padding: 8px;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--gray-50);
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1;
+}
+
+.avatar-option:hover {
+  border-color: var(--purple);
+  background: var(--purple-light);
+  transform: scale(1.1);
+}
+
+.avatar-option.selected {
+  border-color: var(--purple);
+  background: var(--purple-light);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.25);
+  transform: scale(1.15);
+}
+
 /* ── STUDENT HEADER ── */
 .student-header {
   background: linear-gradient(135deg, var(--purple-light) 0%, var(--blue-light) 100%);

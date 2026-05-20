@@ -308,28 +308,109 @@ const G5_MODULE_OPTIONS = `
 `;
 
 // ── Grade 4 test topic areas ──
+// Grade 4: 9 topics × 3 questions = 27 questions ≈ 15–20 minutes
 const TEST_TOPICS_G4 = [
-  { module: 1, name: "Place Value & Rounding" },
-  { module: 1, name: "Addition & Subtraction Algorithms" },
-  { module: 2, name: "Metric Measurement" },
-  { module: 3, name: "Multiplication" },
-  { module: 3, name: "Division & Remainders" },
-  { module: 3, name: "Factors, Multiples, Prime & Composite" },
-  { module: 4, name: "Angles & Shapes" },
-  { module: 5, name: "Fractions" },
-  { module: 6, name: "Decimals" },
+  {
+    module: 1, name: "Place Value & Rounding", questions: 3,
+    guidance: `Q1 (straightforward): Ask for the value of a specific digit in a 6-digit number (e.g., "What is the value of the 4 in 345,672?").
+Q2 (medium): Round a 6-digit number to a given place using the vertical number line strategy (e.g., "Round 234,567 to the nearest ten-thousand. Show which two multiples it falls between.").
+Q3 (harder): Give a number and ask them to write it in all three forms — standard, expanded, and word form (e.g., "Write 40,506 in expanded form AND word form.").`
+  },
+  {
+    module: 1, name: "Addition & Subtraction Algorithms", questions: 3,
+    guidance: `Q1 (straightforward): Multi-digit addition requiring regrouping (e.g., "Solve 364,852 + 147,369 using the standard algorithm.").
+Q2 (medium): Subtraction across zeros (e.g., "Solve 400,000 − 152,738.").
+Q3 (harder): Two-step word problem requiring both operations (e.g., "A school had 23,450 books. They donated 4,875 and received 6,312 new ones. How many books now? Show your work.").`
+  },
+  {
+    module: 2, name: "Metric Measurement & Conversions", questions: 3,
+    guidance: `Q1 (straightforward): Single-step conversion (e.g., "Convert 4 km to meters." or "Convert 3,500 g to kilograms.").
+Q2 (medium): Mixed unit problem (e.g., "A trail is 2 km 350 m long. How many meters is that in all?").
+Q3 (harder): Multi-step word problem (e.g., "Jenna has 2 L of juice. She pours out 750 mL. How much is left? Express your answer in mL AND in L and mL.").`
+  },
+  {
+    module: 3, name: "Multiplication", questions: 3,
+    guidance: `Q1 (straightforward): 3-digit × 1-digit using the standard algorithm (e.g., "Solve 346 × 7.").
+Q2 (medium): 2-digit × 2-digit (e.g., "Solve 47 × 23. Estimate first, then compute.").
+Q3 (harder): Multi-step word problem (e.g., "A factory makes 365 boxes per day. Each box holds 24 items. How many items in 5 days?").`
+  },
+  {
+    module: 3, name: "Division & Remainders", questions: 3,
+    guidance: `Q1 (straightforward): 3-digit ÷ 1-digit with remainder, show DMSB steps (e.g., "Solve 457 ÷ 6 using long division.").
+Q2 (medium): Interpret the remainder in context (e.g., "86 students are going on a trip. Each van holds 8 students. How many vans are needed? What happens to the remainder?").
+Q3 (harder): 4-digit ÷ 1-digit (e.g., "Solve 4,385 ÷ 7. What is the quotient and remainder?").`
+  },
+  {
+    module: 3, name: "Factors, Multiples, Prime & Composite", questions: 3,
+    guidance: `Q1 (straightforward): List all factor pairs of a number (e.g., "List all factor pairs of 36.").
+Q2 (medium): Classify numbers (e.g., "Is 47 prime or composite? How do you know?").
+Q3 (harder): Both factors AND multiples (e.g., "Is 72 a multiple of 8? Explain. Then list three other multiples of 8. Is 2 a factor of 72? How about 9?").`
+  },
+  {
+    module: 4, name: "Angles & Shapes", questions: 3,
+    guidance: `Q1 (straightforward): Classify an angle by type (e.g., "Is an angle of 135° acute, right, obtuse, or straight? Explain how you know.").
+Q2 (medium): Angle addition — find the missing angle (e.g., "Two angles share a vertex and a side. One angle is 47°, and together they form a 90° angle. What is the other angle?").
+Q3 (harder): Classify a shape with reasons (e.g., "I have a quadrilateral with 2 pairs of parallel sides, 4 equal sides, but no right angles. What is it? How is it different from a square?").`
+  },
+  {
+    module: 5, name: "Fractions", questions: 3,
+    guidance: `Q1 (straightforward): Create an equivalent fraction and explain why (e.g., "Write two fractions equivalent to 3/4. Explain how you found them.").
+Q2 (medium): Add or subtract fractions with unlike denominators (e.g., "Solve 2/3 + 3/4. Show how you found a common denominator.").
+Q3 (harder): Mixed number operations (e.g., "Solve 3 1/4 − 1 3/4. Show your regrouping step.").`
+  },
+  {
+    module: 6, name: "Decimals", questions: 3,
+    guidance: `Q1 (straightforward): Convert between fraction and decimal (e.g., "Write 0.47 as a fraction. What does each digit represent?").
+Q2 (medium): Compare decimals with an explanation (e.g., "Which is greater: 0.3 or 0.28? Explain using place value — don't just look at the digits.").
+Q3 (harder): Add or order decimals (e.g., "Order these from least to greatest: 0.5, 0.05, 0.52, 0.509. Explain your reasoning.").`
+  },
 ];
 
-// ── Grade 5 test topic areas ──
-// Topic names and question guidance derived from the official Eureka Math G5 M1 curriculum.
+// Grade 5 M1: 7 topics × 3 questions = 21 questions ≈ 15 minutes
+// Questions sourced from real Eureka Math G5 M1 exit tickets, homework, and assessments.
 const TEST_TOPICS_G5 = [
-  { module: 1, name: "Place Value Chart & Powers of 10 (Topics A–B)", hint: "Ask about the ×10/÷10 relationship between adjacent places, reading a digit's value, and using exponents. Example questions: 'What is the value of the 7 in 3.074?' and 'What is 4.13 × 10²?'" },
-  { module: 1, name: "Decimal Forms — Expanded, Unit, and Word Form (Topic B)", hint: "Ask students to write a decimal in expanded form using fractions AND decimals, and to read a decimal aloud correctly. Example: 'Write 24.357 in expanded form using fractions.' Remind them to say tenths/hundredths, not just digits." },
-  { module: 1, name: "Comparing and Rounding Decimals (Topic C)", hint: "Ask students to compare two decimals to the thousandths using like units, and to round to a specified place using the vertical number line strategy. Example: 'Is 0.4 greater or less than 0.38? Explain how you know.' and 'Round 8.546 to the nearest hundredth.'" },
-  { module: 1, name: "Adding and Subtracting Decimals (Topic D)", hint: "Ask students to add and subtract using unit-form thinking and the standard algorithm. Example: '4 hundredths + 8 hundredths = ?' and 'Solve 36.25 + 8.67' and '7 – 0.35.' Check regrouping/composing." },
-  { module: 1, name: "Multiplying Decimals (Topic E)", hint: "Ask students to multiply a decimal by a single-digit whole number using place value thinking and estimation. Example: '3 × 9.63 = ?' Ask them to estimate first, then compute. Check they say '3 copies of 9 ones 6 tenths 3 hundredths.'" },
-  { module: 1, name: "Dividing Decimals (Topic F)", hint: "Ask students to divide a decimal by a single-digit whole number using unit-form thinking. Example: '1.8 ÷ 2 = ?' (think: 18 tenths ÷ 2 = 9 tenths = 0.9). Also try a problem with a remainder: '0.9 ÷ 4.'" },
-  { module: 1, name: "Metric Conversions with Exponents (Topic A)", hint: "Ask students to convert metric units using powers of 10. Example: 'Yi Ting is 1.49 m tall — how many centimeters is that? Write your equation using exponents.' and 'A ladybug is 2 cm long — how many meters is that?'" },
+  {
+    module: 1, name: "Place Value Chart & Powers of 10", questions: 3,
+    guidance: `Q1 (straightforward): Ask for the value of a digit in a decimal to thousandths (e.g., "What is the value of the 7 in 3.074? What place is it in?").
+Q2 (medium): Multiply or divide by a power of 10 (e.g., "Solve 3.452 × 100. Explain how and why the digits shifted."). Expect them to use the place value chart and describe digit movement.
+Q3 (harder): Use exponents (e.g., "Write an equation using an exponent to show that 5.3 × 1,000 = 5,300. Now solve 247 ÷ 10². Explain the pattern.").`
+  },
+  {
+    module: 1, name: "Decimal Forms — Expanded, Unit, and Word Form", questions: 3,
+    guidance: `Q1 (straightforward): Write a decimal in word form and unit form (e.g., "Write 3.074 in word form AND unit form — e.g., __ ones __ hundredths __ thousandths.").
+Q2 (medium): Write in expanded form using fractions (e.g., "Write 24.357 in expanded form using fractions like 2×10 + 4×1 + 3×(1/10)..."). This is a key Eureka Math skill — check they use fractions, not just decimals.
+Q3 (harder): Convert from expanded form to standard form (e.g., "Write the standard form: 3×10 + 5×1 + 2×(1/10) + 7×(1/100) + 6×(1/1000).").`
+  },
+  {
+    module: 1, name: "Comparing and Rounding Decimals", questions: 3,
+    guidance: `Q1 (straightforward): Compare two decimals using place value (e.g., "Which is greater: 0.4 or 0.38? Rename 0.4 as hundredths to compare like units.").
+Q2 (medium): Round to a specified decimal place (e.g., "Round 8.546 to the nearest hundredth. Show the two benchmarks and the midpoint on a vertical number line.").
+Q3 (harder): Order a set of decimals AND round (e.g., "Order 3.072, 3.7, 3.27, 3.072 from least to greatest. Then round each to the nearest tenth.").`
+  },
+  {
+    module: 1, name: "Adding and Subtracting Decimals", questions: 3,
+    guidance: `Q1 (straightforward): Unit-form addition (e.g., "4 hundredths + 8 hundredths = ___? Write your answer as a decimal."). Expect them to say '12 hundredths = 1 tenth 2 hundredths = 0.12'.
+Q2 (medium): Standard algorithm addition with composing (e.g., "Solve 36.25 + 8.67 using the standard algorithm. Show your work.").
+Q3 (harder): Subtraction from a whole number (e.g., "Solve 7 − 0.35. Show how you decompose the 7 to subtract. Check by adding.").`
+  },
+  {
+    module: 1, name: "Multiplying Decimals", questions: 3,
+    guidance: `Q1 (straightforward): Use place value thinking (e.g., "What is 3 × 0.4? Think: 3 copies of 4 tenths = ___ tenths = ___").
+Q2 (medium): Estimate first, then compute (e.g., "Estimate 7.13 × 6 by rounding first. Then compute the exact answer. Is your answer close to your estimate?").
+Q3 (harder): Multi-digit decimal multiplication (e.g., "Solve 4 × 9.63. Show your area model OR standard algorithm. Check using an estimate.").`
+  },
+  {
+    module: 1, name: "Dividing Decimals", questions: 3,
+    guidance: `Q1 (straightforward): Unit-form division (e.g., "Solve 1.8 ÷ 2 by thinking in units — '18 tenths ÷ 2 = ___'. Write as a decimal.").
+Q2 (medium): Division with unbundling (e.g., "Solve 4.5 ÷ 5. Think: 4 ones ÷ 5 doesn't work — what do you do next?").
+Q3 (harder): Division with remainder at hundredths (e.g., "Solve 0.9 ÷ 4. Show how you unbundle tenths to hundredths. Use place value disks if helpful.").`
+  },
+  {
+    module: 1, name: "Metric Conversions with Exponents", questions: 3,
+    guidance: `Q1 (straightforward): Convert meters to centimeters or kilometers (e.g., "Yi Ting is 1.49 m tall. How many centimeters is that? Write an equation using an exponent.").
+Q2 (medium): Convert to smaller unit — millimeters (e.g., "A sticky note is 77 mm long. How many meters is that? Write an equation using an exponent.").
+Q3 (harder): Multi-step conversion problem (e.g., "A path is 2.35 km long. Express this in meters, then in centimeters. Write both equations using exponents.").`
+  },
 ];
 
 // ── Build homework system prompt ──
@@ -407,50 +488,68 @@ Remember: Your goal is for the student to feel confident and capable. Every chil
 function buildTestSystemPrompt(grade) {
   grade = grade || 4;
   const topics = grade === 5 ? TEST_TOPICS_G5 : TEST_TOPICS_G4;
+  const totalQuestions = topics.length * 3;
+
   const topicList = topics.map((t, i) =>
-    `${i + 1}. ${t.name} (Module ${t.module})${t.hint ? '\n   Guidance: ' + t.hint : ''}`
-  ).join('\n');
+    `${i + 1}. ${t.name} (Module ${t.module})\n   Question guidance:\n   ${t.guidance.split('\n').map(l => l.trim()).filter(Boolean).join('\n   ')}`
+  ).join('\n\n');
 
-  const g5Example = `{"grade":5,"overallScore":71,"topics":[{"module":1,"name":"Place Value Chart & Powers of 10 (Topics A-B)","score":100,"level":"proficient","correct":2,"total":2,"suggestedProblems":[]},{"module":1,"name":"Decimal Forms — Expanded, Unit, and Word Form (Topic B)","score":50,"level":"needs support","correct":1,"total":2,"suggestedProblems":["Write 24.357 in expanded form using fractions (e.g. 2×10 + 4×1 + 3×1/10...)","Write 0.408 in unit form (__ tenths __ hundredths) and word form"]},{"module":1,"name":"Comparing and Rounding Decimals (Topic C)","score":50,"level":"needs support","correct":1,"total":2,"suggestedProblems":["Round 8.546 to the nearest hundredth using a vertical number line","Compare 0.4 and 0.38: rename 0.4 as 40 hundredths to compare"]},{"module":1,"name":"Adding and Subtracting Decimals (Topic D)","score":100,"level":"proficient","correct":2,"total":2,"suggestedProblems":[]},{"module":1,"name":"Multiplying Decimals (Topic E)","score":50,"level":"needs support","correct":1,"total":2,"suggestedProblems":["Estimate first, then solve: 7.13 × 6","Draw an area model to solve 3 × 9.63"]},{"module":1,"name":"Dividing Decimals (Topic F)","score":50,"level":"needs support","correct":1,"total":2,"suggestedProblems":["Solve 4.5 ÷ 5 by thinking in units (45 tenths ÷ 5)","Draw place value disks to solve 0.9 ÷ 4"]},{"module":1,"name":"Metric Conversions with Exponents (Topic A)","score":100,"level":"proficient","correct":2,"total":2,"suggestedProblems":[]}]}`;
+  const g5Example = `{"grade":5,"overallScore":71,"topics":[{"module":1,"name":"Place Value Chart & Powers of 10 (Topics A-B)","score":100,"level":"proficient","correct":3,"total":3,"mistakes":[],"suggestedProblems":[]},{"module":1,"name":"Decimal Forms — Expanded, Unit, and Word Form (Topic B)","score":33,"level":"needs support","correct":1,"total":3,"mistakes":["Wrote expanded form with decimals instead of fractions","Confused unit form with word form"],"suggestedProblems":["Write 24.357 in expanded form using fractions (2×10 + 4×1 + 3×(1/10) + 5×(1/100) + 7×(1/1000))","Write 0.408 in unit form: ___ tenths ___ hundredths ___ thousandths, then write it in word form"]}]}`;
 
-  const g4Example = `{"grade":4,"overallScore":75,"topics":[{"module":1,"name":"Place Value & Rounding","score":85,"level":"proficient","correct":2,"total":2,"suggestedProblems":["Round 234,567 to the nearest ten-thousand","Write 45,008 in expanded form"]},{"module":2,"name":"Metric Measurement","score":60,"level":"developing","correct":1,"total":2,"suggestedProblems":["Convert 3 km 400 m to meters","If you have 4,500 g, how many kilograms is that?"]}]}`;
+  const g4Example = `{"grade":4,"overallScore":67,"topics":[{"module":1,"name":"Place Value & Rounding","score":100,"level":"proficient","correct":3,"total":3,"mistakes":[],"suggestedProblems":[]},{"module":2,"name":"Metric Measurement","score":33,"level":"needs support","correct":1,"total":3,"mistakes":["Confused km and m conversion direction","Did not use the standard algorithm for subtraction with mixed units"],"suggestedProblems":["Convert 3 km 400 m to meters — write an equation showing your thinking","If you have 4,500 g, how many kilograms and grams is that? Show your work."]}]}`;
 
   const g5CurriculumContext = grade === 5 ? `
 GRADE 5 MODULE 1 CURRICULUM CONTEXT (use this to write accurate questions):
-- Topic A (L1-4): The place value chart extends from millions to thousandths. Moving one place LEFT multiplies value by 10; moving one place RIGHT divides by 1/10. Powers of 10: 10¹=10, 10²=100, 10³=1,000. Metric: 1m = 10²cm = 10³mm.
-- Topic B (L5-6): Decimals have THREE forms: expanded form with fractions (3×1/10 + 6×1/100), unit form (3 tenths 6 hundredths), word form (thirty-six hundredths). Compare by renaming to like units.
-- Topic C (L7-8): Round using a vertical number line — find the two nearest benchmarks, locate the midpoint, choose the closer one.
-- Topic D (L9-10): Add/subtract using unit language. 4 hundredths + 8 hundredths = 12 hundredths = 1 tenth 2 hundredths. Standard algorithm aligns by place value.
-- Topic E (L11-12): Multiply decimals by a single digit. Think in units: 3 × 1.2 = 3 copies of 1 tenth 2 hundredths. Estimate first to check decimal placement.
-- Topic F (L13-16): Divide decimals by a single digit using unit-form thinking. 1.8 ÷ 2 = 18 tenths ÷ 2 = 9 tenths = 0.9. When a unit doesn't divide evenly, unbundle to the next smaller unit.
-- Sprint-type facts: multiplying/dividing by 10, 100, 1,000 and by exponents; finding midpoints; rounding to the nearest one; adding/subtracting single decimal units.` : '';
+- Topic A (L1-4): Place value chart from millions to thousandths. Moving LEFT ×10, moving RIGHT ÷10. Powers: 10¹=10, 10²=100, 10³=1,000. Metric: 1m = 10²cm = 10³mm.
+- Topic B (L5-6): THREE decimal forms: expanded with fractions (3×(1/10) + 6×(1/100)), unit form (3 tenths 6 hundredths), word form (thirty-six hundredths).
+- Topic C (L7-8): Round using a vertical number line — two nearest benchmarks, locate midpoint, choose closer one.
+- Topic D (L9-10): Add/subtract using unit language. 4 hundredths + 8 hundredths = 12 hundredths = 1 tenth 2 hundredths.
+- Topic E (L11-12): Multiply decimals by single digit. Think in units: 3 × 1.2 = 3 copies of 1 tenth 2 hundredths. Estimate first.
+- Topic F (L13-16): Divide decimals using unit-form thinking. 1.8 ÷ 2 = 18 tenths ÷ 2 = 9 tenths = 0.9. Unbundle when needed.` : '';
 
-  return `You are Math Buddy, conducting a Grade ${grade} Eureka Math assessment. Your goal is to evaluate the student's understanding across all major topic areas in a fun, friendly quiz-game format.
+  return `You are Math Buddy, conducting a Grade ${grade} Eureka Math assessment. Your goal is to accurately measure the student's understanding across all major topics so the report card reflects their true ability.
 ${g5CurriculumContext}
 
 ASSESSMENT STRUCTURE:
-Ask exactly 2 questions per topic area (${topics.length} topics = ${topics.length * 2} questions total). Work through them in order.
+Ask exactly 3 questions per topic area, in the order listed below (${topics.length} topics × 3 questions = ${totalQuestions} questions total).
+Work through topics in order. Do not skip ahead or revisit earlier topics.
 
 TOPIC AREAS AND QUESTION GUIDANCE:
 ${topicList}
 
-QUESTION-ASKING RULES:
-- Ask one question at a time and wait for the student's answer.
-- After each answer: briefly say whether it was correct or not and give the right answer if they were wrong. Then immediately move to the next question.
-- Keep feedback short (1-2 sentences max) — this is a quiz, not a tutoring session.
-- Keep the tone warm and encouraging: "Nice try!" / "You nailed it! 🌟" / "Almost — the answer is X. You'll get it next time!"
-- Do NOT use the Socratic method — tell them the answer if they're wrong, then move on.
-- Keep questions age-appropriate for Grade ${grade}.
+STRICT NO-HINTS POLICY — THIS IS A TEST:
+- NEVER offer hints, clues, leading questions, or encouragement mid-answer unless the student explicitly types "can I have a hint?" or "hint please" or similar.
+- If the student asks for a hint: give one small hint, then mark that question as incorrect regardless of whether they get it right after the hint. Note it in their mistakes.
+- Do NOT rephrase or simplify the question if the student struggles.
+- Do NOT say things like "think about..." or "remember that..." before the student answers.
+- After the student answers: state briefly if it is correct or incorrect, give the right answer if they were wrong (1 sentence), then move immediately to the next question.
+- Tone stays warm: "Nice try! The answer is X." / "You nailed it! 🌟" / "Almost — it's X. Keep going!"
+- Keep all feedback to 1-2 sentences max. This is a timed quiz, not a tutoring session.
 
-SCORING RULES:
-- Full credit (100%): both questions correct.
-- Partial credit (50%): one correct.
-- No credit (0%): neither correct.
+QUESTION-ASKING RULES:
+- Ask one question at a time. Wait for the student to answer before asking the next.
+- Questions should increase in difficulty: Q1 = straightforward, Q2 = moderate, Q3 = challenging (follow guidance above).
+- Keep questions age-appropriate for Grade ${grade}.
+- Do not announce topic names or question numbers to the student — just ask naturally.
+
+SCORING RULES (3 questions per topic):
+- 3/3 correct = 100% — "proficient"
+- 2/3 correct = 67% — "developing"
+- 1/3 correct = 33% — "needs support"
+- 0/3 correct = 0% — "needs support"
 - Levels: ≥80% = "proficient", 60–79% = "developing", <60% = "needs support".
 - Overall score = average of all topic scores (rounded to nearest whole number).
-- suggestedProblems: include 2 specific practice problems for any topic with score < 100%; empty array [] if score = 100%.
+- A question answered only after a hint counts as incorrect.
 
-WHEN ALL QUESTIONS ARE DONE:
+MISTAKE TRACKING:
+For each topic, track the specific errors the student made (e.g., "confused tenths and hundredths", "forgot to regroup in the hundreds column"). Record these in the "mistakes" array. Be specific — not just "got it wrong."
+
+SUGGESTED PROBLEMS:
+- For topics with score < 100%: generate 2 practice problems BASED ON THE STUDENT'S SPECIFIC MISTAKES from this test.
+- Reference what they actually got wrong (e.g., if they mixed up unit form and word form, give a problem that practices exactly that).
+- For topics with score = 100%: empty array [].
+
+WHEN ALL ${totalQuestions} QUESTIONS ARE DONE:
 1. Say "Amazing work finishing the whole assessment! 🎉 Your report card is ready!"
 2. On the very next lines, output EXACTLY this block (no extra text before or after the markers):
 
@@ -458,7 +557,7 @@ WHEN ALL QUESTIONS ARE DONE:
 ${grade === 5 ? g5Example : g4Example}
 ===REPORT_CARD_END===
 
-Replace the example JSON with the actual results from this assessment. Include ALL ${topics.length} topics.`;
+Replace the example JSON with the ACTUAL results from this assessment. Include ALL ${topics.length} topics. Use the real scores, real mistakes, and real personalized practice problems based on what this student got wrong.`;
 }
 
 // ── API Key management ──

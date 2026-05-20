@@ -728,6 +728,13 @@ changeKeyBtn.addEventListener('click', () => {
 });
 
 // ── Login screen ──
+const AVATARS = [
+  '🦉', '🐐', '🦊', '🐼', '🦁', '🐯', '🐸', '🦋',
+  '🐬', '🦄', '🐙', '🦅', '🐻', '🐨', '🦖', '🐲',
+  '🐧', '🦜', '🦩', '🐺', '🦝', '🐮', '🐷', '🐸',
+  '🦔', '🐢', '🦈', '🐳', '🦭', '🦕',
+];
+
 let loginMode = 'login'; // 'login' or 'register'
 let registerGrade = 4;
 let registerAvatar = AVATARS[0]; // default to 🦉
@@ -876,13 +883,6 @@ function showLoginError(msg) {
 }
 
 // ── Student header ──
-const AVATARS = [
-  '🦉', '🐐', '🦊', '🐼', '🦁', '🐯', '🐸', '🦋',
-  '🐬', '🦄', '🐙', '🦅', '🐻', '🐨', '🦖', '🐲',
-  '🐧', '🦜', '🦩', '🐺', '🦝', '🐮', '🐷', '🐸',
-  '🦔', '🐢', '🦈', '🐳', '🦭', '🦕',
-];
-
 function getAvatarForUser(user) {
   if (user && user.avatar) return user.avatar;
   // fallback: deterministic pick from username

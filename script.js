@@ -566,6 +566,10 @@ const USERS_STORAGE = 'mathbuddy_users';
 const SESSION_STORAGE = 'mathbuddy_session';
 
 function getApiKey() {
+  // Prefer key baked in at deploy time (via GitHub Actions secret)
+  if (window.MATHBUDDY_KEY && window.MATHBUDDY_KEY.startsWith('sk-')) {
+    return window.MATHBUDDY_KEY;
+  }
   return localStorage.getItem(KEY_STORAGE) || '';
 }
 
@@ -691,6 +695,11 @@ function showScreen(screen) {
 
 // ── Startup ──
 (function init() {
+  // Hide "Change API Key" button if key is baked in at deploy time
+  if (window.MATHBUDDY_KEY && window.MATHBUDDY_KEY.startsWith('sk-')) {
+    const changeKeyRow = document.querySelector('.change-key-row');
+    if (changeKeyRow) changeKeyRow.style.display = 'none';
+  }
   const user = getCurrentUser();
   if (user) {
     setupStudentHeader(user);

@@ -770,6 +770,7 @@ function setLoginMode(mode) {
   } else {
     toggleLoginBtn.classList.remove('active');
     toggleRegisterBtn.classList.add('active');
+    ensureAvatarPicker();
     registerNameSection.style.display = 'block';
     registerGradeSection.style.display = 'block';
     registerAvatarSection.style.display = 'block';
@@ -781,9 +782,13 @@ function setLoginMode(mode) {
   }
 }
 
-// Build avatar picker grid
-(function buildAvatarPicker() {
+// Build avatar picker grid (lazy — called on first switch to register mode)
+let avatarPickerBuilt = false;
+function ensureAvatarPicker() {
+  if (avatarPickerBuilt) return;
+  avatarPickerBuilt = true;
   const picker = document.getElementById('avatar-picker');
+  if (!picker) return;
   AVATARS.forEach((emoji, idx) => {
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -796,7 +801,7 @@ function setLoginMode(mode) {
     });
     picker.appendChild(btn);
   });
-})();
+}
 
 toggleLoginBtn.addEventListener('click', () => setLoginMode('login'));
 toggleRegisterBtn.addEventListener('click', () => setLoginMode('register'));

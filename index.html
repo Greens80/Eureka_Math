@@ -35,13 +35,124 @@
     </div>
   </div>
 
-  <!-- SETUP SCREEN -->
-  <div id="setup-screen" class="screen">
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="screen">
     <div class="setup-card">
       <div class="buddy-header">
         <div class="buddy-avatar">🦉</div>
+        <h1 id="login-title">Welcome Back!</h1>
+        <p class="buddy-subtitle" id="login-subtitle">Log in to continue your math journey! 🌟</p>
+      </div>
+
+      <div class="login-toggle-row">
+        <button id="toggle-login-btn" class="toggle-mode-btn active" data-mode="login">Log In</button>
+        <button id="toggle-register-btn" class="toggle-mode-btn" data-mode="register">New Student</button>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Username</label>
+        <input
+          type="text"
+          id="login-username"
+          class="setup-input"
+          placeholder="Your username"
+          autocomplete="username"
+          spellcheck="false"
+        />
+      </div>
+
+      <div id="register-name-section" class="setup-section" style="display:none">
+        <label class="setup-label">Display Name</label>
+        <input
+          type="text"
+          id="register-displayname"
+          class="setup-input"
+          placeholder="e.g. Alex"
+          spellcheck="false"
+        />
+      </div>
+
+      <div id="register-grade-section" class="setup-section" style="display:none">
+        <label class="setup-label">What grade are you in?</label>
+        <div class="grade-btn-row">
+          <button class="grade-select-btn active" data-grade="4">Grade 4</button>
+          <button class="grade-select-btn" data-grade="5">Grade 5</button>
+        </div>
+      </div>
+
+      <div id="register-avatar-section" class="setup-section" style="display:none">
+        <label class="setup-label">Pick your avatar!</label>
+        <div id="avatar-picker" class="avatar-picker"></div>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Password</label>
+        <input
+          type="password"
+          id="login-password"
+          class="setup-input"
+          placeholder="Password"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <div id="register-confirm-section" class="setup-section" style="display:none">
+        <label class="setup-label">Confirm Password</label>
+        <input
+          type="password"
+          id="login-confirm"
+          class="setup-input"
+          placeholder="Confirm password"
+          autocomplete="new-password"
+        />
+      </div>
+
+      <p id="login-error" class="login-error" style="display:none"></p>
+
+      <button id="login-submit-btn" class="start-btn">Log In 🚀</button>
+    </div>
+  </div>
+
+  <!-- SETUP SCREEN -->
+  <div id="setup-screen" class="screen">
+    <div class="setup-card">
+
+      <!-- Student header (shown after login) -->
+      <div id="student-header" class="student-header" style="display:none">
+        <div class="student-header-top">
+          <div class="student-avatar-name">
+            <span class="student-avatar-emoji" id="student-avatar">🎓</span>
+            <div>
+              <h2 id="student-greeting">Hi, Student! 🎉</h2>
+              <span class="grade-badge" id="student-grade-badge">Grade 4</span>
+            </div>
+          </div>
+        </div>
+        <div class="student-action-row">
+          <button class="student-action-btn" id="report-card-btn">📊 Report Card</button>
+          <button class="student-action-btn" id="take-test-btn">🎯 Take Test</button>
+          <button class="student-action-btn logout-btn" id="logout-btn">🚪 Log Out</button>
+        </div>
+        <div id="retest-banner" class="retest-banner" style="display:none">
+          <span id="retest-banner-text"></span>
+          <button id="retest-now-btn" class="retest-now-btn">🎯 Take Test Now</button>
+        </div>
+      </div>
+
+      <!-- Generic header (shown without login) -->
+      <div id="generic-header" class="buddy-header">
+        <div class="buddy-avatar">🦉</div>
         <h1>Hi! I'm Math Buddy!</h1>
         <p class="buddy-subtitle">Let's do some math together! 🌟</p>
+      </div>
+
+      <!-- Grade selection -->
+      <div class="setup-section" id="grade-select-section">
+        <label class="setup-label">Which grade are you in?</label>
+        <div class="grade-btn-row">
+          <button class="grade-select-btn active" data-grade="4" id="setup-grade-4">Grade 4</button>
+          <button class="grade-select-btn" data-grade="5" id="setup-grade-5">Grade 5</button>
+        </div>
       </div>
 
       <div class="setup-section">
@@ -79,9 +190,6 @@
           <button class="method-tab" data-method="photo">
             📷 Take a photo
           </button>
-          <button class="method-tab" data-method="number">
-            🔢 Problem number
-          </button>
         </div>
 
         <!-- Type method -->
@@ -116,33 +224,6 @@
           <button class="clear-photo-btn" id="clear-photo-btn" style="display:none">
             Remove photo
           </button>
-        </div>
-
-        <!-- Problem number method -->
-        <div id="method-number" class="method-panel">
-          <div class="number-inputs">
-            <div class="number-input-group">
-              <label>Page number</label>
-              <input
-                type="number"
-                id="page-number"
-                class="setup-input small"
-                placeholder="e.g. 47"
-                min="1"
-              />
-            </div>
-            <div class="number-input-group">
-              <label>Problem number</label>
-              <input
-                type="number"
-                id="problem-number"
-                class="setup-input small"
-                placeholder="e.g. 3"
-                min="1"
-              />
-            </div>
-          </div>
-          <p class="number-hint">I'll ask you to describe the problem so I can help! 📖</p>
         </div>
       </div>
 
@@ -185,6 +266,48 @@
         <button id="send-btn" class="send-btn">Send ✈️</button>
       </div>
 
+    </div>
+  </div>
+
+  <!-- TEST SCREEN -->
+  <div id="test-screen" class="screen">
+    <div class="chat-layout">
+
+      <div class="chat-topbar test-topbar">
+        <button class="back-btn" id="test-back-btn">← Back</button>
+        <div class="chat-info">
+          <span class="chat-owl">🦉</span>
+          <div>
+            <div class="chat-title">Math Buddy — Assessment Mode</div>
+            <div class="chat-subtitle" id="test-subtitle">Grade 4 Assessment</div>
+          </div>
+        </div>
+        <button class="new-problem-btn finish-test-btn" id="finish-test-btn">Finish Test ✅</button>
+      </div>
+
+      <div class="chat-messages" id="test-messages">
+        <!-- Test messages appear here -->
+      </div>
+
+      <div class="chat-input-area">
+        <textarea
+          id="test-input"
+          class="chat-textarea"
+          placeholder="Type your answer here..."
+          rows="2"
+        ></textarea>
+        <button id="test-send-btn" class="send-btn">Send ✈️</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- REPORT CARD SCREEN -->
+  <div id="report-screen" class="screen">
+    <div class="setup-card report-card-container">
+      <div id="report-content">
+        <!-- Report card content rendered here -->
+      </div>
     </div>
   </div>
 

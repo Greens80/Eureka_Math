@@ -121,7 +121,7 @@
       <div id="student-header" class="student-header" style="display:none">
         <div class="student-header-top">
           <div class="student-avatar-name">
-            <span class="student-avatar-emoji" id="student-avatar">🎓</span>
+            <button class="student-avatar-emoji avatar-profile-btn" id="student-avatar" title="Edit profile"></button>
             <div>
               <h2 id="student-greeting">Hi, Student! 🎉</h2>
               <span class="grade-badge" id="student-grade-badge">Grade 4</span>
@@ -209,25 +209,11 @@
               <span class="photo-icon">📸</span>
               <p>Take a photo or upload your homework</p>
               <div class="photo-btn-row">
-                <label class="photo-btn" for="photo-camera-input">
-                  📷 Camera
-                </label>
-                <label class="photo-btn photo-btn-secondary" for="photo-upload-input">
-                  📁 Upload
-                </label>
+                <button type="button" class="photo-btn" id="camera-btn">📷 Camera</button>
+                <button type="button" class="photo-btn photo-btn-secondary" id="upload-btn">📁 Upload</button>
               </div>
-              <input
-                type="file"
-                id="photo-camera-input"
-                accept="image/*"
-                capture="environment"
-                style="display:none"
-              />
-              <input
-                type="file"
-                id="photo-upload-input"
-                accept="image/*"
-                style="display:none"
+              <input type="file" id="photo-camera-input" accept="image/*" capture="environment" style="display:none" />
+              <input type="file" id="photo-upload-input" accept="image/*" style="display:none" />
             </div>
             <img id="photo-preview" class="photo-preview" alt="Your homework" style="display:none" />
           </div>
@@ -319,6 +305,50 @@
       <div id="report-content">
         <!-- Report card content rendered here -->
       </div>
+    </div>
+  </div>
+
+  <!-- PROFILE SCREEN -->
+  <div id="profile-screen" class="screen">
+    <div class="setup-card">
+      <div class="profile-topbar">
+        <button class="back-btn profile-back-native" id="profile-back-btn">← Back</button>
+        <h2 class="profile-title">Edit Profile</h2>
+      </div>
+
+      <!-- Avatar (clickable to expand picker) -->
+      <div class="profile-avatar-section">
+        <div id="profile-avatar-display" class="profile-avatar-circle"></div>
+        <button type="button" class="profile-change-avatar-btn" id="profile-change-avatar-btn">Change Avatar</button>
+      </div>
+      <div id="profile-avatar-picker-wrap" style="display:none">
+        <div id="profile-avatar-picker" class="avatar-picker"></div>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Display Name</label>
+        <input type="text" id="profile-displayname" class="setup-input" placeholder="Your name" />
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Grade</label>
+        <div class="grade-btn-row">
+          <button class="grade-select-btn" data-grade="4" id="profile-grade-4">Grade 4</button>
+          <button class="grade-select-btn" data-grade="5" id="profile-grade-5">Grade 5</button>
+        </div>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Change Password <span style="font-weight:400;color:var(--gray-400)">(leave blank to keep current)</span></label>
+        <input type="password" id="profile-current-pw" class="setup-input" placeholder="Current password" autocomplete="current-password" />
+        <input type="password" id="profile-new-pw" class="setup-input" placeholder="New password" autocomplete="new-password" style="margin-top:8px" />
+        <input type="password" id="profile-confirm-pw" class="setup-input" placeholder="Confirm new password" autocomplete="new-password" style="margin-top:8px" />
+      </div>
+
+      <p id="profile-error" class="login-error" style="display:none"></p>
+      <p id="profile-success" class="profile-success" style="display:none">✅ Profile saved!</p>
+
+      <button id="profile-save-btn" class="start-btn">Save Changes 💾</button>
     </div>
   </div>
 

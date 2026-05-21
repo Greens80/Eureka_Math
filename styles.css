@@ -1229,3 +1229,93 @@ body {
     min-width: unset;
   }
 }
+
+/* ── PROFILE SCREEN ── */
+.profile-topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.profile-back-native {
+  background: var(--gray-100);
+  color: var(--gray-800);
+  border: 1px solid var(--gray-200);
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 700;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.profile-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--purple-dark);
+}
+
+.profile-avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.profile-avatar-circle {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid var(--purple);
+  background: var(--purple-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.profile-change-avatar-btn {
+  background: none;
+  border: 2px solid var(--purple);
+  color: var(--purple);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.profile-change-avatar-btn:hover {
+  background: var(--purple-light);
+}
+
+.profile-success {
+  color: var(--green);
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* Clickable avatar on setup screen */
+.avatar-profile-btn {
+  background: none;
+  border: 2px solid transparent;
+  padding: 2px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-profile-btn:hover {
+  border-color: var(--purple);
+  transform: scale(1.08);
+}

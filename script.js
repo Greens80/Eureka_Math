@@ -637,6 +637,7 @@ const setupScreen = document.getElementById('setup-screen');
 const chatScreen = document.getElementById('chat-screen');
 const testScreen = document.getElementById('test-screen');
 const reportScreen = document.getElementById('report-screen');
+const profileScreen = document.getElementById('profile-screen');
 
 const apiKeyInput = document.getElementById('api-key-input');
 const saveKeyBtn = document.getElementById('save-key-btn');
@@ -682,7 +683,7 @@ const setupGrade4Btn = document.getElementById('setup-grade-4');
 const setupGrade5Btn = document.getElementById('setup-grade-5');
 
 // ── All screens list ──
-const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen];
+const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen];
 
 // ── Screen helper ──
 function showScreen(screen) {
@@ -1107,6 +1108,181 @@ logoutBtn.addEventListener('click', () => {
   showScreen(loginScreen);
 });
 
+// ── Avatar click → Profile ──
+studentAvatar.addEventListener('click', () => {
+  const user = getCurrentUser();
+  if (user) openProfileScreen(user);
+});
+
+// ── Profile screen ──
+let profileAvatarAnimal = '';
+let profileAvatarAccessory = '';
+let profileAvatarPickerBuilt = false;
+
+function openProfileScreen(user) {
+  profileAvatarAnimal = user.avatarAnimal || ANIMAL_AVATARS[0].cp;
+  profileAvatarAccessory = user.avatarAccessory || '';
+
+  document.getElementById('profile-displayname').value = user.displayName || '';
+  document.getElementById('profile-current-pw').value = '';
+  document.getElementById('profile-new-pw').value = '';
+  document.getElementById('profile-confirm-pw').value = '';
+  document.getElementById('profile-error').style.display = 'none';
+  document.getElementById('profile-success').style.display = 'none';
+
+  const grade = user.grade || 4;
+  document.getElementById('profile-grade-4').classList.toggle('active', grade === 4);
+  document.getElementById('profile-grade-5').classList.toggle('active', grade === 5);
+
+  refreshProfileAvatarDisplay();
+  document.getElementById('profile-avatar-picker-wrap').style.display = 'none';
+
+  buildProfileAvatarPicker();
+  showScreen(profileScreen);
+}
+
+function refreshProfileAvatarDisplay() {
+  document.getElementById('profile-avatar-display').innerHTML = animalAvatarHtml(profileAvatarAnimal, profileAvatarAccessory, 80);
+}
+
+function buildProfileAvatarPicker() {
+  if (profileAvatarPickerBuilt) return;
+  profileAvatarPickerBuilt = true;
+  const picker = document.getElementById('profile-avatar-picker');
+  if (!picker) return;
+
+  const gridLabel = document.createElement('p');
+  gridLabel.className = 'avatar-section-label';
+  gridLabel.textContent = 'Choose your animal';
+  picker.appendChild(gridLabel);
+
+  const grid = document.createElement('div');
+  grid.className = 'avatar-grid';
+  picker.appendChild(grid);
+
+  ANIMAL_AVATARS.forEach(({ name, cp }) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.title = name;
+    btn.className = 'avatar-option';
+    const img = document.createElement('img');
+    img.src = twemojiUrl(cp);
+    img.width = 48; img.height = 48; img.alt = name; img.loading = 'lazy';
+    btn.appendChild(img);
+    btn.addEventListener('click', () => {
+      grid.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      profileAvatarAnimal = cp;
+      refreshProfileAvatarDisplay();
+    });
+    grid.appendChild(btn);
+  });
+
+  const accLabel = document.createElement('p');
+  accLabel.className = 'avatar-section-label';
+  accLabel.textContent = 'Add an accessory';
+  picker.appendChild(accLabel);
+
+  const accRow = document.createElement('div');
+  accRow.className = 'avatar-accessory-row';
+  picker.appendChild(accRow);
+
+  AVATAR_ACCESSORIES.forEach((acc, idx) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'acc-option' + (idx === 0 ? ' selected' : '');
+    btn.textContent = acc.label;
+    btn.addEventListener('click', () => {
+      accRow.querySelectorAll('.acc-option').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      profileAvatarAccessory = acc.id;
+      refreshProfileAvatarDisplay();
+    });
+    accRow.appendChild(btn);
+  });
+}
+
+// Sync selected state when picker opens (animal/accessory may differ from defaults)
+function syncProfilePickerSelection() {
+  const grid = document.querySelector('#profile-avatar-picker .avatar-grid');
+  if (grid) {
+    grid.querySelectorAll('.avatar-option').forEach((btn, i) => {
+      btn.classList.toggle('selected', ANIMAL_AVATARS[i].cp === profileAvatarAnimal);
+    });
+  }
+  const accRow = document.querySelector('#profile-avatar-picker .avatar-accessory-row');
+  if (accRow) {
+    accRow.querySelectorAll('.acc-option').forEach((btn, i) => {
+      btn.classList.toggle('selected', AVATAR_ACCESSORIES[i].id === profileAvatarAccessory);
+    });
+  }
+}
+
+document.getElementById('profile-back-btn').addEventListener('click', () => showScreen(setupScreen));
+
+document.getElementById('profile-change-avatar-btn').addEventListener('click', () => {
+  const wrap = document.getElementById('profile-avatar-picker-wrap');
+  const open = wrap.style.display === 'none';
+  wrap.style.display = open ? 'block' : 'none';
+  if (open) syncProfilePickerSelection();
+});
+
+document.getElementById('profile-grade-4').addEventListener('click', function() {
+  this.classList.add('active');
+  document.getElementById('profile-grade-5').classList.remove('active');
+});
+document.getElementById('profile-grade-5').addEventListener('click', function() {
+  this.classList.add('active');
+  document.getElementById('profile-grade-4').classList.remove('active');
+});
+
+document.getElementById('profile-save-btn').addEventListener('click', async () => {
+  const errorEl = document.getElementById('profile-error');
+  const successEl = document.getElementById('profile-success');
+  errorEl.style.display = 'none';
+  successEl.style.display = 'none';
+
+  const user = getCurrentUser();
+  if (!user) return;
+
+  const displayName = document.getElementById('profile-displayname').value.trim();
+  if (!displayName) { errorEl.textContent = 'Display name cannot be empty.'; errorEl.style.display = 'block'; return; }
+
+  const grade = document.getElementById('profile-grade-4').classList.contains('active') ? 4 : 5;
+
+  const currentPw = document.getElementById('profile-current-pw').value;
+  const newPw = document.getElementById('profile-new-pw').value;
+  const confirmPw = document.getElementById('profile-confirm-pw').value;
+
+  const users = getUsers();
+  const stored = users[user.username];
+  if (!stored) return;
+
+  // Password change (optional)
+  if (newPw || currentPw) {
+    if (!currentPw) { errorEl.textContent = 'Enter your current password to change it.'; errorEl.style.display = 'block'; return; }
+    const currentHash = await hashPassword(currentPw);
+    if (currentHash !== stored.passwordHash) { errorEl.textContent = 'Current password is incorrect.'; errorEl.style.display = 'block'; return; }
+    if (newPw.length < 4) { errorEl.textContent = 'New password must be at least 4 characters.'; errorEl.style.display = 'block'; return; }
+    if (newPw !== confirmPw) { errorEl.textContent = 'New passwords do not match.'; errorEl.style.display = 'block'; return; }
+    stored.passwordHash = await hashPassword(newPw);
+  }
+
+  stored.displayName = displayName;
+  stored.grade = grade;
+  stored.avatarAnimal = profileAvatarAnimal;
+  stored.avatarAccessory = profileAvatarAccessory;
+  users[user.username] = stored;
+  saveUsers(users);
+
+  const updatedUser = { username: user.username, ...stored };
+  setCurrentUser(updatedUser);
+  setupStudentHeader(updatedUser);
+
+  successEl.style.display = 'block';
+  setTimeout(() => { successEl.style.display = 'none'; showScreen(setupScreen); }, 1200);
+});
+
 // ── Grade selection on setup screen ──
 function updateGradeUI(grade) {
   if (grade === 5) {
@@ -1202,6 +1378,8 @@ function handlePhotoFile(e) {
 }
 photoCameraInput.addEventListener('change', handlePhotoFile);
 photoUploadInput.addEventListener('change', handlePhotoFile);
+document.getElementById('camera-btn').addEventListener('click', () => photoCameraInput.click());
+document.getElementById('upload-btn').addEventListener('click', () => photoUploadInput.click());
 
 clearPhotoBtn.addEventListener('click', () => {
   photoBase64 = null;

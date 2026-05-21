@@ -757,7 +757,7 @@ const AVATAR_ACCESSORIES = [
 ];
 
 function dicebearUrl(seed, accessory) {
-  const base = `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+  const base = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
   return accessory ? `${base}&glasses=${accessory}` : base;
 }
 
@@ -895,12 +895,26 @@ function ensureAvatarPicker() {
   // ── Live preview ──
   const previewWrap = document.createElement('div');
   previewWrap.className = 'avatar-preview-wrap';
-  previewWrap.innerHTML = `<p class="avatar-section-label">Your avatar</p><div class="avatar-preview-circle"><img id="avatar-preview-img" src="${dicebearUrl(AVATAR_SEEDS[0], '')}" width="80" height="80" alt="preview"></div>`;
   picker.appendChild(previewWrap);
 
+  const previewLabel = document.createElement('p');
+  previewLabel.className = 'avatar-section-label';
+  previewLabel.textContent = 'Your avatar';
+  previewWrap.appendChild(previewLabel);
+
+  const previewCircle = document.createElement('div');
+  previewCircle.className = 'avatar-preview-circle';
+  previewWrap.appendChild(previewCircle);
+
+  const previewImg = document.createElement('img');
+  previewImg.src = dicebearUrl(AVATAR_SEEDS[0], '');
+  previewImg.width = 80;
+  previewImg.height = 80;
+  previewImg.alt = 'preview';
+  previewCircle.appendChild(previewImg);
+
   function updatePreview() {
-    const img = document.getElementById('avatar-preview-img');
-    if (img) img.src = dicebearUrl(registerAvatarSeed, registerAvatarAccessory);
+    previewImg.src = dicebearUrl(registerAvatarSeed, registerAvatarAccessory);
   }
 }
 
@@ -992,21 +1006,24 @@ function showLoginError(msg) {
 // ── Student header ──
 
 function setupStudentHeader(user) {
+  const gradeSelectSection = document.getElementById('grade-select-section');
   if (!user) {
     studentHeader.style.display = 'none';
     genericHeader.style.display = 'block';
+    if (gradeSelectSection) gradeSelectSection.style.display = 'block';
     return;
   }
 
   studentHeader.style.display = 'block';
   genericHeader.style.display = 'none';
+  if (gradeSelectSection) gradeSelectSection.style.display = 'none';
 
   studentAvatar.innerHTML = avatarImgHtml(user, 56);
   studentGreeting.textContent = `Hi, ${user.displayName}! 🎉`;
   const grade = user.grade || 4;
   studentGradeBadge.textContent = `${user.displayName}'s Grade ${grade}`;
 
-  // Set grade selection to match user's grade
+  // Set grade from profile
   selectedGrade = grade;
   updateGradeUI(grade);
 
@@ -1044,6 +1061,8 @@ logoutBtn.addEventListener('click', () => {
   setCurrentUser(null);
   studentHeader.style.display = 'none';
   genericHeader.style.display = 'block';
+  const gradeSelectSection = document.getElementById('grade-select-section');
+  if (gradeSelectSection) gradeSelectSection.style.display = 'block';
   showScreen(loginScreen);
 });
 

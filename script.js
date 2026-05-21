@@ -683,10 +683,11 @@ const setupGrade4Btn = document.getElementById('setup-grade-4');
 const setupGrade5Btn = document.getElementById('setup-grade-5');
 
 // ── All screens list ──
-const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen];
+const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen].filter(Boolean);
 
 // ── Screen helper ──
 function showScreen(screen) {
+  if (!screen) return;
   ALL_SCREENS.forEach(s => {
     s.classList.remove('active');
     s.style.display = '';
@@ -1218,25 +1219,33 @@ function syncProfilePickerSelection() {
   }
 }
 
-document.getElementById('profile-back-btn').addEventListener('click', () => showScreen(setupScreen));
+function bindProfile() {
+  const backBtn = document.getElementById('profile-back-btn');
+  const changeAvatarBtn = document.getElementById('profile-change-avatar-btn');
+  const grade4Btn = document.getElementById('profile-grade-4');
+  const grade5Btn = document.getElementById('profile-grade-5');
+  const saveBtn = document.getElementById('profile-save-btn');
+  if (!backBtn) return; // profile screen not in DOM (old cached HTML)
 
-document.getElementById('profile-change-avatar-btn').addEventListener('click', () => {
-  const wrap = document.getElementById('profile-avatar-picker-wrap');
-  const open = wrap.style.display === 'none';
-  wrap.style.display = open ? 'block' : 'none';
-  if (open) syncProfilePickerSelection();
-});
+  backBtn.addEventListener('click', () => showScreen(setupScreen));
 
-document.getElementById('profile-grade-4').addEventListener('click', function() {
-  this.classList.add('active');
-  document.getElementById('profile-grade-5').classList.remove('active');
-});
-document.getElementById('profile-grade-5').addEventListener('click', function() {
-  this.classList.add('active');
-  document.getElementById('profile-grade-4').classList.remove('active');
-});
+  changeAvatarBtn.addEventListener('click', () => {
+    const wrap = document.getElementById('profile-avatar-picker-wrap');
+    const open = wrap.style.display === 'none';
+    wrap.style.display = open ? 'block' : 'none';
+    if (open) syncProfilePickerSelection();
+  });
 
-document.getElementById('profile-save-btn').addEventListener('click', async () => {
+  grade4Btn.addEventListener('click', function() {
+    this.classList.add('active');
+    grade5Btn.classList.remove('active');
+  });
+  grade5Btn.addEventListener('click', function() {
+    this.classList.add('active');
+    grade4Btn.classList.remove('active');
+  });
+
+  saveBtn.addEventListener('click', async () => {
   const errorEl = document.getElementById('profile-error');
   const successEl = document.getElementById('profile-success');
   errorEl.style.display = 'none';
@@ -1281,7 +1290,9 @@ document.getElementById('profile-save-btn').addEventListener('click', async () =
 
   successEl.style.display = 'block';
   setTimeout(() => { successEl.style.display = 'none'; showScreen(setupScreen); }, 1200);
-});
+  });
+}
+bindProfile();
 
 // ── Grade selection on setup screen ──
 function updateGradeUI(grade) {

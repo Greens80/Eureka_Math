@@ -208,16 +208,26 @@
             <div class="photo-placeholder" id="photo-placeholder">
               <span class="photo-icon">📸</span>
               <p>Take a photo or upload your homework</p>
-              <label class="photo-btn" for="photo-input">
-                Choose Photo
-              </label>
+              <div class="photo-btn-row">
+                <label class="photo-btn" for="photo-camera-input">
+                  📷 Camera
+                </label>
+                <label class="photo-btn photo-btn-secondary" for="photo-upload-input">
+                  📁 Upload
+                </label>
+              </div>
               <input
                 type="file"
-                id="photo-input"
+                id="photo-camera-input"
                 accept="image/*"
                 capture="environment"
                 style="display:none"
               />
+              <input
+                type="file"
+                id="photo-upload-input"
+                accept="image/*"
+                style="display:none"
             </div>
             <img id="photo-preview" class="photo-preview" alt="Your homework" style="display:none" />
           </div>

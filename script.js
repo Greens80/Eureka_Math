@@ -650,7 +650,8 @@ const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const sendBtn = document.getElementById('send-btn');
 const chatSubtitle = document.getElementById('chat-subtitle');
-const photoInput = document.getElementById('photo-input');
+const photoCameraInput = document.getElementById('photo-camera-input');
+const photoUploadInput = document.getElementById('photo-upload-input');
 const photoPreview = document.getElementById('photo-preview');
 const photoPlaceholder = document.getElementById('photo-placeholder');
 const clearPhotoBtn = document.getElementById('clear-photo-btn');
@@ -739,53 +740,98 @@ changeKeyBtn.addEventListener('click', () => {
 });
 
 // ── Login screen ──
-// DiceBear adventurer seeds — each generates a unique forward-facing cartoon character
-const AVATAR_SEEDS = [
-  'Buddy','Nova','Blaze','Luna','Storm','Pixel','Echo','Sunny',
-  'Comet','River','Sage','Felix','Zara','Rocket','Frost','Maple',
-  'Dune','Spark','Jade','Ember','Wren','Cruz','Bowie','Indigo',
-  'Ziggy','Reef','Koda','Lumi','Axel','Orion',
+// Twemoji SVG animal faces — forward-facing cartoon animals
+const ANIMAL_AVATARS = [
+  { name: 'Goat',      cp: '1f410' },
+  { name: 'Cat',       cp: '1f431' },
+  { name: 'Dog',       cp: '1f436' },
+  { name: 'Rabbit',    cp: '1f430' },
+  { name: 'Fox',       cp: '1f98a' },
+  { name: 'Bear',      cp: '1f43b' },
+  { name: 'Panda',     cp: '1f43c' },
+  { name: 'Koala',     cp: '1f428' },
+  { name: 'Tiger',     cp: '1f42f' },
+  { name: 'Lion',      cp: '1f981' },
+  { name: 'Cow',       cp: '1f42e' },
+  { name: 'Pig',       cp: '1f437' },
+  { name: 'Frog',      cp: '1f438' },
+  { name: 'Monkey',    cp: '1f435' },
+  { name: 'Wolf',      cp: '1f43a' },
+  { name: 'Hamster',   cp: '1f439' },
+  { name: 'Mouse',     cp: '1f42d' },
+  { name: 'Horse',     cp: '1f434' },
+  { name: 'Unicorn',   cp: '1f984' },
+  { name: 'Owl',       cp: '1f989' },
+  { name: 'Penguin',   cp: '1f427' },
+  { name: 'Duck',      cp: '1f986' },
+  { name: 'Eagle',     cp: '1f985' },
+  { name: 'Turtle',    cp: '1f422' },
+  { name: 'T-Rex',     cp: '1f996' },
+  { name: 'Dino',      cp: '1f995' },
+  { name: 'Shark',     cp: '1f988' },
+  { name: 'Dolphin',   cp: '1f42c' },
+  { name: 'Butterfly', cp: '1f98b' },
+  { name: 'Seal',      cp: '1f9ad' },
 ];
 
 const AVATAR_ACCESSORIES = [
-  { id: '', label: 'None' },
-  { id: 'glasses01', label: '👓 Glasses' },
-  { id: 'glasses02', label: '🕶️ Shades' },
-  { id: 'glasses03', label: '🤓 Big Glasses' },
-  { id: 'glasses04', label: '😎 Cool Shades' },
-  { id: 'glasses05', label: '🥽 Goggles' },
+  { id: '',          emoji: '',   label: 'None',       pos: null },
+  { id: 'crown',     emoji: '👑', label: '👑 Crown',    pos: 'top' },
+  { id: 'tophat',    emoji: '🎩', label: '🎩 Top Hat',  pos: 'top' },
+  { id: 'gradcap',   emoji: '🎓', label: '🎓 Grad Cap', pos: 'top' },
+  { id: 'cowboy',    emoji: '🤠', label: '🤠 Cowboy',   pos: 'top' },
+  { id: 'sunglasses',emoji: '🕶️', label: '🕶️ Shades',  pos: 'mid' },
+  { id: 'nerd',      emoji: '🤓', label: '🤓 Nerd',     pos: 'mid' },
+  { id: 'star',      emoji: '⭐', label: '⭐ Star',      pos: 'corner' },
+  { id: 'fire',      emoji: '🔥', label: '🔥 Fire',     pos: 'top' },
+  { id: 'rainbow',   emoji: '🌈', label: '🌈 Rainbow',  pos: 'top' },
+  { id: 'bow',       emoji: '🎀', label: '🎀 Bow',      pos: 'top' },
+  { id: 'gem',       emoji: '💎', label: '💎 Gem',      pos: 'corner' },
 ];
 
-function dicebearUrl(seed, accessory) {
-  const base = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(seed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
-  return accessory ? `${base}&glasses=${accessory}` : base;
+function twemojiUrl(cp) {
+  return `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/${cp}.svg`;
 }
 
-let loginMode = 'login'; // 'login' or 'register'
-let registerGrade = 4;
-let registerAvatarSeed = AVATAR_SEEDS[0];
-let registerAvatarAccessory = '';
+function animalAvatarHtml(cp, accessoryId, size) {
+  const acc = AVATAR_ACCESSORIES.find(a => a.id === accessoryId) || AVATAR_ACCESSORIES[0];
+  const accSize = Math.round(size * 0.44);
+  let accHtml = '';
+  if (acc.emoji) {
+    const styles = {
+      top:    `position:absolute;top:-${Math.round(accSize*0.25)}px;left:50%;transform:translateX(-50%);font-size:${accSize}px;line-height:1;pointer-events:none;`,
+      mid:    `position:absolute;top:52%;left:50%;transform:translate(-50%,-50%);font-size:${Math.round(accSize*0.85)}px;line-height:1;pointer-events:none;`,
+      corner: `position:absolute;bottom:-${Math.round(accSize*0.15)}px;right:-${Math.round(accSize*0.15)}px;font-size:${Math.round(accSize*0.7)}px;line-height:1;pointer-events:none;`,
+    };
+    accHtml = `<span style="${styles[acc.pos]}">${acc.emoji}</span>`;
+  }
+  return `<div style="position:relative;width:${size}px;height:${size}px;display:inline-flex;align-items:center;justify-content:center;"><img src="${twemojiUrl(cp)}" width="${size}" height="${size}" style="border-radius:50%;display:block;" alt="avatar" loading="lazy">${accHtml}</div>`;
+}
 
-function getAvatarSeed(user) {
-  // Returns {seed, accessory} for DiceBear, or {emoji} for legacy emoji avatars
-  if (!user) return { seed: AVATAR_SEEDS[0], accessory: '' };
-  if (user.avatarSeed) return { seed: user.avatarSeed, accessory: user.avatarAccessory || '' };
-  // Legacy: emoji stored in user.avatar — keep showing as fallback
-  if (user.avatar) return { emoji: user.avatar };
+function avatarImgHtml(user, size) {
+  if (!user) return animalAvatarHtml(ANIMAL_AVATARS[0].cp, '', size);
+  // New animal avatar
+  if (user.avatarAnimal) return animalAvatarHtml(user.avatarAnimal, user.avatarAccessory || '', size);
+  // Legacy DiceBear seed
+  if (user.avatarSeed) {
+    const base = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(user.avatarSeed)}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf`;
+    const url = user.avatarAccessory ? `${base}&glasses=${user.avatarAccessory}` : base;
+    return `<img src="${url}" width="${size}" height="${size}" style="border-radius:50%;display:block" alt="avatar" loading="lazy">`;
+  }
+  // Legacy emoji
+  if (user.avatar) return `<span style="font-size:${size}px;line-height:1">${user.avatar}</span>`;
   // Deterministic fallback from username
   const username = user.username || '';
   let sum = 0;
   for (let i = 0; i < username.length; i++) sum += username.charCodeAt(i);
-  return { seed: AVATAR_SEEDS[sum % AVATAR_SEEDS.length], accessory: '' };
+  const animal = ANIMAL_AVATARS[sum % ANIMAL_AVATARS.length];
+  return animalAvatarHtml(animal.cp, '', size);
 }
 
-function avatarImgHtml(user, size) {
-  const av = getAvatarSeed(user);
-  if (av.emoji) {
-    return `<span style="font-size:${size}px;line-height:1">${av.emoji}</span>`;
-  }
-  return `<img src="${dicebearUrl(av.seed, av.accessory)}" width="${size}" height="${size}" style="border-radius:50%;display:block" alt="avatar" loading="lazy">`;
-}
+let loginMode = 'login'; // 'login' or 'register'
+let registerGrade = 4;
+let registerAvatarAnimal = ANIMAL_AVATARS[0].cp;
+let registerAvatarAccessory = '';
 
 const toggleLoginBtn = document.getElementById('toggle-login-btn');
 const toggleRegisterBtn = document.getElementById('toggle-register-btn');
@@ -838,31 +884,32 @@ function ensureAvatarPicker() {
   const picker = document.getElementById('avatar-picker');
   if (!picker) return;
 
-  // ── Character grid ──
+  // ── Animal grid ──
   const gridLabel = document.createElement('p');
   gridLabel.className = 'avatar-section-label';
-  gridLabel.textContent = 'Choose your character';
+  gridLabel.textContent = 'Choose your animal';
   picker.appendChild(gridLabel);
 
   const grid = document.createElement('div');
   grid.className = 'avatar-grid';
   picker.appendChild(grid);
 
-  AVATAR_SEEDS.forEach((seed, idx) => {
+  ANIMAL_AVATARS.forEach(({ name, cp }, idx) => {
     const btn = document.createElement('button');
     btn.type = 'button';
+    btn.title = name;
     btn.className = 'avatar-option' + (idx === 0 ? ' selected' : '');
     const img = document.createElement('img');
-    img.src = dicebearUrl(seed, '');
-    img.width = 56;
-    img.height = 56;
-    img.alt = seed;
+    img.src = twemojiUrl(cp);
+    img.width = 48;
+    img.height = 48;
+    img.alt = name;
     img.loading = 'lazy';
     btn.appendChild(img);
     btn.addEventListener('click', () => {
       grid.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      registerAvatarSeed = seed;
+      registerAvatarAnimal = cp;
       updatePreview();
     });
     grid.appendChild(btn);
@@ -902,20 +949,14 @@ function ensureAvatarPicker() {
   previewLabel.textContent = 'Your avatar';
   previewWrap.appendChild(previewLabel);
 
-  const previewCircle = document.createElement('div');
-  previewCircle.className = 'avatar-preview-circle';
-  previewWrap.appendChild(previewCircle);
-
-  const previewImg = document.createElement('img');
-  previewImg.src = dicebearUrl(AVATAR_SEEDS[0], '');
-  previewImg.width = 80;
-  previewImg.height = 80;
-  previewImg.alt = 'preview';
-  previewCircle.appendChild(previewImg);
+  const previewDiv = document.createElement('div');
+  previewDiv.className = 'avatar-preview-circle';
+  previewWrap.appendChild(previewDiv);
 
   function updatePreview() {
-    previewImg.src = dicebearUrl(registerAvatarSeed, registerAvatarAccessory);
+    previewDiv.innerHTML = animalAvatarHtml(registerAvatarAnimal, registerAvatarAccessory, 80);
   }
+  updatePreview();
 }
 
 toggleLoginBtn.addEventListener('click', () => setLoginMode('login'));
@@ -969,7 +1010,7 @@ async function handleLoginSubmit() {
       displayName,
       passwordHash,
       grade: registerGrade,
-      avatarSeed: registerAvatarSeed,
+      avatarAnimal: registerAvatarAnimal,
       avatarAccessory: registerAvatarAccessory,
       reportCard: null,
       homeworkSessions: {},
@@ -1143,7 +1184,7 @@ document.querySelectorAll('.method-tab').forEach(tab => {
 });
 
 // ── Photo upload ──
-photoInput.addEventListener('change', e => {
+function handlePhotoFile(e) {
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -1155,13 +1196,18 @@ photoInput.addEventListener('change', e => {
     photoPreview.style.display = 'block';
     photoPlaceholder.style.display = 'none';
     clearPhotoBtn.style.display = 'inline-block';
+    e.target.value = '';
   };
   reader.readAsDataURL(file);
-});
+}
+photoCameraInput.addEventListener('change', handlePhotoFile);
+photoUploadInput.addEventListener('change', handlePhotoFile);
 
 clearPhotoBtn.addEventListener('click', () => {
   photoBase64 = null;
   photoMediaType = null;
+  photoCameraInput.value = '';
+  photoUploadInput.value = '';
   photoPreview.style.display = 'none';
   photoPlaceholder.style.display = 'block';
   clearPhotoBtn.style.display = 'none';

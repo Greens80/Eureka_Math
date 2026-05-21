@@ -220,9 +220,16 @@ body {
   margin-bottom: 16px;
 }
 
+.photo-btn-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .photo-btn {
   display: inline-block;
-  padding: 10px 24px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 700;
   background: var(--purple);
@@ -234,6 +241,14 @@ body {
 
 .photo-btn:hover {
   background: var(--purple-dark);
+}
+
+.photo-btn-secondary {
+  background: var(--gray-600);
+}
+
+.photo-btn-secondary:hover {
+  background: var(--gray-800);
 }
 
 .photo-preview {

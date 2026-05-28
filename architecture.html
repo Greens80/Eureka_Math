@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Buddy — Architecture Overview</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f8f9fb;
+      color: #1a1a2e;
+      padding: 40px 24px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    h1 { font-size: 2rem; font-weight: 700; margin-bottom: 6px; }
+    .subtitle { color: #666; margin-bottom: 40px; font-size: 1rem; }
+    h2 { font-size: 1.2rem; font-weight: 700; margin: 32px 0 12px; color: #1a1a2e; }
+    h3 { font-size: 1rem; font-weight: 700; margin: 20px 0 6px; color: #333; }
+    p { line-height: 1.6; color: #444; margin-bottom: 10px; }
+    ul { margin: 6px 0 10px 20px; }
+    li { line-height: 1.7; color: #444; }
+    code {
+      background: #eef0f5;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.85em;
+      color: #d63384;
+    }
+    .diagram-wrap {
+      background: #fff;
+      border: 1px solid #dde2ed;
+      border-radius: 12px;
+      padding: 32px 16px;
+      margin: 8px 0 32px;
+      overflow-x: auto;
+    }
+    .section {
+      background: #fff;
+      border: 1px solid #dde2ed;
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+    .section h2 { margin-top: 0; }
+    .badge {
+      display: inline-block;
+      background: #eef3ff;
+      color: #3b5bdb;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge.green { background: #ebfbee; color: #2f9e44; }
+    .badge.orange { background: #fff4e6; color: #e8590c; }
+    .badge.red { background: #fff5f5; color: #c92a2a; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+    @media(max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+    .card {
+      background: #f8f9fb;
+      border: 1px solid #e5e8f0;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .card h3 { margin-top: 0; font-size: 0.9rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+    th { text-align: left; padding: 8px 10px; background: #f0f2f8; font-size: 0.85rem; color: #555; font-weight: 600; }
+    td { padding: 8px 10px; border-top: 1px solid #eee; font-size: 0.9rem; vertical-align: top; }
+    .flow-step {
+      display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      background: #3b5bdb; color: #fff;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.85rem;
+    }
+    .step-body { padding-top: 4px; }
+    .warning {
+      background: #fff4e6;
+      border-left: 4px solid #e8590c;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: #7c4a15;
+    }
+    .tip {
+      background: #ebfbee;
+      border-left: 4px solid #2f9e44;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: #1a4d2a;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🦉 Math Buddy — Architecture Overview</h1>
+<p class="subtitle">High-level technical overview for contributors and collaborators · June 2026</p>
+
+<!-- ── DIAGRAM ── -->
+<div class="diagram-wrap">
+  <svg viewBox="0 0 860 520" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:860px;display:block;margin:0 auto;">
+    <defs>
+      <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#888"/>
+      </marker>
+      <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#3b5bdb"/>
+      </marker>
+      <marker id="arr-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#2f9e44"/>
+      </marker>
+      <marker id="arr-orange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0, 8 3, 0 6" fill="#e8590c"/>
+      </marker>
+    </defs>
+
+    <!-- ── BACKGROUND ZONES ── -->
+    <!-- Developer zone -->
+    <rect x="10" y="10" width="200" height="500" rx="12" fill="#f0f4ff" stroke="#c5d0fa" stroke-width="1.5"/>
+    <text x="110" y="34" text-anchor="middle" fill="#3b5bdb" font-size="11" font-weight="700" font-family="system-ui,sans-serif">DEVELOPER / CI</text>
+
+    <!-- Browser zone -->
+    <rect x="230" y="10" width="380" height="500" rx="12" fill="#f0faf4" stroke="#b2e0be" stroke-width="1.5"/>
+    <text x="420" y="34" text-anchor="middle" fill="#2f9e44" font-size="11" font-weight="700" font-family="system-ui,sans-serif">USER'S BROWSER (Static Site)</text>
+
+    <!-- External zone -->
+    <rect x="630" y="10" width="220" height="500" rx="12" fill="#fff4e6" stroke="#ffd8a8" stroke-width="1.5"/>
+    <text x="740" y="34" text-anchor="middle" fill="#e8590c" font-size="11" font-weight="700" font-family="system-ui,sans-serif">EXTERNAL SERVICES</text>
+
+    <!-- ── DEVELOPER ZONE ── -->
+    <!-- Git push -->
+    <rect x="28" y="48" width="164" height="44" rx="8" fill="#3b5bdb" stroke="none"/>
+    <text x="110" y="67" text-anchor="middle" fill="#fff" font-size="12" font-weight="700" font-family="system-ui,sans-serif">Git Push</text>
+    <text x="110" y="83" text-anchor="middle" fill="#bfcfff" font-size="10" font-family="system-ui,sans-serif">claude/homework-helper-app</text>
+
+    <!-- GitHub Actions -->
+    <rect x="28" y="118" width="164" height="64" rx="8" fill="#fff" stroke="#c5d0fa" stroke-width="1.5"/>
+    <text x="110" y="140" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="700" font-family="system-ui,sans-serif">GitHub Actions</text>
+    <text x="110" y="156" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">deploy.yml</text>
+    <text x="110" y="172" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">Injects ANTHROPIC_API_KEY</text>
+
+    <!-- GitHub Pages -->
+    <rect x="28" y="212" width="164" height="44" rx="8" fill="#fff" stroke="#c5d0fa" stroke-width="1.5"/>
+    <text x="110" y="232" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="700" font-family="system-ui,sans-serif">GitHub Pages</text>
+    <text x="110" y="248" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">Static file hosting (CDN)</text>
+
+    <!-- Source files -->
+    <rect x="28" y="294" width="164" height="200" rx="8" fill="#fff" stroke="#c5d0fa" stroke-width="1.5"/>
+    <text x="110" y="316" text-anchor="middle" fill="#1a1a2e" font-size="11" font-weight="700" font-family="system-ui,sans-serif">Source Files</text>
+    <text x="44" y="338" fill="#d63384" font-size="10" font-family="'SF Mono',monospace">index.html</text>
+    <text x="44" y="356" fill="#666" font-size="10" font-family="system-ui,sans-serif">7 app screens</text>
+    <text x="44" y="378" fill="#d63384" font-size="10" font-family="'SF Mono',monospace">script.js</text>
+    <text x="44" y="396" fill="#666" font-size="10" font-family="system-ui,sans-serif">All app logic (~1750 lines)</text>
+    <text x="44" y="418" fill="#d63384" font-size="10" font-family="'SF Mono',monospace">styles.css</text>
+    <text x="44" y="436" fill="#666" font-size="10" font-family="system-ui,sans-serif">All UI styles</text>
+    <text x="44" y="458" fill="#d63384" font-size="10" font-family="'SF Mono',monospace">config.js</text>
+    <text x="44" y="476" fill="#666" font-size="10" font-family="system-ui,sans-serif">API key (generated, gitignored)</text>
+
+    <!-- ── BROWSER ZONE ── -->
+    <!-- Screens stack -->
+    <rect x="248" y="48" width="344" height="150" rx="8" fill="#fff" stroke="#b2e0be" stroke-width="1.5"/>
+    <text x="420" y="70" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="700" font-family="system-ui,sans-serif">App Screens (showScreen())</text>
+
+    <!-- Screen boxes -->
+    <rect x="260" y="82" width="74" height="26" rx="5" fill="#e3f9e5" stroke="#2f9e44" stroke-width="1"/>
+    <text x="297" y="99" text-anchor="middle" fill="#1a4d2a" font-size="9" font-family="system-ui,sans-serif">🔑 API Key</text>
+
+    <rect x="340" y="82" width="74" height="26" rx="5" fill="#e3f9e5" stroke="#2f9e44" stroke-width="1"/>
+    <text x="377" y="99" text-anchor="middle" fill="#1a4d2a" font-size="9" font-family="system-ui,sans-serif">🦉 Login</text>
+
+    <rect x="420" y="82" width="74" height="26" rx="5" fill="#e3f9e5" stroke="#2f9e44" stroke-width="1"/>
+    <text x="457" y="99" text-anchor="middle" fill="#1a4d2a" font-size="9" font-family="system-ui,sans-serif">⚙️ Setup</text>
+
+    <rect x="500" y="82" width="74" height="26" rx="5" fill="#e3f9e5" stroke="#2f9e44" stroke-width="1"/>
+    <text x="537" y="99" text-anchor="middle" fill="#1a4d2a" font-size="9" font-family="system-ui,sans-serif">👤 Profile</text>
+
+    <rect x="260" y="118" width="74" height="26" rx="5" fill="#dbe4ff" stroke="#3b5bdb" stroke-width="1"/>
+    <text x="297" y="135" text-anchor="middle" fill="#1c3aad" font-size="9" font-family="system-ui,sans-serif">💬 Chat</text>
+
+    <rect x="340" y="118" width="74" height="26" rx="5" fill="#dbe4ff" stroke="#3b5bdb" stroke-width="1"/>
+    <text x="377" y="135" text-anchor="middle" fill="#1c3aad" font-size="9" font-family="system-ui,sans-serif">🎯 Test</text>
+
+    <rect x="420" y="118" width="74" height="26" rx="5" fill="#dbe4ff" stroke="#3b5bdb" stroke-width="1"/>
+    <text x="457" y="135" text-anchor="middle" fill="#1c3aad" font-size="9" font-family="system-ui,sans-serif">📊 Report</text>
+
+    <text x="420" y="180" text-anchor="middle" fill="#888" font-size="9" font-family="system-ui,sans-serif">Green = setup/account  ·  Blue = AI-powered</text>
+
+    <!-- Lesson Data box -->
+    <rect x="248" y="220" width="160" height="120" rx="8" fill="#fff" stroke="#b2e0be" stroke-width="1.5"/>
+    <text x="328" y="242" text-anchor="middle" fill="#1a1a2e" font-size="11" font-weight="700" font-family="system-ui,sans-serif">Lesson Data</text>
+    <text x="264" y="262" fill="#666" font-size="9.5" font-family="system-ui,sans-serif">LESSON_MAP (G4)</text>
+    <text x="264" y="278" fill="#888" font-size="9" font-family="system-ui,sans-serif">135 lessons across 7 modules</text>
+    <text x="264" y="298" fill="#666" font-size="9.5" font-family="system-ui,sans-serif">LESSON_MAP_G5</text>
+    <text x="264" y="314" fill="#888" font-size="9" font-family="system-ui,sans-serif">16 detailed + 5 overview modules</text>
+    <text x="264" y="330" fill="#888" font-size="9" font-family="system-ui,sans-serif">TEST_TOPICS_G4 / G5</text>
+
+    <!-- Prompt Builder -->
+    <rect x="248" y="360" width="160" height="80" rx="8" fill="#fff" stroke="#b2e0be" stroke-width="1.5"/>
+    <text x="328" y="382" text-anchor="middle" fill="#1a1a2e" font-size="11" font-weight="700" font-family="system-ui,sans-serif">Prompt Builder</text>
+    <text x="264" y="400" fill="#666" font-size="9.5" font-family="system-ui,sans-serif">buildSystemPrompt()</text>
+    <text x="264" y="416" fill="#666" font-size="9.5" font-family="system-ui,sans-serif">buildTestSystemPrompt()</text>
+    <text x="264" y="432" fill="#888" font-size="9" font-family="system-ui,sans-serif">Injects lesson context + Socratic rules</text>
+
+    <!-- Local Storage box -->
+    <rect x="428" y="220" width="164" height="80" rx="8" fill="#fff" stroke="#b2e0be" stroke-width="1.5"/>
+    <text x="510" y="242" text-anchor="middle" fill="#1a1a2e" font-size="11" font-weight="700" font-family="system-ui,sans-serif">Browser Storage</text>
+    <text x="444" y="262" fill="#666" font-size="9.5" font-family="system-ui,sans-serif">localStorage</text>
+    <text x="444" y="278" fill="#888" font-size="9" font-family="system-ui,sans-serif">User accounts (hashed pw), API key</text>
+    <text x="444" y="296" fill="#666" font-size="9.5" font-family="system-ui,sans-serif">sessionStorage</text>
+
+    <!-- API Call box -->
+    <rect x="428" y="320" width="164" height="120" rx="8" fill="#fff3bf" stroke="#f0b429" stroke-width="1.5"/>
+    <text x="510" y="344" text-anchor="middle" fill="#7c5800" font-size="11" font-weight="700" font-family="system-ui,sans-serif">API Call Layer</text>
+    <text x="444" y="364" fill="#7c5800" font-size="9.5" font-family="system-ui,sans-serif">callClaude() / stream</text>
+    <text x="444" y="382" fill="#7c5800" font-size="9" font-family="system-ui,sans-serif">SSE streaming response</text>
+    <text x="444" y="402" fill="#7c5800" font-size="9" font-family="system-ui,sans-serif">dangerous-direct-browser-access</text>
+    <text x="444" y="422" fill="#7c5800" font-size="9" font-family="system-ui,sans-serif">Model: claude-opus-4-5</text>
+
+    <!-- ── EXTERNAL ZONE ── -->
+    <!-- Anthropic API -->
+    <rect x="648" y="48" width="184" height="100" rx="8" fill="#fff" stroke="#ffd8a8" stroke-width="1.5"/>
+    <text x="740" y="72" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="700" font-family="system-ui,sans-serif">Anthropic API</text>
+    <text x="740" y="92" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">api.anthropic.com/v1/messages</text>
+    <text x="740" y="112" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">Streaming SSE</text>
+    <text x="740" y="132" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">claude-opus-4-5</text>
+
+    <!-- Twemoji CDN -->
+    <rect x="648" y="172" width="184" height="64" rx="8" fill="#fff" stroke="#ffd8a8" stroke-width="1.5"/>
+    <text x="740" y="196" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="700" font-family="system-ui,sans-serif">Twemoji CDN</text>
+    <text x="740" y="214" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">cdn.jsdelivr.net</text>
+    <text x="740" y="230" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">SVG animal avatar images</text>
+
+    <!-- GitHub Secrets -->
+    <rect x="648" y="260" width="184" height="64" rx="8" fill="#fff" stroke="#ffd8a8" stroke-width="1.5"/>
+    <text x="740" y="284" text-anchor="middle" fill="#1a1a2e" font-size="12" font-weight="700" font-family="system-ui,sans-serif">GitHub Secrets</text>
+    <text x="740" y="304" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">ANTHROPIC_API_KEY</text>
+    <text x="740" y="320" text-anchor="middle" fill="#666" font-size="10" font-family="system-ui,sans-serif">(never in source code)</text>
+
+    <!-- ── ARROWS ── -->
+    <!-- Git push → GitHub Actions -->
+    <line x1="110" y1="92" x2="110" y2="116" stroke="#3b5bdb" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+    <!-- GitHub Actions → GitHub Pages -->
+    <line x1="110" y1="182" x2="110" y2="210" stroke="#3b5bdb" stroke-width="1.5" marker-end="url(#arr-blue)"/>
+    <!-- GitHub Secrets → GitHub Actions -->
+    <line x1="648" y1="292" x2="210" y2="170" stroke="#888" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arr)"/>
+
+    <!-- GitHub Pages → Browser (loads files) -->
+    <line x1="192" y1="232" x2="246" y2="232" stroke="#2f9e44" stroke-width="1.5" marker-end="url(#arr-green)"/>
+
+    <!-- Lesson Data → Prompt Builder -->
+    <line x1="328" y1="340" x2="328" y2="358" stroke="#2f9e44" stroke-width="1.5" marker-end="url(#arr-green)"/>
+
+    <!-- Prompt Builder → API Call -->
+    <line x1="408" y1="400" x2="426" y2="400" stroke="#888" stroke-width="1.5" marker-end="url(#arr)"/>
+
+    <!-- API Call → Anthropic -->
+    <line x1="592" y1="360" x2="680" y2="148" stroke="#e8590c" stroke-width="1.8" marker-end="url(#arr-orange)"/>
+    <!-- Anthropic → API Call (response) -->
+    <line x1="676" y1="152" x2="594" y2="364" stroke="#e8590c" stroke-width="1.8" stroke-dasharray="5,4" marker-end="url(#arr-orange)"/>
+
+    <!-- API Call → Chat/Test screens (display) -->
+    <line x1="510" y1="320" x2="420" y2="210" stroke="#888" stroke-width="1.2" marker-end="url(#arr)"/>
+
+    <!-- Browser → Twemoji CDN (avatar images) -->
+    <line x1="592" y1="240" x2="646" y2="210" stroke="#888" stroke-width="1.2" stroke-dasharray="5,4" marker-end="url(#arr)"/>
+
+    <!-- Legend -->
+    <rect x="248" y="462" width="340" height="40" rx="6" fill="#f8f9fb" stroke="#dde2ed" stroke-width="1"/>
+    <line x1="264" y1="482" x2="290" y2="482" stroke="#e8590c" stroke-width="2"/>
+    <text x="296" y="486" fill="#555" font-size="9" font-family="system-ui,sans-serif">API call / response</text>
+    <line x1="364" y1="482" x2="390" y2="482" stroke="#888" stroke-width="1.5" stroke-dasharray="5,3"/>
+    <text x="396" y="486" fill="#555" font-size="9" font-family="system-ui,sans-serif">Async / optional fetch</text>
+    <line x1="476" y1="482" x2="502" y2="482" stroke="#3b5bdb" stroke-width="1.5"/>
+    <text x="508" y="486" fill="#555" font-size="9" font-family="system-ui,sans-serif">Deploy pipeline</text>
+  </svg>
+</div>
+
+<!-- ── WRITTEN OVERVIEW ── -->
+<div class="section">
+  <h2>What is Math Buddy?</h2>
+  <p>Math Buddy is a <strong>pure static web app</strong> — there is no backend server. It is a single-page application (HTML + CSS + JS) that calls the Anthropic Claude API <em>directly from the user's browser</em>. The app is hosted for free on GitHub Pages and deployed automatically via GitHub Actions every time code is pushed to the branch.</p>
+  <p>The app acts as a Socratic math tutor for Nick, a 4th/5th-grade student working through the Eureka Math curriculum. It has a homework chat mode and a timed test/assessment mode, both powered by Claude.</p>
+</div>
+
+<div class="section">
+  <h2>Repository Structure</h2>
+  <table>
+    <tr><th>File</th><th>Purpose</th><th>Size</th></tr>
+    <tr><td><code>index.html</code></td><td>All 7 app screens defined as hidden <code>&lt;div&gt;</code>s. One screen is shown at a time via <code>showScreen()</code>.</td><td>~360 lines</td></tr>
+    <tr><td><code>script.js</code></td><td>All application logic: lesson data, prompt building, API calls, user auth, avatar system, test timer, report card parsing.</td><td>~1,750 lines</td></tr>
+    <tr><td><code>styles.css</code></td><td>All UI styles including responsive layout, avatar picker, chat bubbles, timer animation.</td><td>~900 lines</td></tr>
+    <tr><td><code>config.js</code></td><td>Generated at deploy time. Contains <code>window.MATHBUDDY_KEY = '...'</code>. <strong>Gitignored — never committed.</strong></td><td>1 line</td></tr>
+    <tr><td><code>.github/workflows/deploy.yml</code></td><td>GitHub Actions workflow that injects the API key and deploys to GitHub Pages on every push.</td><td>~37 lines</td></tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>The 7 App Screens</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔑 API Key Screen</h3>
+      <p>First-time setup. Shown only if no API key is found (neither baked in via deploy nor saved in localStorage). User pastes their Anthropic key; it's stored in <code>localStorage</code>.</p>
+    </div>
+    <div class="card">
+      <h3>🦉 Login Screen</h3>
+      <p>Login or register. Accounts are stored entirely in <code>localStorage</code>. Passwords are SHA-256 hashed with a salt via the browser's <code>crypto.subtle</code> API — no server involved.</p>
+    </div>
+    <div class="card">
+      <h3>⚙️ Setup Screen</h3>
+      <p>Student picks their module and lesson, then types or photographs their homework problem. Choosing "Let's Go!" launches the chat screen with the correct lesson context injected.</p>
+    </div>
+    <div class="card">
+      <h3>💬 Chat Screen</h3>
+      <p>The main tutoring interface. Sends a system prompt (with lesson context and Socratic rules) plus the student's problem to Claude and streams the response back in real time.</p>
+    </div>
+    <div class="card">
+      <h3>🎯 Test Screen</h3>
+      <p>15-minute timed assessment. Claude generates grade-appropriate questions across all modules. At the end, Claude produces a JSON report card parsed by the app.</p>
+    </div>
+    <div class="card">
+      <h3>📊 Report Card Screen</h3>
+      <p>Displays the parsed JSON report: per-topic scores, skill levels (proficient / developing / needs support), common mistakes, and suggested practice problems.</p>
+    </div>
+    <div class="card">
+      <h3>👤 Profile Screen</h3>
+      <p>Student can change their display name, grade, avatar (31 forward-facing animal + accessory combos), and password.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>How the API Call Works</h2>
+
+  <div class="warning">
+    ⚠️ <strong>Security note:</strong> The API key is exposed in the browser. This is acceptable for a private family app but would not be appropriate for a public app with many users. The header <code>anthropic-dangerous-direct-browser-access: true</code> is required precisely because Anthropic knows this is a browser-side call.
+  </div>
+
+  <div class="flow-step">
+    <div class="step-num">1</div>
+    <div class="step-body"><strong>Student selects module + lesson</strong> (e.g. Grade 4, Module 3, Lesson 12). <code>buildSystemPrompt(module, lesson, grade)</code> assembles a detailed system prompt containing the lesson objective, module overview, Socratic tutoring rules, and an instruction to proactively present a practice problem.</div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">2</div>
+    <div class="step-body"><strong>App POSTs to <code>api.anthropic.com/v1/messages</code></strong> with the system prompt, the student's message, and <code>stream: true</code>. The model is <code>claude-opus-4-5</code>.</div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">3</div>
+    <div class="step-body"><strong>Response streams back</strong> as Server-Sent Events (SSE). The app reads each <code>content_block_delta</code> chunk and appends it live to the chat bubble so the student sees the response as it's generated.</div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">4</div>
+    <div class="step-body"><strong>Test mode only:</strong> at the end of the test, Claude's final message includes a JSON block between <code>===REPORT_CARD_START===</code> and <code>===REPORT_CARD_END===</code> markers. The app extracts and parses this to render the Report Card screen.</div>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Lesson Data Structure</h2>
+  <p>The entire Eureka Math curriculum (Grade 4 + Grade 5 Module 1) is hard-coded in <code>script.js</code> as JavaScript objects. There are <strong>135 Grade 4 lessons</strong> and <strong>16 detailed Grade 5 lessons</strong>.</p>
+  <p>Each module entry looks like:</p>
+  <pre style="background:#f0f2f8;padding:14px;border-radius:8px;font-size:0.82rem;overflow-x:auto;line-height:1.6;margin-top:8px;"><code>LESSON_MAP[3] = {
+  name: "Multi-Digit Multiplication and Division",
+  totalLessons: 43,
+  moduleOverview: `Tools: area model, place value disks...
+Key vocabulary: factor, product, quotient...`,
+  lessons: {
+    12: "Explaining how the area model relates to the standard
+         algorithm for two-digit × two-digit multiplication...",
+    ...
+  }
+}</code></pre>
+  <p>The <strong>test topics</strong> (<code>TEST_TOPICS_G4</code> / <code>TEST_TOPICS_G5</code>) are separate arrays — each entry has a module reference, topic name, and detailed <code>guidance</code> string that tells Claude exactly what to ask at each difficulty level (straightforward / medium / harder).</p>
+</div>
+
+<div class="section">
+  <h2>User Authentication &amp; Data</h2>
+  <p>There is <strong>no backend database</strong>. All user data lives in the browser.</p>
+  <table>
+    <tr><th>Storage</th><th>Key</th><th>Contents</th></tr>
+    <tr><td><code>localStorage</code></td><td><code>mathbuddy_users</code></td><td>JSON array of user objects: username, displayName, grade, avatar, hashed password, test history</td></tr>
+    <tr><td><code>localStorage</code></td><td><code>mathbuddy_apikey</code></td><td>API key fallback (if not baked in via deploy)</td></tr>
+    <tr><td><code>sessionStorage</code></td><td><code>mathbuddy_session</code></td><td>Currently logged-in username (clears on tab close)</td></tr>
+  </table>
+  <div class="warning">⚠️ <strong>Data portability:</strong> Because data lives in <code>localStorage</code>, it is tied to the specific browser and device. Clearing browser data or switching devices loses all accounts and history.</div>
+</div>
+
+<div class="section">
+  <h2>Avatar System</h2>
+  <p>Avatars are composed of two parts:</p>
+  <ul>
+    <li><strong>Animal base:</strong> 31 Twemoji SVG images fetched from the jsDelivr CDN (<code>twemoji@14.0.2</code>). All are forward-facing so accessories sit naturally.</li>
+    <li><strong>Accessory overlay:</strong> An emoji (crown 👑, glasses 🕶️, bow 🎀, etc.) absolutely positioned over the animal using CSS. 12 accessory options including "None".</li>
+  </ul>
+  <p>The <code>animalAvatarHtml(cp, accessoryId, size)</code> function builds a <code>&lt;div&gt;</code> with a relative-positioned container, the animal <code>&lt;img&gt;</code>, and a <code>&lt;span&gt;</code> for the accessory. Avatar choice is stored per-user as <code>avatarAnimal</code> (codepoint string) and <code>avatarAccessory</code> (accessory id string).</p>
+</div>
+
+<div class="section">
+  <h2>Deployment Pipeline</h2>
+  <div class="flow-step">
+    <div class="step-num">1</div>
+    <div class="step-body">Developer pushes code to branch <code>claude/homework-helper-app-9nqN1</code> (or <code>main</code>/<code>master</code>)</div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">2</div>
+    <div class="step-body">GitHub Actions runs <code>deploy.yml</code>, which creates <code>config.js</code> containing <code>window.MATHBUDDY_KEY = '[secret]';</code> from the <code>ANTHROPIC_API_KEY</code> repository secret</div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">3</div>
+    <div class="step-body">All files (including the generated <code>config.js</code>) are uploaded to GitHub Pages via <code>actions/upload-pages-artifact</code> and deployed via <code>actions/deploy-pages</code></div>
+  </div>
+  <div class="flow-step">
+    <div class="step-num">4</div>
+    <div class="step-body">Live site at <code>greens80.github.io/Eureka_Math/</code> updates within ~60 seconds</div>
+  </div>
+  <div class="tip">✅ The secret is <strong>never committed to git</strong>. It only exists in the deployed artifact served by GitHub's CDN.</div>
+</div>
+
+<div class="section">
+  <h2>Key Areas for Enhancement / Debugging</h2>
+  <table>
+    <tr><th>Area</th><th>Current State</th><th>Notes for Contributors</th></tr>
+    <tr>
+      <td>Data persistence</td>
+      <td>localStorage only</td>
+      <td>Moving to a real backend (e.g. Supabase, Firebase) would enable cross-device sync and proper user accounts</td>
+    </tr>
+    <tr>
+      <td>API key security</td>
+      <td>Key visible in browser devtools</td>
+      <td>A thin serverless proxy (Cloudflare Worker, Vercel Edge Function) would hide the key entirely</td>
+    </tr>
+    <tr>
+      <td>Claude model</td>
+      <td>claude-opus-4-5</td>
+      <td>Upgrading to claude-opus-4-7 would improve reasoning quality; cost would increase</td>
+    </tr>
+    <tr>
+      <td>Lesson problems</td>
+      <td>Lesson descriptions only; Claude generates problems dynamically</td>
+      <td>Adding curated sample problems per lesson would make the tutoring more consistent</td>
+    </tr>
+    <tr>
+      <td>Grade 5 content</td>
+      <td>Module 1 fully detailed; Modules 2–6 are overviews only</td>
+      <td>Modules 2–6 need lesson-by-lesson detail added to <code>LESSON_MAP_G5</code></td>
+    </tr>
+    <tr>
+      <td>Photo input</td>
+      <td>Camera / upload → sends image to Claude vision</td>
+      <td>Works on modern browsers; iOS Safari requires programmatic <code>.click()</code> pattern (already implemented)</td>
+    </tr>
+    <tr>
+      <td>Test history</td>
+      <td>Report card JSON stored per-user in localStorage</td>
+      <td>Could add a history view showing multiple test sessions over time</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>Running Locally</h2>
+  <p>Because the app calls the Anthropic API from the browser, it needs HTTPS or localhost to work. The simplest local setup:</p>
+  <pre style="background:#f0f2f8;padding:14px;border-radius:8px;font-size:0.82rem;overflow-x:auto;line-height:1.6;margin-top:8px;"><code># 1. Clone the repo
+git clone https://github.com/commonrule/Eureka_Math.git
+cd Eureka_Math
+
+# 2. Create config.js with your API key
+echo "window.MATHBUDDY_KEY = 'sk-ant-...your-key...';" > config.js
+
+# 3. Serve locally (any static server works)
+npx serve .
+# or: python3 -m http.server 8080</code></pre>
+  <p>Then open <code>http://localhost:3000</code> (or whichever port) in your browser.</p>
+</div>
+
+<footer style="margin-top:40px;padding-top:20px;border-top:1px solid #dde2ed;color:#999;font-size:0.82rem;">
+  Math Buddy · Built for Nick · Architecture doc generated June 2026
+</footer>
+
+</body>
+</html>

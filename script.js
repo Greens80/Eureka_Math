@@ -760,6 +760,7 @@ changeKeyBtn.addEventListener('click', () => {
 // ── Login screen ──
 // Twemoji SVG animal faces — forward-facing cartoon animals
 const ANIMAL_AVATARS = [
+  { name: 'Goat',      cp: '1f410' },
   { name: 'Dragon',    cp: '1f432' },  // dragon face — forward-facing
   { name: 'Cat',       cp: '1f431' },
   { name: 'Dog',       cp: '1f436' },

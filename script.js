@@ -760,7 +760,7 @@ changeKeyBtn.addEventListener('click', () => {
 // ── Login screen ──
 // Twemoji SVG animal faces — forward-facing cartoon animals
 const ANIMAL_AVATARS = [
-  { name: 'Goat',      cp: '1f410' },
+  { name: 'Dragon',    cp: '1f432' },  // dragon face — forward-facing
   { name: 'Cat',       cp: '1f431' },
   { name: 'Dog',       cp: '1f436' },
   { name: 'Rabbit',    cp: '1f430' },
@@ -781,13 +781,13 @@ const ANIMAL_AVATARS = [
   { name: 'Unicorn',   cp: '1f984' },
   { name: 'Owl',       cp: '1f989' },
   { name: 'Penguin',   cp: '1f427' },
-  { name: 'Duck',      cp: '1f986' },
-  { name: 'Eagle',     cp: '1f985' },
-  { name: 'Turtle',    cp: '1f422' },
-  { name: 'T-Rex',     cp: '1f996' },
-  { name: 'Dino',      cp: '1f995' },
-  { name: 'Shark',     cp: '1f988' },
-  { name: 'Dolphin',   cp: '1f42c' },
+  { name: 'Chick',     cp: '1f425' },  // front-facing baby chick
+  { name: 'Raccoon',   cp: '1f99d' },  // forward-facing face in Twemoji
+  { name: 'Blowfish',  cp: '1f421' },  // round, faces camera
+  { name: 'Beaver',    cp: '1f9ab' },  // forward-facing face
+  { name: 'Hedgehog',  cp: '1f994' },  // forward-facing face
+  { name: 'Otter',     cp: '1f9a6' },  // forward-facing cute face
+  { name: 'Octopus',   cp: '1f419' },  // round, faces camera
   { name: 'Butterfly', cp: '1f98b' },
   { name: 'Seal',      cp: '1f9ad' },
 ];

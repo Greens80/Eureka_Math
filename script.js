@@ -300,11 +300,7 @@ const G4_MODULE_OPTIONS = `
 const G5_MODULE_OPTIONS = `
   <option value="">-- Pick your module --</option>
   <option value="1">Module 1 – Place Value &amp; Decimal Fractions (16 lessons)</option>
-  <option value="2">Module 2 – Multi-Digit Operations with Decimals (29 lessons)</option>
-  <option value="3">Module 3 – Addition &amp; Subtraction of Fractions (16 lessons)</option>
-  <option value="4">Module 4 – Multiplication &amp; Division of Fractions (38 lessons)</option>
-  <option value="5">Module 5 – Volume and Area (25 lessons)</option>
-  <option value="6">Module 6 – Coordinate Plane (32 lessons)</option>
+  <option value="2">Module 2 – Multi-Digit Whole Number and Decimal Fraction Operations (29 lessons)</option>
 `;
 
 // ── Grade 4 test topic areas ──
@@ -484,6 +480,44 @@ EUREKA MATH APPROACH:
 Remember: Your goal is for the student to feel confident and capable. Every child can do math — they just need the right questions.`;
 }
 
+// ── Build tutorial system prompt ──
+function buildTutorialSystemPrompt(module, lesson) {
+  const mod = LESSON_MAP_G5[module];
+  if (!mod) {
+    return `You are Math Buddy, a warm and encouraging Grade 5 Eureka Math tutor. The student wants to learn a lesson. Start by asking what module and lesson they are working on, then teach it step by step.`;
+  }
+
+  const lessonDetail = lesson && mod.lessons && mod.lessons[lesson]
+    ? `\nTHIS SPECIFIC LESSON (Lesson ${lesson} of ${mod.totalLessons}):\n${mod.lessons[lesson]}`
+    : lesson
+      ? `\nLesson ${lesson} of ${mod.totalLessons}. Teach content appropriate to this point in the module sequence.`
+      : '';
+
+  return `You are Math Buddy, a warm and encouraging Grade 5 Eureka Math tutor. The student wants to LEARN a lesson — not get help with a specific homework problem.
+
+The student is studying Grade 5 Module ${module}: "${mod.name}"${lesson ? `, Lesson ${lesson}` : ''}.
+
+MODULE OVERVIEW:
+${mod.moduleOverview}
+${lessonDetail}
+
+YOUR TUTORIAL FLOW — follow these steps in order:
+1. INTRODUCE: Start with a warm, friendly greeting. Tell the student what today's lesson is about in one or two simple sentences. Use language a 5th grader will understand.
+2. EXPLAIN: Teach the core concept step-by-step. Break it into small, clear steps. Use simple examples and the vocabulary from the module overview.
+3. SHOW: Walk through ONE complete worked example from start to finish. Think out loud as you go (e.g., "First, I notice... then I ask myself...").
+4. PRACTICE: Give the student a similar problem to try on their own. Wait for their answer before giving feedback.
+5. GUIDE: If they answer correctly, celebrate and ask them to explain WHY it works. If they struggle, use Socratic questions to help — never give the answer directly.
+
+TONE AND STYLE:
+- Warm, patient, and encouraging — like a favorite teacher
+- Short paragraphs and simple sentences
+- Use emojis sparingly to keep it fun (✨ 🌟 👍 🤔 💡)
+- One idea at a time — don't overwhelm with a wall of text
+- Celebrate every correct step ("Yes! Exactly right! 🌟")
+
+Remember: the goal is for the student to finish the session feeling confident and capable.`;
+}
+
 // ── Build test system prompt ──
 function buildTestSystemPrompt(grade) {
   grade = grade || 4;
@@ -561,21 +595,8 @@ Replace the example JSON with the ACTUAL results from this assessment. Include A
 }
 
 // ── API Key management ──
-const KEY_STORAGE = 'mathbuddy_apikey';
 const USERS_STORAGE = 'mathbuddy_users';
 const SESSION_STORAGE = 'mathbuddy_session';
-
-function getApiKey() {
-  return localStorage.getItem(KEY_STORAGE) || '';
-}
-
-function saveApiKey(key) {
-  localStorage.setItem(KEY_STORAGE, key.trim());
-}
-
-function clearApiKey() {
-  localStorage.removeItem(KEY_STORAGE);
-}
 
 // ── User management ──
 function getUsers() {
@@ -614,8 +635,9 @@ async function hashPassword(password) {
 // ── State ──
 let selectedModule = null;
 let selectedLesson = null;
-let selectedGrade = 4;
+let selectedGrade = 5;
 let inputMethod = 'type';
+let isTutorialMode = false;
 let photoBase64 = null;
 let photoMediaType = null;
 let conversationHistory = [];
@@ -625,19 +647,16 @@ let isTestStreaming = false;
 let currentMode = 'homework'; // 'homework' or 'test'
 
 // ── DOM refs ──
-const keyScreen = document.getElementById('key-screen');
 const loginScreen = document.getElementById('login-screen');
 const setupScreen = document.getElementById('setup-screen');
 const chatScreen = document.getElementById('chat-screen');
 const testScreen = document.getElementById('test-screen');
 const reportScreen = document.getElementById('report-screen');
 
-const apiKeyInput = document.getElementById('api-key-input');
-const saveKeyBtn = document.getElementById('save-key-btn');
-const changeKeyBtn = document.getElementById('change-key-btn');
 const moduleSelect = document.getElementById('module-select');
 const lessonInput = document.getElementById('lesson-input');
 const startBtn = document.getElementById('start-btn');
+const tutorialBtn = document.getElementById('tutorial-btn');
 const backBtn = document.getElementById('back-btn');
 const newProblemBtn = document.getElementById('new-problem-btn');
 const chatMessages = document.getElementById('chat-messages');
@@ -675,7 +694,7 @@ const setupGrade4Btn = document.getElementById('setup-grade-4');
 const setupGrade5Btn = document.getElementById('setup-grade-5');
 
 // ── All screens list ──
-const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen];
+const ALL_SCREENS = [loginScreen, setupScreen, chatScreen, testScreen, reportScreen];
 
 // ── Screen helper ──
 function showScreen(screen) {
@@ -691,40 +710,15 @@ function showScreen(screen) {
 
 // ── Startup ──
 (function init() {
-  if (!getApiKey()) {
-    showScreen(keyScreen);
+  updateGradeUI(5);
+  const user = getCurrentUser();
+  if (!user) {
+    showScreen(loginScreen);
   } else {
-    const user = getCurrentUser();
-    if (!user) {
-      showScreen(loginScreen);
-    } else {
-      setupStudentHeader(user);
-      showScreen(setupScreen);
-    }
+    setupStudentHeader(user);
+    showScreen(setupScreen);
   }
 })();
-
-// ── Key screen ──
-saveKeyBtn.addEventListener('click', () => {
-  const key = apiKeyInput.value.trim();
-  if (!key.startsWith('sk-')) {
-    alert('That doesn\'t look like a valid API key. It should start with "sk-".');
-    return;
-  }
-  saveApiKey(key);
-  apiKeyInput.value = '';
-  // Go to login screen after saving
-  showScreen(loginScreen);
-});
-
-apiKeyInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') saveKeyBtn.click();
-});
-
-changeKeyBtn.addEventListener('click', () => {
-  clearApiKey();
-  showScreen(keyScreen);
-});
 
 // ── Login screen ──
 let loginMode = 'login'; // 'login' or 'register'
@@ -1051,8 +1045,10 @@ clearPhotoBtn.addEventListener('click', () => {
 
 // ── Start homework session ──
 startBtn.addEventListener('click', startSession);
+tutorialBtn.addEventListener('click', startTutorial);
 
 function startSession() {
+  isTutorialMode = false;
   selectedModule = parseInt(moduleSelect.value) || null;
   selectedLesson = parseInt(lessonInput.value) || null;
 
@@ -1100,6 +1096,34 @@ function startSession() {
   }
 }
 
+function startTutorial() {
+  const mod = parseInt(moduleSelect.value) || null;
+  const les = parseInt(lessonInput.value) || null;
+
+  if (!mod) { alert('Please pick a module first! 📚'); return; }
+  if (!les) { alert('Please enter a lesson number first! ✏️'); return; }
+
+  selectedModule = mod;
+  selectedLesson = les;
+  isTutorialMode = true;
+  currentMode = 'homework';
+
+  const modNames = {
+    1: 'Module 1 – Place Value & Decimal Fractions',
+    2: 'Module 2 – Multi-Digit Operations',
+  };
+  chatSubtitle.textContent = (modNames[mod] || `Module ${mod}`) + `, Lesson ${les}`;
+
+  conversationHistory = [];
+  chatMessages.innerHTML = '';
+  appendBuddyMessage("Hi! I'm Math Buddy! 🦉 I'm so excited to teach you today's lesson!\n\nLet's learn together — I'll explain the concept, show you an example, and then you can try one! 💪");
+
+  const triggerMsg = `Hi! I'd like to learn about today's lesson. Can you teach me?`;
+  conversationHistory.push({ role: 'user', content: triggerMsg });
+  streamToAnthropic(conversationHistory, false);
+  showScreen(chatScreen);
+}
+
 function buildImageMessages(base64, mediaType) {
   return [{
     role: 'user',
@@ -1112,6 +1136,7 @@ function buildImageMessages(base64, mediaType) {
 
 // ── Navigation: Back from chat screen ──
 backBtn.addEventListener('click', () => {
+  isTutorialMode = false;
   // Track homework session for retest suggestion
   if (selectedModule) {
     const user = getCurrentUser();
@@ -1123,6 +1148,7 @@ backBtn.addEventListener('click', () => {
 });
 
 newProblemBtn.addEventListener('click', () => {
+  isTutorialMode = false;
   // Track homework session for retest suggestion
   if (selectedModule) {
     const user = getCurrentUser();
@@ -1198,47 +1224,27 @@ function sendMessage() {
   streamToAnthropic(conversationHistory, false);
 }
 
-// ── Direct Anthropic API streaming (homework) ──
+// ── Server-proxied API streaming (homework/tutorial) ──
 async function streamToAnthropic(messages, isImageRequest) {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    appendBuddyMessage("Oops! I can't find your API key. Let me take you back to set it up.");
-    setTimeout(() => { clearApiKey(); showScreen(keyScreen); }, 1500);
-    return;
-  }
-
   isStreaming = true;
   sendBtn.disabled = true;
   const typingEl = appendTypingIndicator(chatMessages);
 
+  const systemPrompt = isTutorialMode
+    ? buildTutorialSystemPrompt(selectedModule, selectedLesson)
+    : buildSystemPrompt(selectedModule, selectedLesson, selectedGrade);
+
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 1024,
-        stream: true,
-        system: buildSystemPrompt(selectedModule, selectedLesson, selectedGrade),
-        messages,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, systemPrompt }),
     });
 
     typingEl.remove();
 
     if (!response.ok) {
-      const errBody = await response.json().catch(() => ({}));
-      if (response.status === 401) {
-        appendBuddyMessage("❌ That API key doesn't seem to work. Let me take you back to fix it.");
-        setTimeout(() => { clearApiKey(); showScreen(keyScreen); }, 1800);
-      } else {
-        appendBuddyMessage(`Hmm, something went wrong (${response.status}: ${errBody.error?.message || 'unknown error'}). Please try again!`);
-      }
+      appendBuddyMessage(`Hmm, something went wrong (${response.status}). Please try again!`);
       return;
     }
 
@@ -1260,11 +1266,11 @@ async function streamToAnthropic(messages, isImageRequest) {
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue;
         const json = line.slice(6).trim();
-        if (json === '[DONE]' || !json) continue;
+        if (!json) continue;
         try {
           const evt = JSON.parse(json);
-          if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
-            fullText += evt.delta.text;
+          if (evt.text) {
+            fullText += evt.text;
             buddyBubble.innerHTML = formatMessage(fullText);
             scrollToBottom(chatMessages);
           }
@@ -1283,7 +1289,7 @@ async function streamToAnthropic(messages, isImageRequest) {
     checkForComprehensionTrigger(fullText);
   } catch (err) {
     typingEl?.remove();
-    appendBuddyMessage("Oops! I had trouble connecting. Check your internet and try again. 🔄");
+    appendBuddyMessage("Oops! I had trouble connecting to the server. Make sure it's running and try again. 🔄");
     console.error(err);
   } finally {
     isStreaming = false;
@@ -1344,14 +1350,8 @@ function sendTestMessage() {
 }
 
 async function streamTestToAnthropic(messages) {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    appendTestBuddyMessage("Oops! I can't find your API key.");
-    return;
-  }
-
   const user = getCurrentUser();
-  const grade = user ? (user.grade || 4) : selectedGrade || 4;
+  const grade = user ? (user.grade || 5) : selectedGrade || 5;
 
   isTestStreaming = true;
   testSendBtn.disabled = true;
@@ -1359,28 +1359,16 @@ async function streamTestToAnthropic(messages) {
   const typingEl = appendTypingIndicator(testMessages);
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('/api/test', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 2048,
-        stream: true,
-        system: buildTestSystemPrompt(grade),
-        messages,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, systemPrompt: buildTestSystemPrompt(grade) }),
     });
 
     typingEl.remove();
 
     if (!response.ok) {
-      const errBody = await response.json().catch(() => ({}));
-      appendTestBuddyMessage(`Hmm, something went wrong (${response.status}: ${errBody.error?.message || 'unknown error'}). Please try again!`);
+      appendTestBuddyMessage(`Hmm, something went wrong (${response.status}). Please try again!`);
       return;
     }
 
@@ -1403,18 +1391,16 @@ async function streamTestToAnthropic(messages) {
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue;
         const json = line.slice(6).trim();
-        if (json === '[DONE]' || !json) continue;
+        if (!json) continue;
         try {
           const evt = JSON.parse(json);
-          if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
-            fullText += evt.delta.text;
+          if (evt.text) {
+            fullText += evt.text;
 
-            // Check for report card marker while streaming
             if (!reportCardFound && fullText.includes('===REPORT_CARD_START===')) {
               reportCardFound = true;
             }
 
-            // Display text without the report card block
             const displayText = stripReportCardBlock(fullText);
             buddyBubble.innerHTML = formatMessage(displayText);
             scrollToBottom(testMessages);
@@ -1423,12 +1409,10 @@ async function streamTestToAnthropic(messages) {
       }
     }
 
-    // Save assistant turn
     if (fullText) {
       testConversationHistory.push({ role: 'assistant', content: fullText });
     }
 
-    // Process report card if present
     if (reportCardFound && fullText.includes('===REPORT_CARD_END===')) {
       const reportCard = extractReportCard(fullText);
       if (reportCard) {
@@ -1439,7 +1423,7 @@ async function streamTestToAnthropic(messages) {
 
   } catch (err) {
     typingEl?.remove();
-    appendTestBuddyMessage("Oops! I had trouble connecting. Check your internet and try again. 🔄");
+    appendTestBuddyMessage("Oops! I had trouble connecting to the server. 🔄");
     console.error(err);
   } finally {
     isTestStreaming = false;
@@ -1450,11 +1434,8 @@ async function streamTestToAnthropic(messages) {
 }
 
 async function generateReportCardNow() {
-  const apiKey = getApiKey();
-  if (!apiKey) return;
-
   const user = getCurrentUser();
-  const grade = user ? (user.grade || 4) : selectedGrade || 4;
+  const grade = user ? (user.grade || 5) : selectedGrade || 5;
 
   isTestStreaming = true;
   testSendBtn.disabled = true;
@@ -1467,21 +1448,10 @@ async function generateReportCardNow() {
   appendTestBuddyMessage("Generating your report card... 📊");
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('/api/report', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-opus-4-5',
-        max_tokens: 2048,
-        stream: false,
-        system: buildTestSystemPrompt(grade),
-        messages,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, systemPrompt: buildTestSystemPrompt(grade) }),
     });
 
     if (!response.ok) {
@@ -1490,7 +1460,7 @@ async function generateReportCardNow() {
     }
 
     const data = await response.json();
-    const fullText = data.content?.[0]?.text || '';
+    const fullText = data.text || '';
 
     const reportCard = extractReportCard(fullText);
     if (reportCard) {

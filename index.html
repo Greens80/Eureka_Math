@@ -8,33 +8,6 @@
 </head>
 <body>
 
-  <!-- API KEY SCREEN (shown on first visit) -->
-  <div id="key-screen" class="screen">
-    <div class="setup-card">
-      <div class="buddy-header">
-        <div class="buddy-avatar">🔑</div>
-        <h1>Welcome to Math Buddy!</h1>
-        <p class="buddy-subtitle">One quick setup, then let's do math! 🌟</p>
-      </div>
-      <div class="setup-section">
-        <label class="setup-label">Your Anthropic API Key</label>
-        <input
-          type="password"
-          id="api-key-input"
-          class="setup-input"
-          placeholder="sk-ant-api03-..."
-          autocomplete="off"
-          spellcheck="false"
-        />
-        <p class="key-hint">
-          Get your key at <strong>console.anthropic.com</strong> → API Keys.<br/>
-          Your key is saved only on <em>this device</em> — never sent anywhere except directly to Anthropic.
-        </p>
-      </div>
-      <button id="save-key-btn" class="start-btn">Save &amp; Start! 🚀</button>
-    </div>
-  </div>
-
   <!-- LOGIN SCREEN -->
   <div id="login-screen" class="screen">
     <div class="setup-card">
@@ -146,12 +119,12 @@
         <p class="buddy-subtitle">Let's do some math together! 🌟</p>
       </div>
 
-      <!-- Grade selection -->
-      <div class="setup-section" id="grade-select-section">
+      <!-- Grade selection (hidden — Grade 5 only) -->
+      <div class="setup-section" id="grade-select-section" style="display:none">
         <label class="setup-label">Which grade are you in?</label>
         <div class="grade-btn-row">
-          <button class="grade-select-btn active" data-grade="4" id="setup-grade-4">Grade 4</button>
-          <button class="grade-select-btn" data-grade="5" id="setup-grade-5">Grade 5</button>
+          <button class="grade-select-btn" data-grade="4" id="setup-grade-4">Grade 4</button>
+          <button class="grade-select-btn active" data-grade="5" id="setup-grade-5">Grade 5</button>
         </div>
       </div>
 
@@ -159,13 +132,8 @@
         <label class="setup-label">Which module are you working on?</label>
         <select id="module-select" class="setup-select">
           <option value="">-- Pick your module --</option>
-          <option value="1">Module 1 – Place Value &amp; Addition/Subtraction (19 lessons)</option>
-          <option value="2">Module 2 – Metric Measurement (5 lessons)</option>
-          <option value="3">Module 3 – Multiplication &amp; Division (43 lessons)</option>
-          <option value="4">Module 4 – Angles &amp; Shapes (16 lessons)</option>
-          <option value="5">Module 5 – Fractions (41 lessons)</option>
-          <option value="6">Module 6 – Decimals (7 lessons)</option>
-          <option value="7">Module 7 – Measurement with Multiplication (4 lessons)</option>
+          <option value="1">Module 1 – Place Value &amp; Decimal Fractions (16 lessons)</option>
+          <option value="2">Module 2 – Multi-Digit Whole Number and Decimal Fraction Operations (29 lessons)</option>
         </select>
       </div>
 
@@ -227,12 +195,12 @@
         </div>
       </div>
 
+      <button id="tutorial-btn" class="tutorial-btn">
+        📖 Start Tutorial
+      </button>
       <button id="start-btn" class="start-btn">
         Let's Go! 🚀
       </button>
-      <p class="change-key-row">
-        <button id="change-key-btn" class="change-key-btn">🔑 Change API Key</button>
-      </p>
     </div>
   </div>
 

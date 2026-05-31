@@ -282,7 +282,7 @@ Remember: Your goal is for the student to feel confident and capable. Every chil
 }
 
 app.post('/api/chat', async (req, res) => {
-  const { messages, module, lesson } = req.body;
+  const { messages, systemPrompt: clientSystemPrompt, module, lesson } = req.body;
 
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ error: 'messages array required' });
@@ -294,14 +294,13 @@ app.post('/api/chat', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
   try {
-    const systemPrompt = buildSystemPrompt(module, lesson);
+    const systemPrompt = clientSystemPrompt || buildSystemPrompt(module, lesson);
 
     const stream = await client.messages.stream({
       model: 'claude-opus-4-7',
       max_tokens: 1024,
       system: systemPrompt,
-      messages: messages,
-      thinking: { type: 'adaptive' },
+      messages,
     });
 
     for await (const event of stream) {
@@ -316,6 +315,64 @@ app.post('/api/chat', async (req, res) => {
     console.error('Chat error:', err);
     res.write(`data: ${JSON.stringify({ error: 'Something went wrong. Please try again.' })}\n\n`);
     res.end();
+  }
+});
+
+app.post('/api/test', async (req, res) => {
+  const { messages, systemPrompt } = req.body;
+
+  if (!messages || !Array.isArray(messages) || !systemPrompt) {
+    return res.status(400).json({ error: 'messages and systemPrompt required' });
+  }
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  try {
+    const stream = await client.messages.stream({
+      model: 'claude-opus-4-7',
+      max_tokens: 2048,
+      system: systemPrompt,
+      messages,
+    });
+
+    for await (const event of stream) {
+      if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+        res.write(`data: ${JSON.stringify({ text: event.delta.text })}\n\n`);
+      }
+    }
+
+    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+    res.end();
+  } catch (err) {
+    console.error('Test error:', err);
+    res.write(`data: ${JSON.stringify({ error: 'Something went wrong. Please try again.' })}\n\n`);
+    res.end();
+  }
+});
+
+app.post('/api/report', async (req, res) => {
+  const { messages, systemPrompt } = req.body;
+
+  if (!messages || !Array.isArray(messages) || !systemPrompt) {
+    return res.status(400).json({ error: 'messages and systemPrompt required' });
+  }
+
+  try {
+    const response = await client.messages.create({
+      model: 'claude-opus-4-7',
+      max_tokens: 2048,
+      system: systemPrompt,
+      messages,
+    });
+
+    const text = response.content?.[0]?.text || '';
+    res.json({ text });
+  } catch (err) {
+    console.error('Report error:', err);
+    res.status(500).json({ error: 'Could not generate report card.' });
   }
 });
 

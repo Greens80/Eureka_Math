@@ -305,6 +305,31 @@ body {
   transform: translateY(0);
 }
 
+.tutorial-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  background: white;
+  color: var(--purple);
+  border: 2.5px solid var(--purple);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+  font-family: inherit;
+  margin-top: 8px;
+}
+
+.tutorial-btn:hover {
+  background: rgba(124, 58, 237, 0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.2);
+}
+
+.tutorial-btn:active {
+  transform: translateY(0);
+}
+
 /* ── CHAT SCREEN ── */
 .chat-screen {
   display: none;

@@ -654,6 +654,7 @@ const chatScreen = document.getElementById('chat-screen');
 const testScreen = document.getElementById('test-screen');
 const reportScreen = document.getElementById('report-screen');
 const profileScreen = document.getElementById('profile-screen');
+const leaderboardScreen = document.getElementById('leaderboard-screen');
 
 const apiKeyInput = document.getElementById('api-key-input');
 const saveKeyBtn = document.getElementById('save-key-btn');
@@ -699,7 +700,7 @@ const setupGrade4Btn = document.getElementById('setup-grade-4');
 const setupGrade5Btn = document.getElementById('setup-grade-5');
 
 // ── All screens list ──
-const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen].filter(Boolean);
+const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen, leaderboardScreen].filter(Boolean);
 
 // ── Screen helper ──
 function showScreen(screen) {
@@ -1112,6 +1113,9 @@ reportCardBtn.addEventListener('click', () => {
 takeTestBtn.addEventListener('click', () => {
   startTestMode();
 });
+
+const leaderboardBtn = document.getElementById('leaderboard-btn');
+if (leaderboardBtn) leaderboardBtn.addEventListener('click', () => showLeaderboard());
 
 retestNowBtn.addEventListener('click', () => {
   startTestMode();
@@ -1957,6 +1961,13 @@ function saveReportCard(reportCard) {
   const users = getUsers();
   if (users[user.username]) {
     users[user.username].reportCard = reportCard;
+    // Append to testHistory for leaderboard XP tracking
+    if (!users[user.username].testHistory) users[user.username].testHistory = [];
+    users[user.username].testHistory.push({
+      date: reportCard.date,
+      score: reportCard.overallScore || 0,
+      grade: reportCard.grade,
+    });
     // Clear retestSuggested for modules that now have score >= 80
     if (users[user.username].retestSuggested && reportCard.topics) {
       users[user.username].retestSuggested = users[user.username].retestSuggested.filter(modNum => {
@@ -2168,3 +2179,164 @@ function scrollToBottom(container) {
   container = container || chatMessages;
   container.scrollTop = container.scrollHeight;
 }
+
+// ── Leaderboard ──
+
+function calcUserXP(user) {
+  // Bootstrap from reportCard if testHistory not yet populated
+  const history = (user.testHistory && user.testHistory.length > 0)
+    ? user.testHistory
+    : (user.reportCard ? [{ score: user.reportCard.overallScore || 0 }] : []);
+
+  let xp = 0;
+  history.forEach((t, i) => {
+    xp += Math.round(t.score || 0);
+    if (i > 0 && t.score > history[i - 1].score) xp += 20; // improvement bonus
+  });
+
+  const totalSessions = Object.values(user.homeworkSessions || {}).reduce((a, b) => a + b, 0);
+  xp += totalSessions * 5;
+  return xp;
+}
+
+function getUserLevel(xp) {
+  if (xp >= 500) return { label: 'Math Champion', icon: '🏆', color: '#f59e0b', next: null };
+  if (xp >= 300) return { label: 'Math Whiz',     icon: '🔥', color: '#f97316', next: 500 };
+  if (xp >= 150) return { label: 'Rising Star',   icon: '⭐', color: '#7c3aed', next: 300 };
+  if (xp >= 50)  return { label: 'Scholar',       icon: '📚', color: '#2563eb', next: 150 };
+  return             { label: 'Seedling',       icon: '🌱', color: '#16a34a', next: 50  };
+}
+
+function showLeaderboard() {
+  if (!leaderboardScreen) return;
+  const users = getUsers();
+  const currentUser = getCurrentUser();
+  const content = document.getElementById('leaderboard-content');
+
+  const entries = Object.entries(users).map(([username, user]) => {
+    const xp = calcUserXP(user);
+    const level = getUserLevel(xp);
+    const history = (user.testHistory && user.testHistory.length > 0)
+      ? user.testHistory
+      : (user.reportCard ? [{ score: user.reportCard.overallScore || 0, date: user.reportCard.date }] : []);
+    const lastScore = history.length > 0 ? history[history.length - 1].score : null;
+    let trend = '';
+    if (history.length >= 2) {
+      const diff = history[history.length - 1].score - history[history.length - 2].score;
+      trend = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+    }
+    const totalSessions = Object.values(user.homeworkSessions || {}).reduce((a, b) => a + b, 0);
+    return { username, user, xp, level, lastScore, trend, testsCount: history.length, totalSessions };
+  });
+
+  entries.sort((a, b) => b.xp - a.xp);
+
+  const medals = ['🥇', '🥈', '🥉'];
+
+  const rows = entries.map((e, i) => {
+    const isMe = currentUser && e.username === currentUser.username;
+    const medal = i < 3 ? medals[i] : `<span class="lb-rank-num">${i + 1}</span>`;
+    const avatarHtml = avatarImgHtml(e.user, 44);
+    const nextXp = e.level.next;
+    const barMax = nextXp || e.xp || 1;
+    const barPrev = i === 0 ? 0 : (getUserLevel(e.xp).next ? { 500:300,300:150,150:50,50:0 }[e.level.next] || 0 : 0);
+    const barFill = nextXp ? Math.round(((e.xp - barPrev) / (nextXp - barPrev)) * 100) : 100;
+    const testStr = e.testsCount === 0 ? 'No tests yet' : `${e.testsCount} test${e.testsCount > 1 ? 's' : ''}`;
+    const sessionStr = e.totalSessions > 0 ? ` · ${e.totalSessions} sessions` : '';
+    const scoreStr = e.lastScore !== null ? ` · Last: ${Math.round(e.lastScore)}% ${e.trend}` : '';
+    return `
+      <div class="lb-entry${isMe ? ' lb-entry-me' : ''}">
+        <div class="lb-rank">${medal}</div>
+        <div class="lb-avatar">${avatarHtml}</div>
+        <div class="lb-info">
+          <div class="lb-name">${escapeHtml(e.user.displayName || e.username)}${isMe ? ' <span class="lb-you">you</span>' : ''}</div>
+          <div class="lb-level" style="color:${e.level.color}">${e.level.icon} ${e.level.label}</div>
+          <div class="lb-bar-track"><div class="lb-bar-fill" style="width:0%;background:${e.level.color}" data-fill="${barFill}"></div></div>
+          <div class="lb-stats">${testStr}${sessionStr}${scoreStr}</div>
+        </div>
+        <div class="lb-xp" style="color:${e.level.color}">${e.xp}<span class="lb-xp-label">XP</span></div>
+      </div>`;
+  }).join('');
+
+  const legendHtml = `
+    <div class="lb-legend">
+      <p class="lb-legend-title">How XP is earned</p>
+      <div class="lb-legend-row"><span>📝 Test completed</span><span>up to 100 XP</span></div>
+      <div class="lb-legend-row"><span>📈 Score improved</span><span>+20 XP bonus</span></div>
+      <div class="lb-legend-row"><span>📚 Homework session</span><span>+5 XP each</span></div>
+    </div>`;
+
+  content.innerHTML = entries.length === 0
+    ? '<p style="text-align:center;color:#888;padding:32px">No students yet! Register an account to appear here.</p>'
+    : `<div class="lb-list">${rows}</div>${legendHtml}`;
+
+  // Animate bars
+  requestAnimationFrame(() => {
+    content.querySelectorAll('.lb-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.fill + '%';
+    });
+  });
+
+  showScreen(leaderboardScreen);
+}
+
+const leaderboardBackBtn = document.getElementById('leaderboard-back-btn');
+if (leaderboardBackBtn) leaderboardBackBtn.addEventListener('click', () => showScreen(setupScreen));
+
+// ── Voice input ──
+
+function initVoiceInput(textareaId, btnId) {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById(btnId);
+  if (!SR || !btn) return;
+
+  btn.style.display = 'flex';
+
+  const recognition = new SR();
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+  let listening = false;
+
+  btn.addEventListener('click', () => {
+    if (listening) {
+      recognition.stop();
+    } else {
+      const ta = document.getElementById(textareaId);
+      if (ta) ta.value = '';
+      try { recognition.start(); } catch (e) {}
+    }
+  });
+
+  recognition.onstart = () => {
+    listening = true;
+    btn.textContent = '🔴';
+    btn.classList.add('voice-listening');
+    btn.title = 'Listening… tap to stop';
+  };
+
+  recognition.onresult = (e) => {
+    const ta = document.getElementById(textareaId);
+    if (!ta) return;
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    ta.value = transcript;
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+  };
+
+  recognition.onend = () => {
+    listening = false;
+    btn.textContent = '🎤';
+    btn.classList.remove('voice-listening');
+    btn.title = 'Speak your answer';
+  };
+
+  recognition.onerror = (e) => {
+    listening = false;
+    btn.textContent = '🎤';
+    btn.classList.remove('voice-listening');
+  };
+}
+
+initVoiceInput('chat-input', 'voice-btn');
+initVoiceInput('test-input', 'test-voice-btn');

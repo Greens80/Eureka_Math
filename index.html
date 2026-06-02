@@ -131,6 +131,7 @@
         <div class="student-action-row">
           <button class="student-action-btn" id="report-card-btn">📊 Report Card</button>
           <button class="student-action-btn" id="take-test-btn">🎯 Take Test</button>
+          <button class="student-action-btn" id="leaderboard-btn">🏆 Leaderboard</button>
           <button class="student-action-btn logout-btn" id="logout-btn">🚪 Log Out</button>
         </div>
         <div id="retest-banner" class="retest-banner" style="display:none">
@@ -253,6 +254,7 @@
       </div>
 
       <div class="chat-input-area">
+        <button id="voice-btn" class="voice-btn" title="Speak your answer" style="display:none">🎤</button>
         <textarea
           id="chat-input"
           class="chat-textarea"
@@ -287,6 +289,7 @@
       </div>
 
       <div class="chat-input-area">
+        <button id="test-voice-btn" class="voice-btn" title="Speak your answer" style="display:none">🎤</button>
         <textarea
           id="test-input"
           class="chat-textarea"
@@ -349,6 +352,17 @@
       <p id="profile-success" class="profile-success" style="display:none">✅ Profile saved!</p>
 
       <button id="profile-save-btn" class="start-btn">Save Changes 💾</button>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD SCREEN -->
+  <div id="leaderboard-screen" class="screen">
+    <div class="setup-card">
+      <div class="profile-topbar">
+        <button class="back-btn profile-back-native" id="leaderboard-back-btn">← Back</button>
+        <h2 class="profile-title">🏆 Leaderboard</h2>
+      </div>
+      <div id="leaderboard-content"></div>
     </div>
   </div>
 

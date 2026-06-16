@@ -735,6 +735,32 @@ function setCurrentUser(user) {
   }
 }
 
+// ── Child management helpers ──
+function getChildIds(parentUsername) {
+  const prefix = parentUsername + ':';
+  return Object.keys(getUsers()).filter(k => k.startsWith(prefix));
+}
+
+function getChild(parentUsername, childKey) {
+  return getUsers()[childKey] || null;
+}
+
+function saveChild(parentUsername, childKey, data) {
+  const users = getUsers();
+  users[childKey] = data;
+  saveUsers(users);
+}
+
+function deleteChild(childKey) {
+  const users = getUsers();
+  delete users[childKey];
+  saveUsers(users);
+}
+
+function makeChildKey(parentUsername, name) {
+  return parentUsername + ':' + name.trim().toLowerCase().replace(/[^a-z0-9]/g, '_') + '_' + Date.now().toString(36);
+}
+
 // ── Password hashing ──
 async function hashPassword(password) {
   const saltedPassword = 'mathbuddy:' + password;
@@ -768,6 +794,8 @@ const testScreen = document.getElementById('test-screen');
 const reportScreen = document.getElementById('report-screen');
 const profileScreen = document.getElementById('profile-screen');
 const leaderboardScreen = document.getElementById('leaderboard-screen');
+const studentPickerScreen = document.getElementById('student-picker-screen');
+const addStudentScreen = document.getElementById('add-student-screen');
 
 const apiKeyInput = document.getElementById('api-key-input');
 const saveKeyBtn = document.getElementById('save-key-btn');
@@ -812,7 +840,7 @@ const retestNowBtn = document.getElementById('retest-now-btn');
 const ALL_GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
 
 // ── All screens list ──
-const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen, leaderboardScreen].filter(Boolean);
+const ALL_SCREENS = [keyScreen, loginScreen, studentPickerScreen, addStudentScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen, leaderboardScreen].filter(Boolean);
 
 // ── Screen helper ──
 function showScreen(screen) {
@@ -836,8 +864,13 @@ function showScreen(screen) {
   }
   const user = getCurrentUser();
   if (user) {
-    setupStudentHeader(user);
-    showScreen(setupScreen);
+    if (user.isParent) {
+      renderStudentPicker(user.parentUsername || user.username);
+      showScreen(studentPickerScreen);
+    } else {
+      setupStudentHeader(user);
+      showScreen(setupScreen);
+    }
   } else {
     showScreen(loginScreen);
   }
@@ -971,7 +1004,6 @@ const toggleRegisterBtn = document.getElementById('toggle-register-btn');
 function setLoginMode(mode) {
   loginMode = mode;
   const registerNameSection = document.getElementById('register-name-section');
-  const registerGradeSection = document.getElementById('register-grade-section');
   const registerConfirmSection = document.getElementById('register-confirm-section');
   const loginTitle = document.getElementById('login-title');
   const loginSubtitle = document.getElementById('login-subtitle');
@@ -980,14 +1012,10 @@ function setLoginMode(mode) {
 
   loginError.style.display = 'none';
 
-  const registerAvatarSection = document.getElementById('register-avatar-section');
-
   if (mode === 'login') {
     toggleLoginBtn.classList.add('active');
     toggleRegisterBtn.classList.remove('active');
     registerNameSection.style.display = 'none';
-    registerGradeSection.style.display = 'none';
-    registerAvatarSection.style.display = 'none';
     registerConfirmSection.style.display = 'none';
     loginTitle.textContent = 'Welcome Back!';
     loginSubtitle.textContent = 'Log in to continue your math journey! 🌟';
@@ -996,13 +1024,10 @@ function setLoginMode(mode) {
   } else {
     toggleLoginBtn.classList.remove('active');
     toggleRegisterBtn.classList.add('active');
-    ensureAvatarPicker();
     registerNameSection.style.display = 'block';
-    registerGradeSection.style.display = 'block';
-    registerAvatarSection.style.display = 'block';
     registerConfirmSection.style.display = 'block';
-    loginTitle.textContent = 'New Student!';
-    loginSubtitle.textContent = 'Create your account to start learning! 🌟';
+    loginTitle.textContent = 'New Account';
+    loginSubtitle.textContent = 'Create your parent account to get started! 🌟';
     loginSubmitBtn.textContent = 'Create Account 🚀';
     document.getElementById('login-password').autocomplete = 'new-password';
   }
@@ -1141,21 +1166,15 @@ async function handleLoginSubmit() {
     const newUser = {
       displayName,
       passwordHash,
-      grade: registerGrade,
-      avatarAnimal: registerAvatarAnimal,
-      avatarAccessory: registerAvatarAccessory,
-      reportCard: null,
-      homeworkSessions: {},
-      retestSuggested: [],
-      masteredSkills: {},
+      isParent: true,
     };
     users[username] = newUser;
     saveUsers(users);
 
-    const sessionUser = { username, ...newUser };
+    const sessionUser = { username, displayName, isParent: true, parentUsername: username };
     setCurrentUser(sessionUser);
-    setupStudentHeader(sessionUser);
-    showScreen(setupScreen);
+    renderStudentPicker(username);
+    showScreen(studentPickerScreen);
   } else {
     const users = getUsers();
     const user = users[username];
@@ -1164,10 +1183,17 @@ async function handleLoginSubmit() {
     const passwordHash = await hashPassword(password);
     if (passwordHash !== user.passwordHash) { showLoginError('Incorrect password. Try again!'); return; }
 
-    const sessionUser = { username, ...user };
-    setCurrentUser(sessionUser);
-    setupStudentHeader(sessionUser);
-    showScreen(setupScreen);
+    if (user.isParent) {
+      const sessionUser = { username, displayName: user.displayName, isParent: true, parentUsername: username };
+      setCurrentUser(sessionUser);
+      renderStudentPicker(username);
+      showScreen(studentPickerScreen);
+    } else {
+      const sessionUser = { username, ...user };
+      setCurrentUser(sessionUser);
+      setupStudentHeader(sessionUser);
+      showScreen(setupScreen);
+    }
   }
 }
 
@@ -1175,6 +1201,60 @@ function showLoginError(msg) {
   const loginError = document.getElementById('login-error');
   loginError.textContent = msg;
   loginError.style.display = 'block';
+}
+
+// ── Student Picker ──
+function renderStudentPicker(parentUsername) {
+  const users = getUsers();
+  const parent = users[parentUsername];
+  document.getElementById('picker-greeting').textContent = `Hi, ${parent ? parent.displayName : 'there'}! 👋`;
+
+  const container = document.getElementById('student-cards');
+  const childKeys = getChildIds(parentUsername);
+
+  if (childKeys.length === 0) {
+    container.innerHTML = `
+      <div class="student-card-empty">
+        <div style="font-size:3em">👧</div>
+        <p>No students yet. Add your first child to get started!</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = childKeys.map(key => {
+    const child = users[key];
+    if (!child) return '';
+    const stats = getSkillMasteryStats(child, child.grade);
+    const gradeLabel = String(child.grade) === 'K' ? 'Kindergarten' : `Grade ${child.grade}`;
+    const avatarHtml = child.avatarAnimal
+      ? `<img src="${twemojiUrl(child.avatarAnimal)}" width="48" height="48" alt="avatar" />`
+      : `<span style="font-size:2.5em">👤</span>`;
+    return `
+      <div class="student-card" onclick="selectChild('${parentUsername}', '${key}')">
+        <div class="student-card-avatar">${avatarHtml}</div>
+        <div class="student-card-info">
+          <div class="student-card-name">${escapeHtml(child.displayName)}</div>
+          <div class="student-card-grade">${gradeLabel}</div>
+          <div class="student-card-progress">
+            <div class="progress-bar-track" style="height:6px">
+              <div class="progress-bar-fill" style="width:${stats.pct}%;background:#7c3aed;height:6px;border-radius:3px"></div>
+            </div>
+            <span style="font-size:0.75em;color:#6b7280">${stats.totalMastered}/${stats.totalSkills} skills</span>
+          </div>
+        </div>
+        <button class="student-card-edit" onclick="event.stopPropagation();openEditStudent('${parentUsername}','${key}')" title="Edit">✏️</button>
+      </div>`;
+  }).join('');
+}
+
+function selectChild(parentUsername, childKey) {
+  const users = getUsers();
+  const child = users[childKey];
+  if (!child) return;
+  const sessionUser = { username: childKey, parentUsername, ...child };
+  setCurrentUser(sessionUser);
+  setupStudentHeader(sessionUser);
+  showScreen(setupScreen);
 }
 
 // ── Student header ──
@@ -1243,6 +1323,172 @@ logoutBtn.addEventListener('click', () => {
   if (gradeSelectSection) gradeSelectSection.style.display = 'block';
   showScreen(loginScreen);
 });
+
+// ── Student picker bindings ──
+function bindStudentPicker() {
+  document.getElementById('picker-logout-btn').addEventListener('click', () => {
+    setCurrentUser(null);
+    showScreen(loginScreen);
+  });
+  document.getElementById('add-student-btn').addEventListener('click', () => {
+    const sess = getCurrentUser();
+    const parentUsername = sess && (sess.parentUsername || (sess.isParent ? sess.username : null));
+    if (parentUsername) openAddStudent(parentUsername);
+  });
+}
+bindStudentPicker();
+
+// ── Switch Student button ──
+const switchStudentBtn = document.getElementById('switch-student-btn');
+if (switchStudentBtn) {
+  switchStudentBtn.addEventListener('click', () => {
+    const session = getCurrentUser();
+    const parentUsername = session && session.parentUsername;
+    if (parentUsername) {
+      renderStudentPicker(parentUsername);
+      showScreen(studentPickerScreen);
+    }
+  });
+}
+
+// ── Add/Edit Student Screen ──
+let addStudentAvatarAnimal = ANIMAL_AVATARS[0].cp;
+let addStudentGrade = 'K';
+let editingChildKey = null;
+let addStudentParentUsername = null;
+let addStudentAvatarPickerBuilt = false;
+
+function openAddStudent(parentUsername) {
+  addStudentParentUsername = parentUsername;
+  editingChildKey = null;
+  addStudentGrade = 'K';
+  addStudentAvatarAnimal = ANIMAL_AVATARS[0].cp;
+  document.getElementById('add-student-title').textContent = 'Add Student';
+  document.getElementById('student-name-input').value = '';
+  document.getElementById('add-student-error').style.display = 'none';
+  document.getElementById('delete-student-section').style.display = 'none';
+  document.querySelectorAll('#add-student-grade-row .grade-select-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.grade === 'K');
+  });
+  updateAddStudentAvatarDisplay();
+  ensureAddStudentAvatarPicker();
+  showScreen(addStudentScreen);
+}
+
+function openEditStudent(parentUsername, childKey) {
+  const child = getUsers()[childKey];
+  if (!child) return;
+  addStudentParentUsername = parentUsername;
+  editingChildKey = childKey;
+  addStudentGrade = child.grade || 'K';
+  addStudentAvatarAnimal = child.avatarAnimal || ANIMAL_AVATARS[0].cp;
+  document.getElementById('add-student-title').textContent = 'Edit Student';
+  document.getElementById('student-name-input').value = child.displayName || '';
+  document.getElementById('add-student-error').style.display = 'none';
+  document.getElementById('delete-student-section').style.display = 'block';
+  document.querySelectorAll('#add-student-grade-row .grade-select-btn').forEach(b => {
+    b.classList.toggle('active', String(b.dataset.grade) === String(addStudentGrade));
+  });
+  updateAddStudentAvatarDisplay();
+  ensureAddStudentAvatarPicker();
+  showScreen(addStudentScreen);
+}
+
+function updateAddStudentAvatarDisplay() {
+  const display = document.getElementById('add-student-avatar-display');
+  if (display) display.innerHTML = `<img src="${twemojiUrl(addStudentAvatarAnimal)}" width="72" height="72" alt="avatar" />`;
+}
+
+function ensureAddStudentAvatarPicker() {
+  if (!addStudentAvatarPickerBuilt) {
+    addStudentAvatarPickerBuilt = true;
+    const picker = document.getElementById('add-student-avatar-picker');
+    if (!picker) return;
+    picker.className = 'avatar-grid';
+    ANIMAL_AVATARS.forEach(({ name, cp }) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'avatar-option';
+      btn.title = name;
+      const img = document.createElement('img');
+      img.src = twemojiUrl(cp);
+      img.width = 48; img.height = 48; img.alt = name; img.loading = 'lazy';
+      btn.appendChild(img);
+      btn.addEventListener('click', () => {
+        picker.querySelectorAll('.avatar-option').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        addStudentAvatarAnimal = cp;
+        updateAddStudentAvatarDisplay();
+      });
+      picker.appendChild(btn);
+    });
+  }
+  const picker = document.getElementById('add-student-avatar-picker');
+  if (picker) {
+    picker.querySelectorAll('.avatar-option').forEach((btn, i) => {
+      btn.classList.toggle('selected', ANIMAL_AVATARS[i].cp === addStudentAvatarAnimal);
+    });
+  }
+}
+
+function bindAddStudentScreen() {
+  document.querySelectorAll('#add-student-grade-row .grade-select-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#add-student-grade-row .grade-select-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      addStudentGrade = btn.dataset.grade === 'K' ? 'K' : parseInt(btn.dataset.grade);
+    });
+  });
+
+  document.getElementById('save-student-btn').addEventListener('click', () => {
+    const name = document.getElementById('student-name-input').value.trim();
+    const errorEl = document.getElementById('add-student-error');
+    if (!name) { errorEl.textContent = 'Please enter a name.'; errorEl.style.display = 'block'; return; }
+
+    if (editingChildKey) {
+      const users = getUsers();
+      const child = users[editingChildKey];
+      if (child) {
+        child.displayName = name;
+        child.grade = addStudentGrade;
+        child.avatarAnimal = addStudentAvatarAnimal;
+        users[editingChildKey] = child;
+        saveUsers(users);
+      }
+    } else {
+      const childKey = makeChildKey(addStudentParentUsername, name);
+      const newChild = {
+        displayName: name,
+        grade: addStudentGrade,
+        avatarAnimal: addStudentAvatarAnimal,
+        avatarAccessory: '',
+        masteredSkills: {},
+        reportCard: null,
+        homeworkSessions: {},
+        retestSuggested: [],
+        testHistory: [],
+      };
+      saveChild(addStudentParentUsername, childKey, newChild);
+    }
+
+    renderStudentPicker(addStudentParentUsername);
+    showScreen(studentPickerScreen);
+  });
+
+  document.getElementById('cancel-student-btn').addEventListener('click', () => {
+    showScreen(studentPickerScreen);
+  });
+
+  document.getElementById('delete-student-btn').addEventListener('click', () => {
+    if (!editingChildKey) return;
+    if (confirm('Remove this student? Their progress will be deleted.')) {
+      deleteChild(editingChildKey);
+      renderStudentPicker(addStudentParentUsername);
+      showScreen(studentPickerScreen);
+    }
+  });
+}
+bindAddStudentScreen();
 
 // ── Avatar click → Profile ──
 studentAvatar.addEventListener('click', () => {

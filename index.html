@@ -46,7 +46,7 @@
 
       <div class="login-toggle-row">
         <button id="toggle-login-btn" class="toggle-mode-btn active" data-mode="login">Log In</button>
-        <button id="toggle-register-btn" class="toggle-mode-btn" data-mode="register">New Student</button>
+        <button id="toggle-register-btn" class="toggle-mode-btn" data-mode="register">New Account</button>
       </div>
 
       <div class="setup-section">
@@ -72,25 +72,6 @@
         />
       </div>
 
-      <div id="register-grade-section" class="setup-section" style="display:none">
-        <label class="setup-label">What grade are you in?</label>
-        <div class="grade-btn-row" id="register-grade-row">
-          <button class="grade-select-btn" data-grade="K">K</button>
-          <button class="grade-select-btn active" data-grade="1">1</button>
-          <button class="grade-select-btn" data-grade="2">2</button>
-          <button class="grade-select-btn" data-grade="3">3</button>
-          <button class="grade-select-btn" data-grade="4">4</button>
-          <button class="grade-select-btn" data-grade="5">5</button>
-          <button class="grade-select-btn" data-grade="6">6</button>
-          <button class="grade-select-btn" data-grade="7">7</button>
-          <button class="grade-select-btn" data-grade="8">8</button>
-        </div>
-      </div>
-
-      <div id="register-avatar-section" class="setup-section" style="display:none">
-        <label class="setup-label">Pick your avatar!</label>
-        <div id="avatar-picker" class="avatar-picker"></div>
-      </div>
 
       <div class="setup-section">
         <label class="setup-label">Password</label>
@@ -120,6 +101,65 @@
     </div>
   </div>
 
+  <!-- STUDENT PICKER SCREEN -->
+  <div id="student-picker-screen" class="screen">
+    <div class="setup-card">
+      <div class="picker-header">
+        <div>
+          <h2 id="picker-greeting">Hi! 👋</h2>
+          <p class="buddy-subtitle">Who's learning today?</p>
+        </div>
+        <button class="student-action-btn logout-btn" id="picker-logout-btn">🚪 Log Out</button>
+      </div>
+      <div id="student-cards" class="student-cards"></div>
+      <button id="add-student-btn" class="add-student-btn">＋ Add Student</button>
+    </div>
+  </div>
+
+  <!-- ADD/EDIT STUDENT SCREEN -->
+  <div id="add-student-screen" class="screen">
+    <div class="setup-card">
+      <h2 id="add-student-title">Add Student</h2>
+
+      <div class="setup-section">
+        <label class="setup-label">Student's First Name</label>
+        <input type="text" id="student-name-input" class="setup-input" placeholder="e.g. Emma" spellcheck="false" autocomplete="off" />
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Grade</label>
+        <div class="grade-btn-row" id="add-student-grade-row">
+          <button class="grade-select-btn active" data-grade="K">K</button>
+          <button class="grade-select-btn" data-grade="1">1</button>
+          <button class="grade-select-btn" data-grade="2">2</button>
+          <button class="grade-select-btn" data-grade="3">3</button>
+          <button class="grade-select-btn" data-grade="4">4</button>
+          <button class="grade-select-btn" data-grade="5">5</button>
+          <button class="grade-select-btn" data-grade="6">6</button>
+          <button class="grade-select-btn" data-grade="7">7</button>
+          <button class="grade-select-btn" data-grade="8">8</button>
+        </div>
+      </div>
+
+      <div class="setup-section">
+        <label class="setup-label">Avatar</label>
+        <div id="add-student-avatar-display" style="margin-bottom:8px"></div>
+        <div id="add-student-avatar-picker"></div>
+      </div>
+
+      <p id="add-student-error" class="login-error" style="display:none"></p>
+
+      <div style="display:flex;gap:10px;margin-top:8px">
+        <button id="save-student-btn" class="start-btn" style="flex:1">Save ✅</button>
+        <button id="cancel-student-btn" class="start-btn" style="flex:0.4;background:var(--gray-200);color:var(--gray-600)">Cancel</button>
+      </div>
+
+      <div id="delete-student-section" style="margin-top:16px;text-align:center;display:none">
+        <button id="delete-student-btn" style="background:none;border:none;color:#dc2626;font-size:0.85em;cursor:pointer;text-decoration:underline">Remove this student</button>
+      </div>
+    </div>
+  </div>
+
   <!-- SETUP SCREEN -->
   <div id="setup-screen" class="screen">
     <div class="setup-card">
@@ -139,6 +179,7 @@
           <button class="student-action-btn" id="report-card-btn">📊 Report Card</button>
           <button class="student-action-btn" id="take-test-btn">🎯 Take Test</button>
           <button class="student-action-btn" id="leaderboard-btn">🏆 Leaderboard</button>
+          <button class="student-action-btn" id="switch-student-btn">👨‍👩‍👧‍👦 Switch</button>
           <button class="student-action-btn logout-btn" id="logout-btn">🚪 Log Out</button>
         </div>
         <div id="retest-banner" class="retest-banner" style="display:none">
@@ -388,6 +429,24 @@
     </div>
   </div>
 
+  <style>
+    /* ── Student Picker ── */
+    .picker-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .student-cards { display:flex; flex-direction:column; gap:12px; margin-bottom:16px; }
+    .student-card { display:flex; align-items:center; gap:12px; padding:14px; border:1.5px solid var(--gray-200,#e5e7eb); border-radius:12px; cursor:pointer; transition:box-shadow .15s,border-color .15s; background:#fff; }
+    .student-card:hover { box-shadow:0 2px 8px rgba(0,0,0,.10); border-color:#7c3aed; }
+    .student-card-avatar { width:56px; height:56px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .student-card-info { flex:1; min-width:0; }
+    .student-card-name { font-weight:700; font-size:1.1em; }
+    .student-card-grade { color:#6b7280; font-size:0.85em; margin-bottom:4px; }
+    .student-card-progress { display:flex; flex-direction:column; gap:3px; }
+    .student-card-edit { background:none; border:none; cursor:pointer; font-size:1.1em; opacity:0.5; padding:4px; transition:opacity .15s; }
+    .student-card-edit:hover { opacity:1; }
+    .student-card-empty { text-align:center; padding:32px 16px; color:#6b7280; }
+    .add-student-btn { width:100%; border:2px dashed #7c3aed; background:none; color:#7c3aed; cursor:pointer; padding:14px; border-radius:10px; font-size:1em; font-weight:600; transition:background .15s; }
+    .add-student-btn:hover { background:#f5f3ff; }
+    .progress-bar-track { background:#e5e7eb; border-radius:3px; overflow:hidden; }
+  </style>
   <script src="config.js" onerror="void 0"></script>
   <script src="script.js"></script>
 </body>

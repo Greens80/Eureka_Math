@@ -961,7 +961,7 @@ function avatarImgHtml(user, size) {
 }
 
 let loginMode = 'login'; // 'login' or 'register'
-let registerGrade = 4;
+let registerGrade = 1;
 let registerAvatarAnimal = ANIMAL_AVATARS[0].cp;
 let registerAvatarAccessory = '';
 
@@ -1099,7 +1099,7 @@ document.querySelectorAll('#register-grade-section .grade-select-btn').forEach(b
   btn.addEventListener('click', () => {
     document.querySelectorAll('#register-grade-section .grade-select-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    registerGrade = parseInt(btn.dataset.grade);
+    registerGrade = btn.dataset.grade === 'K' ? 'K' : parseInt(btn.dataset.grade);
   });
 });
 
@@ -1470,6 +1470,11 @@ ALL_GRADES.forEach(g => {
 
 // ── Module → lesson range ──
 moduleSelect.addEventListener('change', () => {
+  if (moduleSelect.value === 'skills-test') {
+    document.getElementById('lesson-range-hint').textContent = '';
+    lessonInput.value = '';
+    return;
+  }
   const mod = parseInt(moduleSelect.value);
   const lessonCounts = String(selectedGrade) === '5' ? MODULE_LESSON_COUNTS_G5 : MODULE_LESSON_COUNTS_G4;
   const maxLessons = lessonCounts[mod];
@@ -1533,7 +1538,12 @@ startBtn.addEventListener('click', startSession);
 
 function startSession() {
   if (!getApiKey()) { showScreen(keyScreen); return; }
-  selectedModule = parseInt(moduleSelect.value) || null;
+  const moduleVal = moduleSelect.value;
+  if (moduleVal === 'skills-test') {
+    startTestMode();
+    return;
+  }
+  selectedModule = parseInt(moduleVal) || null;
   selectedLesson = parseInt(lessonInput.value) || null;
 
   let initialUserMessage = null;

@@ -284,6 +284,7 @@ const MODULE_LESSON_COUNTS_G5 = Object.fromEntries(
 // For backward compatibility
 const MODULE_LESSON_COUNTS = MODULE_LESSON_COUNTS_G4;
 
+
 // ── Grade 4 module options HTML ──
 const G4_MODULE_OPTIONS = `
   <option value="">-- Pick your module --</option>
@@ -307,7 +308,69 @@ const G5_MODULE_OPTIONS = `
   <option value="6">Module 6 – Coordinate Plane (32 lessons)</option>
 `;
 
+// ── K-8 Math Curriculum Skills (from Core Knowledge Sequence 2023) ──
+const MATH_CURRICULUM = {
+  "K": [
+    { section: "Counting and Cardinality", skills: ["Know number names and the count sequence.", "Count to 100 by ones and by tens.", "Count forward beginning from a given number within the known sequence.", "Write numbers from 0 to 20.", "Represent a number of objects with a written numeral 0–20.", "Count to tell the number of objects.", "Understand the relationship between numbers and quantities.", "Connect counting to cardinality.", "Count to answer “how many?” questions, Ź With as many as 20 things arranged in a line, a rectangular array, or a circle; Ź With as many as 10 things in a scattered configuration.", "Given a number from 1–20, count out that many objects.", "Compare numbers.", "Identify whether the number of objects in one group is greater than, less than, or equal to the number of objects in another group.", "Compare two numbers between 1 and 10 presented as written numerals."] },
+    { section: "Operations and Algebraic Thinking", skills: ["Understand addition as putting together and adding to, and understand subtraction as taking apart and taking from.", "Represent addition and subtraction with: Ź objects Ź fingers Ź mental images Ź drawings Ź sounds (e.g., claps) Ź acting out situations Ź verbal explanations Ź expressions Ź equations", "Solve addition and subtraction word problems (within 10).", "Decompose numbers less than or equal to 10 into pairs in more than one way. Ź Record each decomposition by a drawing or equation.", "For any number from 1 to 9, find the number that makes 10 when added to the given number. Ź Record the answer with a drawing or equation.", "Fluently add and subtract within 5."] },
+    { section: "Number and Operations in Base Ten", skills: ["Work with numbers 11–19 to gain foundations for place value.", "Understand that numbers are composed of ten ones and one, two, three, four, five, six, seven, eight, or nine ones.", "Compose and decompose numbers from 11 to 19 into ten ones. Ź Record each composition or decomposition by a drawing or equation."] },
+    { section: "Measurement and Data", skills: ["Describe and compare measurable attributes.", "Describe measurable attributes of objects, such as length or weight.", "Describe several measurable attributes of a single object.", "Directly compare two objects with a measurable attribute in common, to see which object has “more of”/“less of” the attribute, and describe the difference.", "Classify objects into given categories.", "Count the numbers of objects in each category and sort the categories by count. V. Geometry", "Identify and describe shapes (squares, circles, triangles, rectangles, hexagons, cubes, cones, cylinders, and spheres).", "Describe objects in the environment using names of shapes, and describe the relative positions of these objects.", "Correctly name shapes regardless of their orientations or overall size.", "Identify shapes as two-dimensional (lying in a plane, “flat”) or three-dimensional (“solid”).", "Analyze, compare, create, and compose shapes.", "Analyze and compare two- and three-dimensional shapes: Ź In different sizes and orientations; Ź Using informal language to describe their similarities, differences, parts and other attributes.", "Model shapes in the world by building shapes from components and drawing shapes.", "Compose simple shapes to form larger shapes."] },
+  ],
+  "1": [
+    { section: "Operations and Algebraic Thinking", skills: ["Represent and solve problems involving addition and subtraction.", "Use addition and subtraction within 20 to solve word problems, with unknowns in all positions, involving situations of Ź adding to Ź taking from Ź putting together Ź taking apart Ź comparing", "Solve word problems that call for Ź addition of three whole numbers (whose sum is less than or equal to 20) Ź equations with a symbol for the unknown number to represent the problem", "Understand and apply properties of operations and the relationship between addition and subtraction.", "Apply properties of operations (commutative and associative) as strategies to add and subtract.", "Understand subtraction as an unknown-addend problem.", "Add and subtract up to 20.", "Relate counting to addition and subtraction.", "Add and subtract within 20 using strategies such as counting on, making ten, decomposing a number to a ten, and creating equivalent known sums.", "Demonstrate fluency for addition and subtraction within 10.", "Work with addition and subtraction equations.", "Understand the meaning of the equal sign.", "Determine if equations involving addition and subtraction are true or false.", "Determine the unknown whole number in an addition or subtraction equation relating three whole numbers. Using objects and drawings Using objects and drawings."] },
+    { section: "Number and Operations in Base Ten", skills: ["Extend the counting sequence.", "Count to 120, starting at any number less than 120.", "Read and write numerals from 1–120.", "Represent a number of objects with a written numeral.", "Understand place value.", "Understand that the two digits of a two-digit number represent amounts of tens and ones: 10 as a bundle of ones, the numbers from 11–19 are a ten and ones, and that the multiples of ten refer to the number of tens.", "Compare two two-digit numbers based on meanings of the tens and ones digits. Ź Record the results of comparisons with the symbols >, =, and <.", "Use place value understanding and properties of operations to add and subtract.", "Add within 100, including Ź adding a two-digit number and a one-digit number Ź adding a two-digit number and a multiple of 10", "Relate the strategy to a written method and explain the reasoning used.", "Understand that in adding two-digit numbers sometimes it is necessary to compose a ten.", "Given a two-digit number, mentally find 10 more or 10 less than the number. Ź Explain the reasoning used.", "Subtract multiples of 10 in the range 10–90 from multiples of 10 in the range 10–90 (positive or zero differences). Ź Use concrete models or drawings and strategies based on", "place value", "properties of operations", "the relationship between addition and subtraction Ź Relate the strategy to a written method and explain the reasoning used. Use concrete models or drawings and strategies based on place value, properties of operations, and/ or the relationship between addition and subtraction"] },
+    { section: "Measurement and Data", skills: ["Measure lengths indirectly and by iterating length units.", "Order three objects by length.", "Compare the lengths of two objects indirectly by using a third object.", "Express the length of an object as a whole number of length units", "Understand that the length measurement of an object is the number of same-size length units that span it with no gaps or overlaps when laid end to end.", "Tell and write time.", "Tell and write time in hours and half-hours using analog and digital clocks.", "Represent and interpret data.", "Organize, represent, and interpret data with up to three categories. Ź Ask and answer questions about the total number of data points."] },
+    { section: "Geometry", skills: ["Reason with shapes (rectangles, squares, trapezoids, triangles, half-circles, quarter-circles, cubes, right rectangular prisms, right circular cones and right circular cylinders) and their attributes.", "Distinguish between defining attributes (e.g., triangles are closed and three-sided) versus non-defining attributes (e.g., color, orientation, overall size). Ź Build and draw shapes to possess defining attributes.", "Compose two-dimensional and three-dimensional shapes to create a composite shape. Ź Compose new shapes from the composite shape.", "Partition circles and rectangles into two and four equal shares. Ź Describe shares using the words halves, fourths, and quarters. Ź Use the phrases half of, fourth of, and quarter of. Ź Describe the whole as two of, or four of the shares. Ź Understand for these examples that decomposing into more equal shares creates smaller shares."] },
+  ],
+  "2": [
+    { section: "Operations and Algebraic Thinking", skills: ["Represent and solve problems involving addition and subtraction.", "Use addition and subtraction within 100 to solve one- and two-step word problems. Ź Solve word problems that involve situations of adding to, taking from, putting together, taking apart, and comparing, with unknowns in all positions. Ź Use equations with a symbol for the unknown number to represent the problem.", "Add and subtract within 20.", "Fluently add and subtract within 20 using mental strategies.", "Work with equal groups of objects to gain foundations for multiplication.", "Determine whether a group of objects (up to 20) has an odd or even number of members. Ź Write an equation to express an even number as a sum of two equal addends.", "Use addition to find the total number of objects arranged in rectangular arrays with up to 5 rows and up to 5 columns. Ź Write an equation to express the total as a sum of equal addends. By end of Grade 2, know from memory all sums of two one-digit numbers."] },
+    { section: "Number and Operations in Base Ten", skills: ["Understand place value.", "Understand that the three digits of a three-digit number represent amounts of hundreds, tens, and ones. Ź Count within 1000. Ź Skip-count by 5s, 10s, and 100s.", "Read and write numbers to 1000, using Ź base-ten numerals Ź number names Ź expanded form", "Compare two three-digit numbers based on meanings of the hundreds, tens, and ones digits. Ź Use >, =, and < symbols to record the results of comparisons.", "Use place value understanding and properties of operations to add and subtract.", "Fluently add and subtract within 100. Ź Use strategies based on", "place value", "properties of operations", "relationship between addition and subtraction", "Add up to four two-digit numbers. Ź Use strategies based on", "Add and subtract within 1000. Ź Understand that when adding or subtracting three digit numbers sometimes it is necessary to compose or decompose tens or hundreds. Ź Use concrete models or drawings and strategies based on", "Relate the applied strategy to a written method.", "Mentally add 10 or 100 to a given number 100–900.", "Mentally subtract 10 or 100 from a given number 100–900.", "Explain why addition and subtraction strategies work. Ź Use place value and the properties of operations."] },
+    { section: "Measurement and Data", skills: ["Measure and estimate lengths in standard units.", "Measure the length of an object by selecting and using appropriate tools, such as Ź rulers Ź yardsticks Ź meter sticks Ź measuring tape", "Measure the length of an object twice, using length units of different lengths for the two measurements. Ź Describe how the two measurements relate to the size of the unit chosen.", "Estimate lengths, using Ź units of inches Ź feet Ź centimeters Ź meters", "Measure to determine how much longer one object is than another. Ź Express the length difference in terms of a standard length unit.", "Relate addition and subtraction to length.", "Use addition and subtraction within 100 to solve word problems involving lengths (same units).", "Represent whole numbers as lengths from 0 on a number line diagram with equally spaced points corresponding to the numbers 0, 1, 2, etc.", "Represent whole-number sums and differences within 100 on a number line diagram.", "Work with time and money.", "Tell and write time from analog and digital clocks to the nearest five minutes, using a.m. and p.m.", "Solve word problems involving money. Ź Solve problems that include the following forms of currency", "dollar bills", "quarters", "dimes", "nickels", "pennies", "Use $ and ¢ symbols appropriately", "Represent and interpret data.", "Generate measurement data by measuring lengths of several objects to the nearest whole unit. Ź Make repeated measurements of the same object.", "Show the measurements by making a line plot.", "Draw a picture graph and a bar graph (with single-unit scale) to represent a data set with up to four categories.", "Solve simple put together, take apart, and compare problems using information presented in a bar graph. A line plot where the horizontal scale is marked off in whole number units"] },
+    { section: "Geometry", skills: ["Reason with shapes and their attributes.", "Recognize and draw shapes having specified attributes, such as Ź a given number of angles Ź a given number of equal faces", "Identify triangles, quadrilaterals, pentagons, hexagons, and cubes.", "Partition a rectangle into rows and columns of same-size squares. Ź Count to find the total number.", "Partition circles and rectangles into two, three, or four equal shares. Ź Describe shares using the words halves, thirds, half of, a third of, etc. Ź Describe the whole as two halves, three thirds, four fourths. Ź Recognize that equal shares of identical wholes need not have the same shape."] },
+  ],
+  "3": [
+    { section: "Operations and Algebraic Thinking", skills: ["Represent and solve problems involving multiplication and division.", "Interpret products of whole numbers as the number of objects in groups.", "Interpret whole-number quotients of whole numbers as the number of objects in each share or the number of shares when partitioned into equal shares.", "Use multiplication and division within 100 to solve word problems, with a symbol for the unknown number, in situations involving Ź equal groups Ź arrays Ź measurement quantities", "Determine the unknown whole number, with a symbol for the unknown number, in a multiplication or division equation relating three whole numbers.", "Understand properties of multiplication and the relationship between multiplication and division.", "Apply properties of operations (commutative, associative, and distributive) as strategies to multiply and divide.", "Understand division as an unknown-factor problem.", "Multiply and divide within 100.", "Fluently multiply and divide within 100.", "Use strategies such as the relationship between multiplication and division or properties of operations.", "Know all products of two one digit numbers.", "Solve problems involving the four operations.", "Solve two-step word problems using the four operations. Ź Represent these problems using equations with a letter standing for the unknown quantity. Ź Assess the reasonableness of answers using mental computation and estimation strategies.", "Identify arithmetic patterns. Ź Describe using properties of operations. Ź Know that the product of an even number multiplied by any number is always even and why an even number multiplied by a number can be decomposed into equal addends. By the end of Grade 3, know from memory all products of two one-digit numbers."] },
+    { section: "Number and Operations in Base Ten", skills: ["Use place value understanding and properties of operations to perform multi-digit arithmetic.", "Use place value understanding to round whole numbers to the nearest 10 or 100.", "Fluently add and subtract within 1000, using strategies and algorithms based on Ź place value Ź properties of operations Ź the relationship between addition and subtraction", "Multiply one-digit whole numbers by multiples of 10 in the range 10–90. Ź Use strategies based on place value and properties of operations."] },
+    { section: "Number and Operations\u2014Fractions", skills: ["Develop understanding of fractions as numbers.", "Understand a fraction b1 as the quantity formed by 1 part when a whole is partitioned into b equal parts. Ź Understand a fraction ba as the quantity formed by a part of size b1 .", "Understand a fraction as a number on the number line. Ź Represent fractions on a number line diagram. Ź Define the interval between zero and one as the whole and partition into b equal parts. Ź Define ba on a number line with segment lengths b1 and an interval size ba .", "Explain equivalence of fractions in special cases.", "Compare fractions by reasoning about their size. Ź Understand two fractions as equivalent (equal) if", "they are the same size.", "they are on the same point on a number line. Ź Recognize and generate simple equivalent fractions. Ź Explain why the fractions are equivalent. Ź Express whole numbers as fractions, and recognize fractions that are equivalent to whole numbers. Ź Compare two fractions with the same numerator or the same denominator by reasoning about their size.", "Recognize that comparisons are valid only when the two fractions refer to the same whole.", "Record the results of comparisons with the symbols >, =, or <, and justify the conclusions."] },
+    { section: "Measurement and Data", skills: ["Solve problems involving measurement and estimation of intervals of time, liquid volumes, and masses of objects.", "Tell and write time to the nearest minute.", "Measure time intervals in minutes.", "Solve word problems involving addition and subtraction of time intervals in minutes.", "Measure and estimate liquid volumes and masses of objects. Ź Use standard units of", "grams (g)", "kilograms (kg)", "liters (l) Ź Add, subtract, multiply, or divide to solve one-step word problems involving masses or volumes that are given in the same unit.", "Represent and interpret data", "Draw a scaled picture graph and a scaled bar graph to represent a data set with several categories. Ź Solve one- and two-step “how many more” and “how many less” problems using information presented in scaled bar graphs.", "Generate measurement data by measuring lengths using rulers marked with halves and fourths of an inch. Ź Show the data by making a line plot, where the horizontal scale is marked off in appropriate units— whole numbers, halves, or quarters.", "Geometric measurement: understand concepts of area and relate area to multiplication and to addition.", "Recognize area as an attribute of plane figures and understand concepts of area measurement. Ź A square with side length of 1 unit", "is called “a unit square”", "is said to have “one square unit” of area", "can be used to measure area Ź A plane figure which can be covered without gaps or overlaps by “n” unit squares is said to have an area of “n” square units.", "Measure areas by counting unit squares.", "Relate area to the operations of multiplication and addition.", "Geometric measurement: recognize perimeter as an attribute of plane figures and distinguish between linear and area measures.", "Solve real world and mathematical problems involving perimeters of polygons.", "Recognize area by tiling.", "Find areas of rectangles by multiplying side lengths.", "Recognize area as additive. Square cm., square m., square in., square ft., and improvised units."] },
+    { section: "Geometry", skills: ["Reason with shapes and their attributes.", "Understand that shapes in different categories (e.g., rhombuses, rectangles, and others) may share attributes (e.g., having four sides).", "Understand that the shared attributes can define a larger category (e.g., quadrilaterals).", "Recognize rhombuses, rectangles, and squares as examples of quadrilaterals. Ź Draw examples of quadrilaterals that do not belong to any of these subcategories.", "Partition shapes into parts with equal areas. Ź Express the area of each part as a unit fraction of the whole."] },
+  ],
+  "4": [
+    { section: "Operations and Algebraic Thinking", skills: ["Use the four operations with whole numbers to solve problems.", "Interpret a multiplication equation as a comparison.", "Represent verbal statements of multiplicative comparisons as multiplication equations.", "Multiply or divide to solve word problems with a symbol for the unknown number, involving multiplicative comparison.", "Solve multistep word problems. Ź posed with whole numbers Ź having whole-number answers using the four operations Ź including problems in which remainders must be interpreted", "Represent multistep word problems using equations with a letter standing for the unknown quantity.", "Use mental computation and estimation strategies to assess the reasonableness of answers.", "Gain familiarity with factors and multiples.", "Find all factor pairs for a whole number in the range 1–100.", "Recognize that a whole number is a multiple of each of its factors.", "Determine whether a given whole number in the range 1–100 is a multiple of a given one-digit number.", "Determine whether a given whole number in the range 1–100 is prime or composite.", "Generate and analyze patterns.", "Generate a number or shape pattern that follows a given rule.", "Identify apparent features of the pattern that were not explicit in the rule itself."] },
+    { section: "Number and Operations in Base Ten", skills: ["Generalize place value understanding for multi-digit whole numbers.", "Recognize that in a multi-digit whole number, a digit in one place represents ten times what it represents in the place to its right.", "Read and write multi-digit whole numbers, using Ź base-ten numerals Ź number names Ź expanded form", "Compare two multi-digit numbers based on meanings of the digits in each place. Ź Use >, =, and < symbols to record them results of comparisons.", "Use place value understanding to round multi-digit whole numbers to any place.", "Use place value understanding and properties of operations to perform multi-digit arithmetic.", "Fluently add and subtract multi-digit whole numbers using the standard algorithm.", "Multiply a whole number of up to four digits by a one-digit whole number.", "Multiply two two-digit numbers, using strategies based on Ź place value Ź properties of operations", "Illustrate and explain the calculation, by using Ź equations Ź rectangular arrays Ź area models", "Find whole-number quotients and remainders with up to four-digit dividends and one-digit divisors, using strategies based on Ź place value Ź properties of operations Ź relationship between multiplication and division"] },
+    { section: "Number and Operations\u2014Fractions", skills: ["Extend understanding of fraction equivalence and ordering. (n × a)", "Explain why a fraction ba is equivalent to a fraction (n by using visual fraction × b) models, with attention to how the number and size of the parts differ. Ź Use this principle to generate equal fractions.", "Compare two fractions with different numerators and different denominators. Ź Recognize that comparisons are valid only when the two fractions refer to the same whole. Ź Record the results of comparisons with symbols >, =, or <, and justify the conclusions.", "Build fractions from unit fractions by applying and extending previous understandings of operations on whole numbers.", "Understand a fraction ba with a > 1 as a sum of fractions b1 . Ź Understand addition and subtraction of fractions as joining and separating parts referring to the same whole. Ź Decompose a fraction into a sum of fractions with the same denominator in more than one way. Ź Add and subtract mixed numbers with like denominators by replacing mixed numbers with equivalent fractions and by using properties of operations. Ź Solve word problems involving addition and subtraction of fractions referring to the same whole and having like denominators.", "Apply and extend previous understandings of multiplication to multiply a fraction by a whole number. Ź Understand a fraction ba as a multiple of b1 . Ź Understand a multiple of ba as a multiple of b1 .", "Use this understanding to multiply a fraction by a whole number. Ź Solve word problems involving multiplication of a fraction by a whole number.", "Understand decimal notation for fractions, and compare decimal fractions.", "Express a fraction with denominator 10 as an equivalent fraction with denominator 100. Ź Use this technique to add two fractions with respective denominators 10 and 100.", "Use decimal notation for fractions with denominators 10 or 100.", "Compare two decimals to hundredths by reasoning about their size.", "Recognize that comparisons are valid only when the two decimals refer to the same whole.", "Record the results of comparisons with the symbols >, =, or <, and justify the conclusions."] },
+    { section: "Measurement and Data", skills: ["Solve problems involving measurement and conversion of measurements from a larger unit to a smaller unit.", "Know relative sizes of measurement units within one system of units, including Ź kilometer Ź meter Ź centimeter Ź kilogram Ź gram Ź pound Ź ounce Ź liter Ź milliliter Ź hour Ź minute Ź second", "Within a single system of measurement, express measurements in a larger unit in terms of a smaller unit.", "Use the four operations to solve word problems involving Ź distances Ź intervals of time Ź liquid volumes Ź masses of objects Ź money", "Solve problems that involve simple fractions or decimals, and problems that require expressing measurements given in a larger unit in terms of a smaller unit. Ź Represent measurement quantities using diagrams such as number line diagrams that feature a measurement scale.", "Apply the area and perimeter formulas for rectangles in real world and mathematical problems.", "Represent and interpret data.", "Make a line plot to display a data set of measurements in fractions of a unit 12 , 14 , 18 . Ź Solve problems involving addition and subtraction of fractions by using information presented in line plots. Ź Geometric measurement: understand concepts of angle and measure angles.", "Recognize angles as geometric shapes that are formed wherever two rays share a common endpoint, and understand concepts of angle measurement: Ź An angle is measured with reference to a circle with its center at the common endpoint of the rays, by considering the fraction of the circular arc between the points where the two rays intersect the circle. 1 of a circle is called a “one-degree angle,” and can Ź An angle that turns through 360 be used to measure angles. Ź An angle that turns through “n” one-degree angles is said to have an angle measure of “n” degrees. When an angle is decomposed into nonoverlapping parts, the angle measure of the whole is the sum of the angle measures of the parts.", "Measure angles in whole-number degrees using a protractor. Ź Sketch angles of specified measure.", "Recognize angle measure as additive. Ź Solve addition and subtraction problems to find unknown angles on a diagram in real world and mathematical problems."] },
+    { section: "Geometry", skills: ["Draw and identify lines and angles, and classify shapes by properties of their lines and angles.", "Draw points, lines, line segments, rays, angles (right, acute, obtuse), and perpendicular and parallel lines. Ź Identify these in two-dimensional figures.", "Classify two-dimensional figures based on the presence or absence of parallel or perpendicular lines, or the presence or absence of angles of a specified size. Ź Recognize right triangles as a category, and identify right triangles.", "Recognize a line of symmetry for a two-dimensional figure as a line across the figure such that the figure can be folded along the line into matching parts. Ź Identify line-symmetric figures and draw lines of symmetry."] },
+  ],
+  "5": [
+    { section: "Operations and Algebraic Thinking", skills: ["Write and interpret numerical expressions.", "Use parentheses, brackets, or braces in numerical expressions. Ź Evaluate expressions with these symbols.", "Write simple expressions. Ź Record calculations with numbers. Ź Interpret numerical expressions without evaluating them.", "Analyze patterns and relationships.", "Generate two numerical patterns using two given rules.", "Identify apparent relationships between corresponding terms.", "Form ordered pairs consisting of corresponding terms from the two patterns. Ź Graph the ordered pairs on a coordinate plane."] },
+    { section: "Number and Operations in Base Ten", skills: ["Understand the place value system.", "Recognize that in a multi-digit number, a digit in the one place represents Ź 10 times as much as it represents in the place to its right Ź One tenth of what it represents in the place to its left", "Explain patterns in the number of zeros of the product when multiplying a number by powers of 10.", "Explain patterns in the placement of the decimal point when a decimal is multiplied or divided by a power of 10.", "Use whole number exponents to denote powers of 10.", "Read, write, and compare decimals to thousandths. Ź Read and write decimals to thousandths, using", "base-ten numerals", "number names", "expanded form", "Compare two decimals to thousandths based on meanings of the digits in each place.", "Use >, =, and < symbols to record the results of comparisons.", "Use place value understanding to round decimals to any place.", "Perform operations with multi-digit whole numbers and with decimals to hundredths.", "Fluently multiply multi-digit whole numbers using the standard algorithm.", "Find whole-number quotients of whole numbers with up to four-digit dividends and two-digit divisors. Ź Use strategies based on", "place value", "properties of operations", "the relationship between multiplication and division Ź Illustrate and explain the calculation by using", "equations", "rectangular arrays", "area models", "Add, subtract, multiply, and divide decimals to hundredths. Ź Use concrete models or drawings and strategies based on", "the relationship between addition and subtraction Ź Relate the strategy to a written method and explain the reasoning used."] },
+    { section: "Number and Operations\u2014Fractions", skills: ["Use equivalent fractions as a strategy to add and subtract fractions.", "Add and subtract fractions with unlike denominators (including mixed numbers) by replacing with equivalent fractions. Ź Produce an equivalent sum. Ź Determine the difference of fractions with like denominators.", "Solve word problems involving addition and subtraction of fractions referring to the same whole, including cases of unlike denominators. Ź Use benchmark fractions and number sense of fractions to mentally estimate and assess the reasonableness of answers.", "Apply and extend previous understandings of multiplication and division to multiply and divide fractions.", "Interpret a fraction as division of the numerator by the denominator ba = a ÷ b .", "Solve word problems involving division of whole numbers leading to answers in the form of fractions or mixed numbers.", "Apply and extend previous understandings of multiplication to multiply a fraction or whole number by a fraction. Ź Interpret the product ba × q as a parts of a partition of q into b equal parts. Ź Find the area of a rectangle with fractional side lengths by tiling with unit squares of the appropriate unit fraction side lengths.", "Interpret multiplication as scaling (resizing), by: Ź Comparing the size of a product to the size of one factor. Ź Explaining why multiplying a given number by a fraction greater than 1 results in a product greater than the given number. Ź Explaining why multiplying a given number by a fraction less than 1 results in a product smaller than the given number; (n × a) Ź Relating the principle of fraction equivalence ba = (n to the effect of multiplying × b) a by 1. b", "Solve real world problems involving multiplication of fractions and mixed numbers by using visual fraction models or equations.", "Apply and extend previous understandings of division to divide unit fractions by whole numbers and whole numbers by unit fractions. Ź Interpret division of a unit fraction by a non-zero whole number, and compute such quotients. Ź Interpret division of a whole number by a unit fraction, and compute such quotients. Ź Solve real world problems involving division of unit fractions by non-zero whole numbers and division of whole numbers by unit fractions."] },
+    { section: "Measurement and Data", skills: ["Convert like measurement units within a given measurement system.", "Convert among different-sized standard measurement units within a given measurement system, and use these conversions in solving multi-step, real world problems.", "Represent and interpret data.", "Make a line plot to display a data set of measurements in fractions of a unit 12 , 14 , 18 .", "Use operations on fractions for this grade to solve problems involving information presented in line plots.", "Geometric measurement: understand concepts of volume and relate volume to multiplication and to addition.", "Recognize volume as an attribute of solid figures and understand concepts of volume measurement. Ź A cube with side length of 1 unit is called a “unit cube,”", "It has “one cubic unit” of volume", "Can be used to measure volume Ź A solid figure which can be packed without gaps or overlaps using “n” unit cubes has a volume of n cubic units.", "Measure volumes by counting unit cubes, using Ź cubic centimeters Ź cubic inches Ź cubic feet Ź improvised units", "Relate volume to the operations of multiplication and addition and solve real world and mathematical problems involving volume. Ź Find the volume of a right rectangular prism with whole-number side lengths. Ź Represent threefold whole number products as volumes. Ź Apply the formulas V = l × w × h and V = b × h for rectangular prisms to find volumes of right rectangular prisms with whole-number edge lengths. Ź Recognize volume as additive. Ź Find volumes of solid figures composed of two non-overlapping right rectangular prisms. Pack right rectangular prism with unit cubes, and show that the volume is the same as would be found by multiplying the edge lengths, equivalently by multiplying the height by the area of the base Add the volumes of the non-overlapping parts, applying this technique to solve real world problems"] },
+    { section: "Geometry", skills: ["Graph Points on the Coordinate Plane to Solve Real World and Mathematical Problems", "Use a pair of perpendicular number lines (axes), to define a coordinate system. Ź Understand that the first number indicates how far to travel from the origin in the direction of one axis. Ź Understand that the second number indicates how far to travel in the direction of the second axis.", "Represent real world and mathematical problems by graphing points in the first quadrant of the coordinate plane. Ź Interpret coordinate values of points in the context of the situation.", "Classify two-dimensional figures into categories based on their properties.", "Understand that attributes belonging to a category of two-dimensional figures also belong to all subcategories of that category.", "Classify two-dimensional figures in a hierarchy based on properties."] },
+  ],
+  "6": [
+    { section: "Ratios and Proportional Relationships", skills: ["Understand ratio concepts and use ratio reasoning to solve problems.", "Understand the concept of a ratio and use ratio language to describe a ratio relationship between two quantities.", "Understand the concept of a unit rate ba associated with a ratio a:b with b ≠ 0, and use rate language in the context of a ratio relationship.", "Use ratio and rate reasoning to solve real-world and mathematical problems. Ź Use equivalent ratios, tape diagrams, double number line diagrams or equations. Ź Make tables of equivalent ratios relating quantities with whole-number measurements. Ź Solve unit rate problems including those involving unit pricing and constant speed. Ź Find a percent of a quantity as a rate per 100. Ź Solve problems involving finding the whole, given a part and the percent. Ź Use ratio reasoning to convert measurement units; manipulate and transform units appropriately when multiplying or dividing quantities."] },
+    { section: "The Number System", skills: ["Apply and extend previous understandings of multiplication and division to divide fractions by fractions.", "Interpret and compute quotients of fractions, and solve word problems involving division of fractions by fractions.", "Compute fluently with multi-digit numbers and find common factors and multiples.", "Fluently divide multi-digit numbers using the standard algorithm.", "Fluently add subtract, multiply, and divide multi-digit decimals using the standard algorithm for each operation.", "Find the greatest common factor of two whole numbers less than or equal to 100.", "Find the least common multiple of two whole numbers less than or equal to 12.", "Use the distributive property to express a sum of two whole numbers 1–100 with a common factor as a multiple of a sum of two whole numbers with no common factor.", "Apply and extend previous understandings of numbers to the system of rational numbers.", "Understand that positive and negative numbers are used together to describe quantities having opposite directions or values.", "Use positive and negative numbers to represent quantities in real-world contexts, explaining the meaning of 0 in each situation.", "Understand a rational number as a point on the number line.", "Extend number line diagrams and coordinate axes familiar from previous grades to represent points on the line and in the plane with negative number coordinates. Ź Recognize opposite signs of numbers as indicating locations on opposite sides of 0 on the number line. Ź Recognize that the opposite of the opposite of a number is the number itself. Ź Recognize that 0 is its own opposite. Ź Understand signs of numbers in ordered pairs as indicating locations in quadrants of the coordinate plane. Ź Recognize that when two ordered pairs differ only by signs, the locations of the points are related by reflections across one or both axes. Ź Find and position integers and other rational numbers on a horizontal or vertical number line diagram. Ź Find and position pairs of integers and other rational numbers on a coordinate plane.", "Understand ordering and absolute value of rational numbers. Ź Interpret statements of inequality as statements about the relative position of two numbers on a number line diagram. Ź Write, interpret, and explain statements of order for rational numbers in real-world contexts. Ź Understand the absolute value of a rational number as its distance from 0 on the number line. Ź Interpret absolute value as magnitude for a positive or negative quantity in a realworld situation. Ź Distinguish comparisons of absolute value from statements about order.", "Solve real-world and mathematical problems by graphing points in all four quadrants of the coordinate plane. Ź Include use of coordinates and absolute value to find distances between points with the same first coordinate or the same second coordinate."] },
+    { section: "Expressions and Equations", skills: ["Apply and extend previous understandings of arithmetic to algebraic expressions.", "Write and evaluate numerical expressions involving whole-number exponents.", "Write, read, and evaluate expressions in which letters stand for numbers. Ź Write expressions that record operations with numbers and with letters standing for numbers. Ź Identify parts of an expression using mathematical terms (sum, term, product, factor, quotient, coefficient). Ź View one or more parts of an expression as a single entity. Ź Evaluate expressions at specific values of their variables. Include expressions that arise from real world problems and use order of operations when no parentheses are present.", "Apply the properties of operations to generate equivalent expressions.", "Identify when two expressions are equivalent.", "Reason about and solve one-variable equations and inequalities.", "Understand solving an equation or inequality as a process of answering a question: which values from a specified set, if any, make the equation or inequality true?", "Use substitution to determine whether a given number in a specified set makes an equation or inequality true.", "Use variables to represent numbers and write expressions when solving a real-world or mathematical problem.", "Understand that a variable can represent an unknown number, or, depending on the purpose at hand, any number in a specified set.", "Solve real-world and mathematical problems by writing and solving equations of them form x + p = q and px = q for cases in which p, q and x are all nonnegative rational numbers.", "Write an inequality of the form x > c or x < c to represent a constraint or condition in a real-world or mathematical problem.", "Recognize that inequalities of the form x > c or x < c have infinitely many solutions; represent solutions of such inequalities on number line diagrams.", "Represent and analyze quantitative relationships between dependent and independent variables.", "Use variables to represent two quantities in a real-world problem that change in relationship to one another write an equation to express one quantity.", "Thought of as the dependent variable, in terms of the other quantity, thought of as the independent variable.", "Analyze the relationship between the dependent and independent variables using graphs and tables, and relate these to the equation."] },
+    { section: "Geometry", skills: ["Solve real-world and mathematical problems involving area, surface area, and volume.", "Find the area of right triangles, other triangles, special quadrilaterals, and polygons by decomposing into triangles or other shapes.", "Find the volume of a right rectangular prism with fractional edge lengths. Ź Show that the volume is the same as would be found by multiplying the edge lengths of the prism. Ź Apply the formulas Volume = length x width x height (V=l x w x h) and Volume = base x height (V=b x h) to find volumes of right rectangular prisms with fractional edge lengths.", "Draw polygons in the coordinate plane given coordinates for the vertices. Ź Use coordinates to find the length of a side joining points with the same first coordinate or the same second coordinate.", "Represent three-dimensional figures using nets made up of rectangles and triangles, and use the nets to find the surface area of these figures. Apply these techniques in the context of solving real-world and mathematical problems. Pack the right rectangular prism with unit cubes of the appropriate unit fraction edge lengths. V. Statistics and Probability", "Develop understanding of statistical variability.", "Recognize a statistical question as one that anticipates variability in the data related to the question and accounts for it in the answers.", "Understand that a set of data collected to answer a statistical question has a distribution which can be described by its center, spread, and overall shape.", "Recognize that a measure of center for a numerical data set summarizes all of its values with a single number, while a measure of variation describes how its values vary with a single number.", "Summarize and describe distributions.", "Display numerical data in plots on a number line, including dot plots, histograms, and box plots.", "Summarize numerical data sets in relation to their context, such as by: Ź Reporting the number of observations. Ź Describing the nature of the attribute under investigation, including how it was measured and its units of measurement. Ź Giving quantitative measures of center (median and/or mean) and variability (interquartile range and/or mean absolute deviation), as well as describing any overall pattern and any striking deviations from the overall pattern with reference to the context in which the data were gathered. Ź Relating the choice of measures of center and variability to the shape of the data distribution and the context in which the data were gathered."] },
+  ],
+  "7": [
+    { section: "Ratios and Proportional Relationships", skills: ["Analyze proportional relationships and use them to solve real-world and mathematical problems.", "Compute unit rates associated with ratios of fractions, including ratios of lengths, areas and other quantities measured in like or different units.", "Recognize and represent proportional relationships between quantities. Ź Decide whether two quantities are in a proportional relationship. Ź Identify the constant of proportionality (unit rate) in tables, graphs, equations, diagrams, and verbal descriptions of proportional relationships. Ź Represent proportional relationships by equations. Ź Explain what a point (x, y) on the graph of a proportional relationship means in terms of the situation, with special attention to the points (0, 0) and (1, r) where r is the unit rate.", "Use proportional relationships to solve multistep ratio and percent problems."] },
+    { section: "The Number System", skills: ["p p then – q = q = –q .", "Apply and extend previous understandings of operations with fractions to add, subtract, multiply, and divide rational numbers.", "Apply and extend previous understandings of addition and subtraction to add and subtract rational numbers.", "Represent addition and subtraction on a horizontal or vertical number line diagram. Ź Describe situations in which opposite quantities combine to make 0. Ź Understand p + q as the number located a distance |q| from p.", "Show that a number and its opposite have a sum of 0 (are additive inverses).", "Interpret sums of rational numbers. Ź Understand subtraction of rational numbers as adding the additive inverse, p – q = p + (–q).", "Show that the distance between two rational numbers on the number line is the absolute value of their difference. Ź Apply properties of operations as strategies to add and subtract rational numbers.", "Apply and extend previous understandings of multiplication and division and of fractions to multiply and divide rational numbers. Ź Understand that multiplication is extended from fractions to rational numbers by requiring that operations continue to satisfy the properties of operations.", "Interpret products of rational numbers. Ź Understand that integers can be divided, provided that the divisor is not zero, and every quotient of integers (with non-zero divisor) is a rational number.", "Interpret quotients of rational numbers. Ź Apply properties of operations as strategies to multiply and divide rational numbers. Ź Convert a rational number to a decimal using long division.", "Solve real-world and mathematical problems involving the four operations with rational numbers. Know that the decimal form of a rational number terminates in 0s or eventually repeats."] },
+    { section: "Expressions and Equations", skills: ["Use properties of operations to generate equivalent expressions.", "Apply properties of operations as strategies to add, subtract, factor, and expand linear expressions with rational coefficients.", "Understand that rewriting an expression in different forms in a problem context can shed light on the problem and how the quantities in it are related.", "Solve real-life and mathematical problems using numerical and algebraic expressions and equations.", "Solve multi-step, real-life and mathematical problems posed with positive and negative rational numbers in any form (whole numbers, fractions, and decimals). Ź Use tools strategically. Ź Apply properties of operations to calculate with numbers in any form. Ź Convert between forms as appropriate. Ź Assess the reasonableness of answers using mental computation and estimation strategies.", "Use variables to represent quantities in a real-world or mathematical problem, and construct simple equations and inequalities to solve problems by reasoning about the quantities. Ź Solve word problems leading to equations of the form px + q = r and p(x + q) = r.", "Solve equations of these forms fluently.", "Compare an algebraic solution to an arithmetic solution, identifying the sequence of the operations used in each approach. Ź Solve word problems leading to inequalities of the form px + q > r or px + q < r.", "Graph the solution set of the inequality and interpret it in the context of the problem. p, q, and r are specific rational numbers. p, q, and r are specific rational numbers"] },
+    { section: "Statistics and Probability", skills: ["Draw, construct and describe geometrical figures and describe the relationships between them.", "Solve problems involving scale drawings of geometric figures.", "Draw geometric shapes with given conditions. Ź Focus on constructing triangles from three measures of angles or sides.", "Describe the two-dimensional figures that result from slicing three-dimensional figures.", "Solve real-life and mathematical problems involving angle measure, area, surface area, and volume.", "Know the formulas for the area and circumference of a circle. Ź Use to solve problems. Ź Give an informal derivation of the relationship between the circumference and area of a circle.", "Use facts about supplementary, complementary, vertical, and adjacent angles in a multi-step problem to write and solve simple equations for an unknown angle in a figure.", "Solve real-world and mathematical problems involving Ź area Ź volume Ź surface area of two- and three-dimensional objects (triangles, quadrilaterals, polygons, cubes, and right prisms) V. Statistics and Probability Generalizations about a population from a sample are valid only if the sample is representative of that population. Measure the difference between the centers by expressing it as a multiple of a measure of variability. If the agreement is not good, explain possible sources of the discrepancy.", "Use random sampling to draw inferences about a population.", "Understand that statistics can be used to gain information about a population by examining a sample of the population. Ź Understand that random sampling tends to produce representative samples and support valid inferences.", "Use data from a random sample to draw inferences about a population with an unknown characteristic of interest. Ź Generate multiple samples (or simulated samples) of the same size to gauge the variation in estimates or predictions.", "Draw informal comparative inferences about two populations.", "Informally assess the degree of visual overlap of two numerical data distributions with similar variabilities.", "Use measures of center and measures of variability for numerical data from random samples to draw informal comparative inferences about two populations.", "Investigate chance processes and develop, use, and evaluate probability models.", "Understand that the probability of a chance event is a number between 0 and 1 that expresses the likelihood of the event occurring. Ź Understand that larger numbers indicate greater likelihood.", "A probability near 0 indicates an unlikely event.", "A probability around 12 indicates an event that is neither unlikely nor likely.", "A probability near 1 indicates a likely event.", "Approximate the probability of a chance event. Ź Collect data on the chance process that produces it. Ź Observe its long-run relative frequency. Ź Predict the approximate relative frequency given the probability.", "Develop a probability model and use it to find probabilities of events. Ź Compare probabilities from a model to observed frequencies.", "Develop a uniform probability model by assigning equal probability to all outcomes, and use the model to determine probabilities of events.", "Develop a probability model (which may not be uniform) by observing frequencies in data generated from a chance process.", "Find probabilities of compound events using organized lists, tables, tree diagrams, and simulation. Ź Understand that the probability of a compound event is the fraction of outcomes in the sample space for which the compound event occurs. Ź Represent sample spaces for compound events using methods such as organized lists, tables and tree diagrams.", "For an event described in everyday language, identify the outcomes in the sample space which compose the event. Ź Design and use a simulation to generate frequencies for compound events."] },
+  ],
+  "8": [
+    { section: "The Number System", skills: ["Know that there are numbers that are not rational, and approximate them by rational numbers.", "Know that numbers that are not rational are called irrational. Ź Understand (informally) that every number has a decimal expansion. Ź Show that for rational numbers the decimal expansion eventually repeats. Ź Convert a decimal expansion which repeats eventually into a rational number.", "Use rational approximations of irrational numbers to compare the size of irrational numbers. Ź Identify approximate location on a number line diagram Ź Estimate the value of expressions"] },
+    { section: "Expressions and Equations", skills: ["Work with radicals and integer exponents.", "Know and apply the properties of integer exponents to generate equivalent numerical expressions.", "Use square root and cube root symbols to represent solutions to equations of the form x2 = p and x3 = p, where p is a positive rational number. Ź Evaluate square roots of small perfect squares. Ź Evaluate cube roots of small perfect cubes. Ź Know that √2 is irrational.", "Use numbers expressed in the form of a single digit times an integer power of 10 to estimate very large or very small quantities. Ź Express how many times as much one is than the other.", "Perform operations with numbers expressed in scientific notation. Ź Use scientific notation and choose units of appropriate size for measurements of very large or very small quantities. Ź Interpret scientific notation that has been generated by technology.", "Understand the connections between proportional relationships, lines, and linear equations.", "Graph proportional relationships. Ź Interpret the unit rate as the slope of the graph. Ź Compare two different proportional relationships represented in different ways.", "Use similar triangles to explain why the slope m is the same between any two distinct points on a non-vertical line in the coordinate plane. Ź Derive the equation y = mx for a line through the origin Ź Derive the equation y = mx + b for a line intercepting the vertical axis at b.", "Analyze and solve linear equations and pairs of simultaneous linear equations.", "Solve linear equations in one variable. Ź Give examples of linear equations in one variable with one solution, infinitely many solutions, or no solutions.", "Show which of these possibilities is the case by successively transforming the given equation into simpler forms. Ź Solve linear equations with rational number coefficients.", "Analyze and solve pairs of simultaneous linear equations. Ź Understand that solutions to a system of two linear equations in two variables correspond to points of intersection of their graphs. Ź Solve systems of two linear equations in two variables algebraically.", "Estimate solutions by graphing the equations.", "Solve simple cases by inspection. Ź Solve real-world and mathematical problems leading to two linear equations in two variables. Transforming into simpler forms until an equivalent equation of the form x = a, a = a, or a = b results. Including, equations whose solutions require expanding expressions using the distributive property and collecting like terms. Points of intersection satisfy both equations simultaneously."] },
+    { section: "Functions", skills: ["Define, evaluate, and compare functions.", "Understand that a function is a rule that assigns to each input exactly one output.", "Compare properties of two functions each represented in a different way.", "Interpret the equation y = mx + b as defining a linear function (a straight line). Ź Give examples of functions that are not linear.", "Use functions to model relationships between quantities.", "Construct a function to model a linear relationship between two quantities. Ź Determine the rate of change and initial value of the function from a description of a relationship or from two (x, y) values. Ź Interpret the rate of change and initial value of a linear function in terms of the situation it models. Ź Interpret the rate of change and initial value of a linear function in terms of its graph or a table of values.", "Describe qualitatively the functional relationship between two quantities by analyzing a graph. Ź Sketch a graph that exhibits the qualitative features of a function that has been described verbally. The graph of a function is the set of ordered pairs consisting of an input and the corresponding output. Represented algebraically, graphically, numerically in tables, or by verbal descriptions. Including reading these from a table or from a graph."] },
+    { section: "Geometry", skills: ["Understand congruence and similarity using physical models, transparencies, or geometry software.", "Verify experimentally the properties of rotations, reflections, and translations: Ź Lines are taken to lines, and line segments to line segments of the same length. Ź Angles are taken to angles of the same measure. Ź Parallel lines are taken to parallel lines.", "Understand that a two-dimensional figure is congruent to another if the second can be obtained from the first by a sequence of rotations, reflections, and translations. Ź Given two congruent figures, describe a sequence that exhibits the congruence between them.", "Describe the effect of dilations, translations, rotations, and reflections on two dimensional figures using coordinates.", "Understand that a two-dimensional figure is similar to another if the second can be obtained from the first by a sequence of rotations, reflections, translations, and dilations. Ź Given two similar two-dimensional figures, describe a sequence that exhibits the similarity between them.", "Use informal arguments to establish facts about the angle sum and exterior angle of triangles.", "Use informal arguments to establish facts about the angles created when parallel lines are cut by a transversal.", "Use informal arguments to establish facts about the angle-angle criterion for similarity of triangles.", "Understand and apply the Pythagorean theorem.", "Explain a proof of the Pythagorean Theorem and its converse.", "Apply the Pythagorean Theorem to determine unknown side lengths in right triangles in real-world and mathematical problems in two and three dimensions.", "Apply the Pythagorean Theorem to find the distance between two points in a coordinate system.", "Solve real-world and mathematical problems involving volume of cylinders, cones and spheres.", "Know the formulas for the volumes of cones, cylinders, and spheres and use them to solve real-world and mathematical problems. V. Statistics and Probability", "Investigate patterns of association in bivariate data.", "Construct and interpret scatter plots for bivariate measurement data to investigate patterns of association between two quantities. Ź Describe patterns such as clustering, outliers, positive or negative association, linear association, and nonlinear association.", "Know that straight lines are widely used to model relationships between two quantitative variables. Ź For scatter plots that suggest a linear association, informally fit a straight line, and informally assess the model fit by judging the closeness of the data points to the line.", "Use the equation of a linear model to solve problems in the context of bivariate measurement data, interpreting the slope and intercept.", "Understand that patterns of association can also be seen in bivariate categorical data by displaying frequencies and relative frequencies in a two-way table. Ź Construct and interpret a two-way table summarizing data on two categorical variables collected from the same subjects. Ź Use relative frequencies calculated for rows or columns to describe possible association between the two variables."] },
+  ],
+};
+
 // ── Grade 4 test topic areas ──
+
 // Grade 4: 9 topics × 3 questions = 27 questions ≈ 15–20 minutes
 const TEST_TOPICS_G4 = [
   {
@@ -500,80 +563,130 @@ EUREKA MATH APPROACH:
 Remember: Your goal is for the student to feel confident and capable. Every child can do math — they just need the right questions.`;
 }
 
+// ── Skill curriculum helpers ──
+function getGradeSkills(grade) {
+  const gradeKey = String(grade);
+  const curriculum = MATH_CURRICULUM[gradeKey] || [];
+  const skills = [];
+  curriculum.forEach((sec, si) => {
+    sec.skills.forEach((skill, ki) => {
+      skills.push({ sectionIndex: si, skillIndex: ki, section: sec.section, skill });
+    });
+  });
+  return skills;
+}
+
+function getMasteredKeys(user, grade) {
+  return new Set((user.masteredSkills || {})[String(grade)] || []);
+}
+
+function getUnmasteredSkills(user, grade, limit = 6) {
+  const mastered = getMasteredKeys(user, grade);
+  const all = getGradeSkills(grade);
+  return all.filter(s => !mastered.has(`${s.sectionIndex}:${s.skillIndex}`)).slice(0, limit);
+}
+
+function markSkillsMastered(username, grade, keys) {
+  if (!keys || !keys.length) return;
+  const users = getUsers();
+  if (!users[username]) return;
+  if (!users[username].masteredSkills) users[username].masteredSkills = {};
+  const gradeKey = String(grade);
+  const existing = new Set(users[username].masteredSkills[gradeKey] || []);
+  keys.forEach(k => existing.add(k));
+  users[username].masteredSkills[gradeKey] = [...existing];
+  saveUsers(users);
+  const session = JSON.parse(sessionStorage.getItem(SESSION_STORAGE) || '{}');
+  if (session.username === username) {
+    session.masteredSkills = users[username].masteredSkills;
+    sessionStorage.setItem(SESSION_STORAGE, JSON.stringify(session));
+  }
+}
+
+function getSkillMasteryStats(user, grade) {
+  const gradeKey = String(grade);
+  const curriculum = MATH_CURRICULUM[gradeKey] || [];
+  const mastered = getMasteredKeys(user, grade);
+  const sections = curriculum.map((sec, si) => {
+    const total = sec.skills.length;
+    const done = sec.skills.filter((_, ki) => mastered.has(`${si}:${ki}`)).length;
+    return { section: sec.section, total, done, pct: total > 0 ? Math.round(done / total * 100) : 0 };
+  });
+  const totalSkills = sections.reduce((n, s) => n + s.total, 0);
+  const totalMastered = sections.reduce((n, s) => n + s.done, 0);
+  return { sections, totalSkills, totalMastered, pct: totalSkills > 0 ? Math.round(totalMastered / totalSkills * 100) : 0 };
+}
+
 // ── Build test system prompt ──
-function buildTestSystemPrompt(grade) {
+function buildTestSystemPrompt(grade, skillsToTest) {
   grade = grade || 4;
+  const gradeLabel = String(grade) === 'K' ? 'Kindergarten' : `Grade ${grade}`;
+
+  // If specific curriculum skills passed, use skill-based mode
+  if (skillsToTest && skillsToTest.length > 0) {
+    const skillList = skillsToTest.map((s, i) =>
+      `${i + 1}. [${s.section}] ${s.skill}`
+    ).join('\n');
+    const exampleResults = skillsToTest.map(s =>
+      `{"sectionIndex":${s.sectionIndex},"skillIndex":${s.skillIndex},"section":${JSON.stringify(s.section)},"skill":${JSON.stringify(s.skill.substring(0, 60))},"mastered":true}`
+    ).join(',');
+
+    return `You are Math Buddy, a friendly math tutor testing a ${gradeLabel} student on specific curriculum skills from the Core Knowledge Sequence.
+
+SKILLS TO ASSESS THIS SESSION (${skillsToTest.length} skills):
+${skillList}
+
+TESTING RULES:
+- Test EACH skill with exactly 2 questions: one simpler, one that requires deeper understanding
+- Ask in a fun, age-appropriate way with emojis 🎉
+- After both questions for a skill, decide: MASTERED (got at least 1 right without a hint) or NOT MASTERED
+- Move through all skills one by one
+- Keep tone encouraging — celebrate effort and correct answers!
+- Do NOT give away answers, but give a hint if the student asks (hint counts as not mastered)
+
+After each skill is tested, say something like "Great, let's try the next one! ⭐"
+
+WHEN ALL ${skillsToTest.length} SKILLS ARE TESTED:
+Say: "Awesome job! 🎉 Let me tally your results..."
+
+Then output EXACTLY this block:
+===SKILLS_REPORT_START===
+{"grade":${JSON.stringify(String(grade))},"results":[${exampleResults}],"xpEarned":0}
+===SKILLS_REPORT_END===
+
+Fill in the ACTUAL true/false for "mastered" for each skill. Set xpEarned = 10 × (number of mastered skills).
+
+Start by greeting the student warmly and jumping right into Skill #1!`;
+  }
+
+  // Legacy: fall back to module-based prompt for grades 4-5
   const topics = grade === 5 ? TEST_TOPICS_G5 : TEST_TOPICS_G4;
   const totalQuestions = topics.length * 3;
-
   const topicList = topics.map((t, i) =>
     `${i + 1}. ${t.name} (Module ${t.module})\n   Question guidance:\n   ${t.guidance.split('\n').map(l => l.trim()).filter(Boolean).join('\n   ')}`
   ).join('\n\n');
+  const g5Example = `{"grade":5,"overallScore":71,"topics":[{"module":1,"name":"Place Value Chart & Powers of 10 (Topics A-B)","score":100,"level":"proficient","correct":3,"total":3,"mistakes":[],"suggestedProblems":[]}]}`;
+  const g4Example = `{"grade":4,"overallScore":67,"topics":[{"module":1,"name":"Place Value & Rounding","score":100,"level":"proficient","correct":3,"total":3,"mistakes":[],"suggestedProblems":[]}]}`;
 
-  const g5Example = `{"grade":5,"overallScore":71,"topics":[{"module":1,"name":"Place Value Chart & Powers of 10 (Topics A-B)","score":100,"level":"proficient","correct":3,"total":3,"mistakes":[],"suggestedProblems":[]},{"module":1,"name":"Decimal Forms — Expanded, Unit, and Word Form (Topic B)","score":33,"level":"needs support","correct":1,"total":3,"mistakes":["Wrote expanded form with decimals instead of fractions","Confused unit form with word form"],"suggestedProblems":["Write 24.357 in expanded form using fractions (2×10 + 4×1 + 3×(1/10) + 5×(1/100) + 7×(1/1000))","Write 0.408 in unit form: ___ tenths ___ hundredths ___ thousandths, then write it in word form"]}]}`;
+  return `You are Math Buddy, conducting a ${gradeLabel} Eureka Math assessment.
 
-  const g4Example = `{"grade":4,"overallScore":67,"topics":[{"module":1,"name":"Place Value & Rounding","score":100,"level":"proficient","correct":3,"total":3,"mistakes":[],"suggestedProblems":[]},{"module":2,"name":"Metric Measurement","score":33,"level":"needs support","correct":1,"total":3,"mistakes":["Confused km and m conversion direction","Did not use the standard algorithm for subtraction with mixed units"],"suggestedProblems":["Convert 3 km 400 m to meters — write an equation showing your thinking","If you have 4,500 g, how many kilograms and grams is that? Show your work."]}]}`;
+ASSESSMENT STRUCTURE: Ask exactly 3 questions per topic (${topics.length} topics × 3 = ${totalQuestions} questions).
 
-  const g5CurriculumContext = grade === 5 ? `
-GRADE 5 MODULE 1 CURRICULUM CONTEXT (use this to write accurate questions):
-- Topic A (L1-4): Place value chart from millions to thousandths. Moving LEFT ×10, moving RIGHT ÷10. Powers: 10¹=10, 10²=100, 10³=1,000. Metric: 1m = 10²cm = 10³mm.
-- Topic B (L5-6): THREE decimal forms: expanded with fractions (3×(1/10) + 6×(1/100)), unit form (3 tenths 6 hundredths), word form (thirty-six hundredths).
-- Topic C (L7-8): Round using a vertical number line — two nearest benchmarks, locate midpoint, choose closer one.
-- Topic D (L9-10): Add/subtract using unit language. 4 hundredths + 8 hundredths = 12 hundredths = 1 tenth 2 hundredths.
-- Topic E (L11-12): Multiply decimals by single digit. Think in units: 3 × 1.2 = 3 copies of 1 tenth 2 hundredths. Estimate first.
-- Topic F (L13-16): Divide decimals using unit-form thinking. 1.8 ÷ 2 = 18 tenths ÷ 2 = 9 tenths = 0.9. Unbundle when needed.` : '';
-
-  return `You are Math Buddy, conducting a Grade ${grade} Eureka Math assessment. Your goal is to accurately measure the student's understanding across all major topics so the report card reflects their true ability.
-${g5CurriculumContext}
-
-ASSESSMENT STRUCTURE:
-Ask exactly 3 questions per topic area, in the order listed below (${topics.length} topics × 3 questions = ${totalQuestions} questions total).
-Work through topics in order. Do not skip ahead or revisit earlier topics.
-
-TOPIC AREAS AND QUESTION GUIDANCE:
+TOPIC AREAS:
 ${topicList}
 
-STRICT NO-HINTS POLICY — THIS IS A TEST:
-- NEVER offer hints, clues, leading questions, or encouragement mid-answer unless the student explicitly types "can I have a hint?" or "hint please" or similar.
-- If the student asks for a hint: give one small hint, then mark that question as incorrect regardless of whether they get it right after the hint. Note it in their mistakes.
-- Do NOT rephrase or simplify the question if the student struggles.
-- Do NOT say things like "think about..." or "remember that..." before the student answers.
-- After the student answers: state briefly if it is correct or incorrect, give the right answer if they were wrong (1 sentence), then move immediately to the next question.
-- Tone stays warm: "Nice try! The answer is X." / "You nailed it! 🌟" / "Almost — it's X. Keep going!"
-- Keep all feedback to 1-2 sentences max. This is a timed quiz, not a tutoring session.
+STRICT NO-HINTS POLICY: Never offer hints unless student explicitly asks. Hints = question marked incorrect.
+After each answer: brief feedback (1-2 sentences), then next question immediately.
+Tone: warm but efficient. "Nice try! The answer is X. Next question:" / "You nailed it! 🌟"
 
-QUESTION-ASKING RULES:
-- Ask one question at a time. Wait for the student to answer before asking the next.
-- Questions should increase in difficulty: Q1 = straightforward, Q2 = moderate, Q3 = challenging (follow guidance above).
-- Keep questions age-appropriate for Grade ${grade}.
-- Do not announce topic names or question numbers to the student — just ask naturally.
-
-SCORING RULES (3 questions per topic):
-- 3/3 correct = 100% — "proficient"
-- 2/3 correct = 67% — "developing"
-- 1/3 correct = 33% — "needs support"
-- 0/3 correct = 0% — "needs support"
-- Levels: ≥80% = "proficient", 60–79% = "developing", <60% = "needs support".
-- Overall score = average of all topic scores (rounded to nearest whole number).
-- A question answered only after a hint counts as incorrect.
-
-MISTAKE TRACKING:
-For each topic, track the specific errors the student made (e.g., "confused tenths and hundredths", "forgot to regroup in the hundreds column"). Record these in the "mistakes" array. Be specific — not just "got it wrong."
-
-SUGGESTED PROBLEMS:
-- For topics with score < 100%: generate 2 practice problems BASED ON THE STUDENT'S SPECIFIC MISTAKES from this test.
-- Reference what they actually got wrong (e.g., if they mixed up unit form and word form, give a problem that practices exactly that).
-- For topics with score = 100%: empty array [].
+SCORING: 3/3=100% proficient, 2/3=67% developing, 1/3=33% needs support, 0/3=0% needs support.
 
 WHEN ALL ${totalQuestions} QUESTIONS ARE DONE:
-1. Say "Amazing work finishing the whole assessment! 🎉 Your report card is ready!"
-2. On the very next lines, output EXACTLY this block (no extra text before or after the markers):
-
+Say "Amazing work! 🎉 Your report card is ready!" then output:
 ===REPORT_CARD_START===
 ${grade === 5 ? g5Example : g4Example}
 ===REPORT_CARD_END===
-
-Replace the example JSON with the ACTUAL results from this assessment. Include ALL ${topics.length} topics. Use the real scores, real mistakes, and real personalized practice problems based on what this student got wrong.`;
+Replace example JSON with actual results including real mistakes and personalized practice problems.`;
 }
 
 // ── API Key management ──
@@ -695,9 +808,8 @@ const retestBanner = document.getElementById('retest-banner');
 const retestBannerText = document.getElementById('retest-banner-text');
 const retestNowBtn = document.getElementById('retest-now-btn');
 
-// Setup grade buttons
-const setupGrade4Btn = document.getElementById('setup-grade-4');
-const setupGrade5Btn = document.getElementById('setup-grade-5');
+// Setup grade buttons (K through 8)
+const ALL_GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
 
 // ── All screens list ──
 const ALL_SCREENS = [keyScreen, loginScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen, leaderboardScreen].filter(Boolean);
@@ -1035,6 +1147,7 @@ async function handleLoginSubmit() {
       reportCard: null,
       homeworkSessions: {},
       retestSuggested: [],
+      masteredSkills: {},
     };
     users[username] = newUser;
     saveUsers(users);
@@ -1082,7 +1195,8 @@ function setupStudentHeader(user) {
   studentAvatar.innerHTML = avatarImgHtml(user, 56);
   studentGreeting.textContent = `Hi, ${user.displayName}! 🎉`;
   const grade = user.grade || 4;
-  studentGradeBadge.textContent = `${user.displayName}'s Grade ${grade}`;
+  const gradeLabel = String(grade) === 'K' ? 'Kindergarten' : `Grade ${grade}`;
+  studentGradeBadge.textContent = `${user.displayName}'s ${gradeLabel}`;
 
   // Set grade from profile
   selectedGrade = grade;
@@ -1153,8 +1267,10 @@ function openProfileScreen(user) {
   document.getElementById('profile-success').style.display = 'none';
 
   const grade = user.grade || 4;
-  document.getElementById('profile-grade-4').classList.toggle('active', grade === 4);
-  document.getElementById('profile-grade-5').classList.toggle('active', grade === 5);
+  ALL_GRADES.forEach(g => {
+    const btn = document.getElementById(`profile-grade-${g}`);
+    if (btn) btn.classList.toggle('active', String(grade) === String(g));
+  });
 
   refreshProfileAvatarDisplay();
   document.getElementById('profile-avatar-picker-wrap').style.display = 'none';
@@ -1243,8 +1359,6 @@ function syncProfilePickerSelection() {
 function bindProfile() {
   const backBtn = document.getElementById('profile-back-btn');
   const changeAvatarBtn = document.getElementById('profile-change-avatar-btn');
-  const grade4Btn = document.getElementById('profile-grade-4');
-  const grade5Btn = document.getElementById('profile-grade-5');
   const saveBtn = document.getElementById('profile-save-btn');
   if (!backBtn) return; // profile screen not in DOM (old cached HTML)
 
@@ -1257,13 +1371,16 @@ function bindProfile() {
     if (open) syncProfilePickerSelection();
   });
 
-  grade4Btn.addEventListener('click', function() {
-    this.classList.add('active');
-    grade5Btn.classList.remove('active');
-  });
-  grade5Btn.addEventListener('click', function() {
-    this.classList.add('active');
-    grade4Btn.classList.remove('active');
+  ALL_GRADES.forEach(g => {
+    const btn = document.getElementById(`profile-grade-${g}`);
+    if (!btn) return;
+    btn.addEventListener('click', function() {
+      ALL_GRADES.forEach(og => {
+        const ob = document.getElementById(`profile-grade-${og}`);
+        if (ob) ob.classList.remove('active');
+      });
+      this.classList.add('active');
+    });
   });
 
   saveBtn.addEventListener('click', async () => {
@@ -1278,7 +1395,9 @@ function bindProfile() {
   const displayName = document.getElementById('profile-displayname').value.trim();
   if (!displayName) { errorEl.textContent = 'Display name cannot be empty.'; errorEl.style.display = 'block'; return; }
 
-  const grade = document.getElementById('profile-grade-4').classList.contains('active') ? 4 : 5;
+  const activeGradeBtn = document.querySelector('#profile-screen .grade-select-btn.active');
+  const gradeRaw = activeGradeBtn ? activeGradeBtn.dataset.grade : '4';
+  const grade = gradeRaw === 'K' ? 'K' : parseInt(gradeRaw);
 
   const currentPw = document.getElementById('profile-current-pw').value;
   const newPw = document.getElementById('profile-new-pw').value;
@@ -1317,57 +1436,42 @@ bindProfile();
 
 // ── Grade selection on setup screen ──
 function updateGradeUI(grade) {
-  if (grade === 5) {
-    setupGrade4Btn.classList.remove('active');
-    setupGrade5Btn.classList.add('active');
-    moduleSelect.innerHTML = G5_MODULE_OPTIONS;
-  } else {
-    setupGrade4Btn.classList.add('active');
-    setupGrade5Btn.classList.remove('active');
-    moduleSelect.innerHTML = G4_MODULE_OPTIONS;
-  }
+  const gradeStr = String(grade);
+  ALL_GRADES.forEach(g => {
+    const btn = document.getElementById(`setup-grade-${g}`);
+    if (btn) btn.classList.toggle('active', String(g) === gradeStr);
+  });
+  moduleSelect.innerHTML = gradeStr === '5' ? G5_MODULE_OPTIONS : G4_MODULE_OPTIONS;
   lessonInput.value = '';
   document.getElementById('lesson-range-hint').textContent = '';
 }
 
-setupGrade4Btn.addEventListener('click', () => {
-  selectedGrade = 4;
-  updateGradeUI(4);
-  // Update user grade if logged in
-  const user = getCurrentUser();
-  if (user) {
-    user.grade = 4;
-    setCurrentUser(user);
-    const users = getUsers();
-    if (users[user.username]) {
-      users[user.username].grade = 4;
-      saveUsers(users);
+ALL_GRADES.forEach(g => {
+  const btn = document.getElementById(`setup-grade-${g}`);
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const grade = g === 'K' ? 'K' : parseInt(g);
+    selectedGrade = grade;
+    updateGradeUI(grade);
+    const user = getCurrentUser();
+    if (user) {
+      user.grade = grade;
+      setCurrentUser(user);
+      const users = getUsers();
+      if (users[user.username]) {
+        users[user.username].grade = grade;
+        saveUsers(users);
+      }
+      const gradeLabel = g === 'K' ? 'Kindergarten' : `Grade ${g}`;
+      studentGradeBadge.textContent = `${user.displayName}'s ${gradeLabel}`;
     }
-    studentGradeBadge.textContent = `${user.displayName}'s Grade 4`;
-  }
-});
-
-setupGrade5Btn.addEventListener('click', () => {
-  selectedGrade = 5;
-  updateGradeUI(5);
-  // Update user grade if logged in
-  const user = getCurrentUser();
-  if (user) {
-    user.grade = 5;
-    setCurrentUser(user);
-    const users = getUsers();
-    if (users[user.username]) {
-      users[user.username].grade = 5;
-      saveUsers(users);
-    }
-    studentGradeBadge.textContent = `${user.displayName}'s Grade 5`;
-  }
+  });
 });
 
 // ── Module → lesson range ──
 moduleSelect.addEventListener('change', () => {
   const mod = parseInt(moduleSelect.value);
-  const lessonCounts = selectedGrade === 5 ? MODULE_LESSON_COUNTS_G5 : MODULE_LESSON_COUNTS_G4;
+  const lessonCounts = String(selectedGrade) === '5' ? MODULE_LESSON_COUNTS_G5 : MODULE_LESSON_COUNTS_G4;
   const maxLessons = lessonCounts[mod];
   const hint = document.getElementById('lesson-range-hint');
   if (maxLessons) {
@@ -1704,22 +1808,44 @@ function stopTestTimer() {
   if (timerEl) timerEl.classList.remove('timer-warning');
 }
 
+// Skills being tested in the current session
+let currentTestSkills = [];
+
 function startTestMode() {
   if (!getApiKey()) { showScreen(keyScreen); return; }
   const user = getCurrentUser();
   const grade = user ? (user.grade || 4) : selectedGrade || 4;
+  const gradeLabel = String(grade) === 'K' ? 'Kindergarten' : `Grade ${grade}`;
+
+  // Get unmastered curriculum skills for this grade
+  const unmastered = user ? getUnmasteredSkills(user, grade, 6) : [];
+  currentTestSkills = unmastered;
+
+  // If all skills mastered, celebrate instead of testing
+  if (user && unmastered.length === 0 && getGradeSkills(grade).length > 0) {
+    currentMode = 'test';
+    testMessages.innerHTML = '';
+    testSubtitle.textContent = `${gradeLabel} — Complete! 🏆`;
+    showScreen(testScreen);
+    appendTestBuddyMessage(`🎉🏆 WOW! You've mastered ALL the ${gradeLabel} math skills! You're incredible!\n\nThere's nothing left to test for ${gradeLabel}. Talk to your teacher about moving up! 🚀\n\nYou can also practice homework problems using the back button.`);
+    return;
+  }
 
   currentMode = 'test';
   testConversationHistory = [];
   testMessages.innerHTML = '';
-  testSubtitle.textContent = `Grade ${grade} Assessment`;
+  testSubtitle.textContent = `${gradeLabel} Skills Assessment`;
 
   showScreen(testScreen);
   startTestTimer();
 
-  appendTestBuddyMessage(`Hi! I'm Math Buddy in Assessment Mode! 🦉📝\n\nI'm going to ask you some math questions to see how you're doing. There are no tricks here — just answer your best and I'll give you feedback along the way.\n\nLet's get started! Ready? 🚀`);
+  const skillCount = unmastered.length;
+  const intro = skillCount > 0
+    ? `Hi! I'm Math Buddy in Skills Mode! 🦉📝\n\nI'm going to test you on ${skillCount} math skill${skillCount > 1 ? 's' : ''} to see what you know. Answer your best — you can earn ⭐ Leadership Points for each skill you show me!\n\nLet's go! 🚀`
+    : `Hi! I'm Math Buddy in Assessment Mode! 🦉📝\n\nI'm going to ask you some math questions to see how you're doing. Answer your best and earn ⭐ Leadership Points!\n\nLet's get started! 🚀`;
 
-  // Start the test by sending an initial prompt
+  appendTestBuddyMessage(intro);
+
   const startMsg = "Please start the assessment now.";
   testConversationHistory.push({ role: 'user', content: startMsg });
   streamTestToAnthropic(testConversationHistory);
@@ -1786,7 +1912,7 @@ async function streamTestToAnthropic(messages) {
         model: 'claude-opus-4-5',
         max_tokens: 2048,
         stream: true,
-        system: buildTestSystemPrompt(grade),
+        system: buildTestSystemPrompt(grade, currentTestSkills.length > 0 ? currentTestSkills : null),
         messages,
       }),
     });
@@ -1802,6 +1928,7 @@ async function streamTestToAnthropic(messages) {
     const buddyBubble = appendTestBuddyMessage('', true);
     let fullText = '';
     let reportCardFound = false;
+    let skillsReportFound = false;
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -1824,13 +1951,13 @@ async function streamTestToAnthropic(messages) {
           if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
             fullText += evt.delta.text;
 
-            // Check for report card marker while streaming
-            if (!reportCardFound && fullText.includes('===REPORT_CARD_START===')) {
-              reportCardFound = true;
-            }
+            // Check for report markers while streaming
+            if (!reportCardFound && fullText.includes('===REPORT_CARD_START===')) reportCardFound = true;
+            if (!skillsReportFound && fullText.includes('===SKILLS_REPORT_START===')) skillsReportFound = true;
 
-            // Display text without the report card block
-            const displayText = stripReportCardBlock(fullText);
+            // Display text without any report blocks
+            const displayText = stripReportCardBlock(fullText)
+              .replace(/===SKILLS_REPORT_START===[\s\S]*?===SKILLS_REPORT_END===/g, '').trim();
             buddyBubble.innerHTML = formatMessage(displayText);
             scrollToBottom(testMessages);
           }
@@ -1843,7 +1970,32 @@ async function streamTestToAnthropic(messages) {
       testConversationHistory.push({ role: 'assistant', content: fullText });
     }
 
-    // Process report card if present
+    // Process skills report (new curriculum-based test)
+    if (skillsReportFound && fullText.includes('===SKILLS_REPORT_END===')) {
+      const report = extractSkillsReport(fullText);
+      if (report) {
+        const user = getCurrentUser();
+        const masteredKeys = report.results
+          .filter(r => r.mastered)
+          .map(r => `${r.sectionIndex}:${r.skillIndex}`);
+        if (user && masteredKeys.length > 0) {
+          markSkillsMastered(user.username, report.grade, masteredKeys);
+        }
+        const xp = report.xpEarned || (masteredKeys.length * 10);
+        const masteredCount = masteredKeys.length;
+        const total = report.results.length;
+        setTimeout(() => {
+          appendTestBuddyMessage(
+            `🎯 Skills Report: You mastered ${masteredCount} of ${total} skills!\n` +
+            `⭐ +${xp} Leadership Points earned!\n\n` +
+            (masteredCount > 0 ? `Great work on: ${report.results.filter(r=>r.mastered).map(r=>r.section).filter((v,i,a)=>a.indexOf(v)===i).join(', ')} 🏆` : 'Keep practicing — you\'ll get there! 💪')
+          );
+          setTimeout(() => showReportScreen(), 2000);
+        }, 500);
+      }
+    }
+
+    // Process old-style report card if present
     if (reportCardFound && fullText.includes('===REPORT_CARD_END===')) {
       const reportCard = extractReportCard(fullText);
       if (reportCard) {
@@ -1952,6 +2104,21 @@ function extractReportCard(text) {
   }
 }
 
+function extractSkillsReport(text) {
+  const startMarker = '===SKILLS_REPORT_START===';
+  const endMarker = '===SKILLS_REPORT_END===';
+  const startIdx = text.indexOf(startMarker);
+  const endIdx = text.indexOf(endMarker);
+  if (startIdx === -1 || endIdx === -1) return null;
+  const jsonStr = text.slice(startIdx + startMarker.length, endIdx).trim();
+  try {
+    return JSON.parse(jsonStr);
+  } catch (e) {
+    console.error('Failed to parse skills report JSON:', e, jsonStr);
+    return null;
+  }
+}
+
 function saveReportCard(reportCard) {
   const user = getCurrentUser();
   if (!user) return;
@@ -1992,7 +2159,11 @@ function showReportScreen() {
 function renderReportCard(user) {
   const reportContent = document.getElementById('report-content');
 
-  if (!user || !user.reportCard) {
+  const grade = (user.reportCard && user.reportCard.grade) || user.grade || 4;
+  const masteryStats = getSkillMasteryStats(user, grade);
+  const hasMastery = masteryStats.totalMastered > 0;
+
+  if (!user || (!user.reportCard && !hasMastery)) {
     reportContent.innerHTML = `
       <div class="report-empty">
         <div class="report-empty-icon">📊</div>
@@ -2005,14 +2176,14 @@ function renderReportCard(user) {
   }
 
   const rc = user.reportCard;
-  const grade = rc.grade || user.grade || 4;
-  const dateStr = rc.date ? new Date(rc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently';
-  const overallScore = rc.overallScore || 0;
+  const gradeLabel = String(grade) === 'K' ? 'Kindergarten' : `Grade ${grade}`;
+  const dateStr = rc && rc.date ? new Date(rc.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'Recently';
+  const overallScore = rc ? (rc.overallScore || 0) : 0;
   const overallLevel = scoreToLevel(overallScore);
   const overallColor = scoreToColor(overallScore);
 
   let topicsHtml = '';
-  if (rc.topics && rc.topics.length > 0) {
+  if (rc && rc.topics && rc.topics.length > 0) {
     topicsHtml = rc.topics.map((topic, idx) => {
       const color = scoreToColor(topic.score);
       const level = scoreToLevel(topic.score);
@@ -2049,22 +2220,64 @@ function renderReportCard(user) {
     }).join('');
   }
 
+  // Skill mastery section
+  const masteryColor = scoreToColor(masteryStats.pct);
+  const masterySecHtml = masteryStats.sections.map(sec => {
+    const c = sec.pct >= 100 ? '#16a34a' : sec.pct >= 50 ? '#d97706' : '#6b7280';
+    const check = sec.pct >= 100 ? ' ✅' : '';
+    return `
+      <div class="report-topic-card" style="margin-bottom:8px">
+        <div class="report-topic-header">
+          <div class="report-topic-name" style="font-size:0.9em">${escapeHtml(sec.section)}${check}</div>
+          <div class="report-topic-score">
+            <span class="score-pct" style="color:${c};font-size:0.9em">${sec.done}/${sec.total}</span>
+          </div>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width:0%;background:${c}" data-width="${sec.pct}"></div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const xp = calcUserXP(user);
+  const level = getUserLevel(xp);
+
   reportContent.innerHTML = `
     <div class="report-header">
       <h2>📊 ${escapeHtml(user.displayName)}'s Report Card</h2>
-      <p class="report-date">${dateStr} • Grade ${grade} Assessment</p>
+      <p class="report-date">${gradeLabel} • ${dateStr}</p>
     </div>
+
+    <div class="overall-score-block" style="border-color:${level.color};text-align:center">
+      <div style="font-size:2em">${level.icon}</div>
+      <div class="overall-score-num" style="color:${level.color}">${xp} XP</div>
+      <div class="overall-level" style="color:${level.color}">${level.label}</div>
+      <div class="overall-label">Leadership Points</div>
+    </div>
+
+    <div style="margin:16px 0">
+      <h3 style="font-size:1em;font-weight:700;color:var(--gray-600);margin-bottom:8px">
+        🎯 Skill Mastery — ${masteryStats.totalMastered} of ${masteryStats.totalSkills} skills (${masteryStats.pct}%)
+      </h3>
+      <div class="progress-bar-track" style="margin-bottom:12px">
+        <div class="progress-bar-fill" style="width:0%;background:${masteryColor}" data-width="${masteryStats.pct}"></div>
+      </div>
+      ${masterySecHtml}
+    </div>
+
+    ${rc ? `
     <div class="overall-score-block" style="border-color:${overallColor}">
       <div class="overall-score-num" style="color:${overallColor}">${overallScore}%</div>
       <div class="overall-level" style="color:${overallColor}">${overallLevel}</div>
-      <div class="overall-label">Overall Score</div>
+      <div class="overall-label">Last Test Score</div>
     </div>
     <div class="report-topics-list">
       ${topicsHtml}
-    </div>
+    </div>` : ''}
+
     <div class="report-actions">
       <button class="start-btn report-action-btn" onclick="showScreen(setupScreen)">📚 Homework Help</button>
-      <button class="start-btn report-action-btn secondary-btn" onclick="startTestMode()">🎯 Retake Full Test</button>
+      <button class="start-btn report-action-btn secondary-btn" onclick="startTestMode()">🎯 Take Skills Test</button>
     </div>
   `;
 
@@ -2183,28 +2396,54 @@ function scrollToBottom(container) {
 // ── Leaderboard ──
 
 function calcUserXP(user) {
-  // Bootstrap from reportCard if testHistory not yet populated
-  const history = (user.testHistory && user.testHistory.length > 0)
-    ? user.testHistory
-    : (user.reportCard ? [{ score: user.reportCard.overallScore || 0 }] : []);
-
   let xp = 0;
-  history.forEach((t, i) => {
-    xp += Math.round(t.score || 0);
-    if (i > 0 && t.score > history[i - 1].score) xp += 20; // improvement bonus
+
+  // 10 XP per mastered skill
+  const masteredSkills = user.masteredSkills || {};
+  const grades = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
+  grades.forEach(g => {
+    const keys = masteredSkills[g] || [];
+    xp += keys.length * 10;
+
+    // 50 XP bonus per completed section
+    const curriculum = MATH_CURRICULUM[g] || [];
+    curriculum.forEach((sec, si) => {
+      const total = sec.skills.length;
+      if (total === 0) return;
+      const done = sec.skills.filter((_, ki) => keys.includes(`${si}:${ki}`)).length;
+      if (done === total) xp += 50;
+    });
+
+    // 200 XP bonus if entire grade complete
+    const totalSkills = curriculum.reduce((n, s) => n + s.skills.length, 0);
+    if (totalSkills > 0 && keys.length >= totalSkills) xp += 200;
   });
 
+  // 5 XP per homework help session
   const totalSessions = Object.values(user.homeworkSessions || {}).reduce((a, b) => a + b, 0);
   xp += totalSessions * 5;
+
+  // Legacy: XP from old test scores (for users pre-skills system)
+  if (xp === totalSessions * 5) {
+    const history = (user.testHistory && user.testHistory.length > 0)
+      ? user.testHistory
+      : (user.reportCard ? [{ score: user.reportCard.overallScore || 0 }] : []);
+    history.forEach((t, i) => {
+      xp += Math.round(t.score || 0);
+      if (i > 0 && t.score > history[i - 1].score) xp += 20;
+    });
+  }
+
   return xp;
 }
 
 function getUserLevel(xp) {
-  if (xp >= 500) return { label: 'Math Champion', icon: '🏆', color: '#f59e0b', next: null };
-  if (xp >= 300) return { label: 'Math Whiz',     icon: '🔥', color: '#f97316', next: 500 };
-  if (xp >= 150) return { label: 'Rising Star',   icon: '⭐', color: '#7c3aed', next: 300 };
-  if (xp >= 50)  return { label: 'Scholar',       icon: '📚', color: '#2563eb', next: 150 };
-  return             { label: 'Seedling',       icon: '🌱', color: '#16a34a', next: 50  };
+  if (xp >= 5000) return { label: 'Math Legend',   icon: '👑', color: '#dc2626', next: null };
+  if (xp >= 2500) return { label: 'Math Champion', icon: '🏆', color: '#f59e0b', next: 5000 };
+  if (xp >= 1000) return { label: 'Math Whiz',     icon: '🔥', color: '#f97316', next: 2500 };
+  if (xp >= 400)  return { label: 'Rising Star',   icon: '⭐', color: '#7c3aed', next: 1000 };
+  if (xp >= 100)  return { label: 'Scholar',       icon: '📚', color: '#2563eb', next: 400  };
+  return               { label: 'Seedling',       icon: '🌱', color: '#16a34a', next: 100  };
 }
 
 function showLeaderboard() {
@@ -2239,7 +2478,7 @@ function showLeaderboard() {
     const avatarHtml = avatarImgHtml(e.user, 44);
     const nextXp = e.level.next;
     const barMax = nextXp || e.xp || 1;
-    const barPrev = i === 0 ? 0 : (getUserLevel(e.xp).next ? { 500:300,300:150,150:50,50:0 }[e.level.next] || 0 : 0);
+    const barPrev = nextXp ? { 5000:2500,2500:1000,1000:400,400:100,100:0 }[nextXp] || 0 : 0;
     const barFill = nextXp ? Math.round(((e.xp - barPrev) / (nextXp - barPrev)) * 100) : 100;
     const testStr = e.testsCount === 0 ? 'No tests yet' : `${e.testsCount} test${e.testsCount > 1 ? 's' : ''}`;
     const sessionStr = e.totalSessions > 0 ? ` · ${e.totalSessions} sessions` : '';

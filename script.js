@@ -2433,7 +2433,7 @@ async function streamToAnthropic(messages, isImageRequest) {
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 1024,
         stream: true,
         system: buildSystemPrompt(selectedModule, selectedLesson, selectedGrade, (document.getElementById('topic-hint-input') || {}).value || ''),
@@ -2495,7 +2495,8 @@ async function streamToAnthropic(messages, isImageRequest) {
     checkForComprehensionTrigger(fullText);
   } catch (err) {
     typingEl?.remove();
-    appendBuddyMessage("Oops! I had trouble connecting. Check your internet and try again. 🔄");
+    const detail = err?.message ? ` (${err.message})` : '';
+    appendBuddyMessage(`Oops! I had trouble connecting${detail}. Check your internet and try again. 🔄`);
     console.error(err);
   } finally {
     isStreaming = false;
@@ -2641,7 +2642,7 @@ async function streamTestToAnthropic(messages) {
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2048,
         stream: true,
         system: buildTestSystemPrompt(grade, currentTestSkills.length > 0 ? currentTestSkills : null),
@@ -2738,7 +2739,8 @@ async function streamTestToAnthropic(messages) {
 
   } catch (err) {
     typingEl?.remove();
-    appendTestBuddyMessage("Oops! I had trouble connecting. Check your internet and try again. 🔄");
+    const detail = err?.message ? ` (${err.message})` : '';
+    appendTestBuddyMessage(`Oops! I had trouble connecting${detail}. Check your internet and try again. 🔄`);
     console.error(err);
   } finally {
     isTestStreaming = false;
@@ -2775,7 +2777,7 @@ async function generateReportCardNow() {
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2048,
         stream: false,
         system: buildTestSystemPrompt(grade),

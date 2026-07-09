@@ -1321,7 +1321,8 @@ async function handleLoginSubmit() {
     const displayName = document.getElementById('register-displayname').value.trim();
     const confirm = document.getElementById('login-confirm').value;
     if (!displayName) { showLoginError('Please enter your name.'); return; }
-    if (password.length < 6) { showLoginError('Password must be at least 6 characters.'); return; }
+    const minLen = (isEmail && auth) ? 6 : 4;
+    if (password.length < minLen) { showLoginError(`Password must be at least ${minLen} characters.`); return; }
     if (password !== confirm) { showLoginError('Passwords do not match.'); return; }
 
     if (isEmail && auth) {
@@ -1358,9 +1359,11 @@ async function handleLoginSubmit() {
       if (error) { showLoginError(error.message); return; }
       // onAuthStateChange handles the rest
     } else {
-      // Legacy username login
-      const username = email.toLowerCase();
+      // Legacy username login — try raw first (for pre-existing accounts), then sanitized (for accounts registered with email-like input when Supabase was unavailable)
       const users = getUsers();
+      const raw = email.toLowerCase();
+      const sanitized = raw.replace(/[^a-z0-9_]/g, '_');
+      const username = users[raw] ? raw : sanitized;
       const user = users[username];
       if (!user) { showLoginError('Username not found. Did you mean to register?'); return; }
       const passwordHash = await hashPassword(password);

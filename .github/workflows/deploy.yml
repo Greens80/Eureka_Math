@@ -26,6 +26,8 @@ jobs:
       - name: Inject API key config
         run: |
           echo "window.MATHBUDDY_KEY = '${{ secrets.ANTHROPIC_API_KEY }}';" > config.js
+          echo "window.SUPABASE_URL = '${{ secrets.SUPABASE_URL }}';" >> config.js
+          echo "window.SUPABASE_ANON_KEY = '${{ secrets.SUPABASE_ANON_KEY }}';" >> config.js
 
       - uses: actions/configure-pages@v4
 

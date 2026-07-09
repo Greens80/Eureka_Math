@@ -1506,3 +1506,225 @@ body {
   font-weight: 700;
   color: var(--gray-800);
 }
+
+/* ── AUTH UPGRADE ── */
+.google-signin-btn,
+.apple-signin-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.18s;
+  margin-bottom: 10px;
+}
+.google-signin-btn {
+  background: #fff;
+  border: 2px solid #dadce0;
+  color: #3c4043;
+}
+.google-signin-btn:hover { background: #f8f9fa; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.apple-signin-btn {
+  background: #000;
+  border: 2px solid #000;
+  color: #fff;
+}
+.apple-signin-btn:hover { background: #1a1a1a; }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  color: var(--gray-400);
+  font-size: 13px;
+}
+.auth-divider::before, .auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.forgot-pw-link {
+  display: block;
+  text-align: right;
+  font-size: 13px;
+  color: var(--purple);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 6px;
+  padding: 0;
+}
+.forgot-pw-link:hover { text-decoration: underline; }
+
+.auth-switch-row {
+  text-align: center;
+  font-size: 14px;
+  color: var(--gray-600);
+  margin-top: 16px;
+}
+.auth-switch-link {
+  color: var(--purple);
+  font-weight: 700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+}
+.auth-switch-link:hover { text-decoration: underline; }
+
+.student-direct-login-btn {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  color: var(--gray-700);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.18s;
+}
+.student-direct-login-btn:hover { background: var(--gray-100); border-color: var(--purple); color: var(--purple); }
+
+/* ── PIN PAD ── */
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin: 24px 0 20px;
+}
+.pin-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2.5px solid var(--purple);
+  background: transparent;
+  transition: background 0.12s, transform 0.1s;
+}
+.pin-dot.filled {
+  background: var(--purple);
+  transform: scale(1.1);
+}
+.pin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 260px;
+  margin: 0 auto 20px;
+}
+.pin-key {
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 50%;
+  background: var(--gray-100);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pin-key:hover { background: #ede9fe; color: var(--purple); }
+.pin-key:active { transform: scale(0.9); }
+.pin-key-cancel, .pin-key-back { font-size: 13px; font-weight: 600; color: var(--gray-600); }
+@keyframes pin-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-7px); }
+  40%, 80% { transform: translateX(7px); }
+}
+.pin-shake { animation: pin-shake 0.38s ease; }
+
+/* ── PIN STATUS in edit student ── */
+.pin-status-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.pin-set-badge { font-size: 13px; color: #16a34a; font-weight: 600; }
+.pin-action-btn {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border: 1.5px solid var(--purple);
+  border-radius: 999px;
+  background: none;
+  color: var(--purple);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.pin-action-btn:hover { background: #ede9fe; }
+.pin-action-btn.danger { border-color: #dc2626; color: #dc2626; }
+.pin-action-btn.danger:hover { background: #fef2f2; }
+
+/* ── BACKUP BUTTONS ── */
+.backup-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.18s;
+  margin-bottom: 8px;
+}
+.backup-btn-download {
+  background: #eff6ff;
+  border: 1.5px solid #3b82f6;
+  color: #1d4ed8;
+}
+.backup-btn-download:hover { background: #dbeafe; }
+.backup-btn-restore {
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-300);
+  color: var(--gray-700);
+}
+.backup-btn-restore:hover { background: var(--gray-100); }
+
+/* ── PARENT ACCOUNT SECTION ── */
+.account-info-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.account-email { font-size: 14px; color: var(--gray-800); }
+.account-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.badge-supabase { background: #eff6ff; color: #1d4ed8; }
+.badge-legacy { background: var(--gray-100); color: var(--gray-600); }
+
+/* ── STUDENT LOGIN SCREEN (direct/PIN) ── */
+.student-login-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+.student-login-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1.5px solid var(--gray-200);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: box-shadow .15s, border-color .15s;
+  background: #fff;
+}
+.student-login-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.10); border-color: var(--purple); }
+.student-login-empty { text-align: center; padding: 24px 16px; color: var(--gray-500); font-size: 14px; }

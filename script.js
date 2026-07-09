@@ -761,6 +761,33 @@ async function hashPassword(password) {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+async function hashPin(parentKey, pin) {
+  const salted = 'mathbuddy_pin:' + parentKey + ':' + pin;
+  const buf = new TextEncoder().encode(salted);
+  const hash = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ── Supabase auth helper ──
+function getSupabaseAuth() {
+  return window._supabaseClient ? window._supabaseClient.auth : null;
+}
+
+// Returns all child records from localStorage, regardless of parent
+function getAllChildren() {
+  const users = getUsers();
+  return Object.entries(users)
+    .filter(([k, v]) => k.includes(':') && v && v.displayName)
+    .map(([k, v]) => ({ key: k, parentKey: k.substring(0, k.indexOf(':')), ...v }));
+}
+
+// ── PIN pad state ──
+let _pinDigits = [];
+let _pendingChild = null; // { parentKey, childKey }
+
+// ── Parent auth state (set after parent logs in this page session) ──
+let _parentAuthed = false;
+
 // ── State ──
 let selectedModule = null;
 let selectedLesson = null;
@@ -831,7 +858,11 @@ const retestNowBtn = document.getElementById('retest-now-btn');
 const ALL_GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
 
 // ── All screens list ──
-const ALL_SCREENS = [keyScreen, loginScreen, studentPickerScreen, addStudentScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen, leaderboardScreen].filter(Boolean);
+const forgotPasswordScreen = document.getElementById('forgot-password-screen');
+const pinPadScreen = document.getElementById('pin-pad-screen');
+const studentLoginScreen = document.getElementById('student-login-screen');
+
+const ALL_SCREENS = [keyScreen, loginScreen, forgotPasswordScreen, pinPadScreen, studentLoginScreen, studentPickerScreen, addStudentScreen, setupScreen, chatScreen, testScreen, reportScreen, profileScreen, leaderboardScreen].filter(Boolean);
 
 // ── Screen helper ──
 function showScreen(screen) {
@@ -853,19 +884,110 @@ function showScreen(screen) {
     const changeKeyRow = document.querySelector('.change-key-row');
     if (changeKeyRow) changeKeyRow.style.display = 'none';
   }
+
+  // Netflix-style: check for a student in session first
   const user = getCurrentUser();
-  if (user) {
-    if (user.isParent) {
-      renderStudentPicker(user.parentUsername || user.username);
+  if (user && !user.isParent) {
+    setupStudentHeader(user);
+    showScreen(setupScreen);
+    return;
+  }
+
+  // Check if there are any children stored on this device
+  const children = getAllChildren();
+  if (children.length > 0) {
+    // Show the Netflix-style picker — no parent login needed
+    renderStudentPickerNetflix(children);
+    showScreen(studentPickerScreen);
+    return;
+  }
+
+  // No children yet — check Supabase session first, fall back to legacy
+  const auth = getSupabaseAuth();
+  if (auth) {
+    auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        handleSupabaseSession(session);
+      } else {
+        // Listen for OAuth redirects (returning from Google/Apple)
+        auth.onAuthStateChange((event, sess) => {
+          if (event === 'SIGNED_IN' && sess) handleSupabaseSession(sess);
+        });
+        showScreen(loginScreen);
+      }
+    });
+  } else {
+    // No Supabase — check legacy parent session or show login
+    if (user && user.isParent) {
+      _parentAuthed = true;
+      renderStudentPickerNetflix([]);
       showScreen(studentPickerScreen);
     } else {
-      setupStudentHeader(user);
-      showScreen(setupScreen);
+      showScreen(loginScreen);
     }
-  } else {
-    showScreen(loginScreen);
   }
 })();
+
+function handleSupabaseSession(session) {
+  const sbUser = session.user;
+  const parentKey = 'uid_' + sbUser.id;
+  const users = getUsers();
+  if (!users[parentKey]) {
+    users[parentKey] = {
+      displayName: sbUser.user_metadata?.full_name || sbUser.email.split('@')[0],
+      isParent: true,
+      email: sbUser.email,
+      authMethod: 'supabase',
+    };
+    saveUsers(users);
+  }
+  const record = users[parentKey];
+  const sessionUser = { username: parentKey, parentUsername: parentKey, displayName: record.displayName, isParent: true, email: sbUser.email, authMethod: 'supabase' };
+  setCurrentUser(sessionUser);
+  _parentAuthed = true;
+  const children = getAllChildren();
+  renderStudentPickerNetflix(children);
+  showScreen(studentPickerScreen);
+}
+
+// Netflix-style picker — shows all children; parent management via 🔒 button
+function renderStudentPickerNetflix(children) {
+  document.getElementById('picker-greeting').textContent = 'Who\'s learning today? 👋';
+  const addBtn = document.getElementById('add-student-btn');
+  if (addBtn) addBtn.style.display = _parentAuthed ? '' : 'none';
+
+  const container = document.getElementById('student-cards');
+  if (children.length === 0) {
+    container.innerHTML = _parentAuthed
+      ? '<div class="student-card-empty"><div style="font-size:3em">👧</div><p>No students yet. Add your first child to get started!</p></div>'
+      : '<div class="student-card-empty"><div style="font-size:3em">👨‍👩‍👧‍👦</div><p>Press <strong>🔒 Parent</strong> to set up your family!</p></div>';
+    return;
+  }
+
+  container.innerHTML = children.map(child => {
+    const stats = getSkillMasteryStats(child, child.grade);
+    const gradeLabel = String(child.grade) === 'K' ? 'Kindergarten' : 'Grade ' + child.grade;
+    const avatarHtml = child.avatarAnimal
+      ? '<img src="' + twemojiUrl(child.avatarAnimal) + '" width="48" height="48" alt="avatar" />'
+      : '<span style="font-size:2.5em">👤</span>';
+    const pinIcon = child.pinHash ? ' 🔐' : '';
+    const editBtn = _parentAuthed
+      ? '<button class="student-card-edit" onclick="event.stopPropagation();openEditStudent(\'' + child.parentKey + '\',\'' + child.key + '\')" title="Edit">✏️</button>'
+      : '';
+    return '<div class="student-card" onclick="selectChild(\'' + child.parentKey + '\',\'' + child.key + '\')">' +
+      '<div class="student-card-avatar">' + avatarHtml + '</div>' +
+      '<div class="student-card-info">' +
+        '<div class="student-card-name">' + escapeHtml(child.displayName) + pinIcon + '</div>' +
+        '<div class="student-card-grade">' + gradeLabel + '</div>' +
+        '<div class="student-card-progress">' +
+          '<div class="progress-bar-track" style="height:6px"><div class="progress-bar-fill" style="width:' + stats.pct + '%;background:#7c3aed;height:6px;border-radius:3px"></div></div>' +
+          '<span style="font-size:0.75em;color:#6b7280">' + stats.totalMastered + '/' + stats.totalSkills + ' skills</span>' +
+        '</div>' +
+      '</div>' +
+      editBtn +
+      '</div>';
+  }).join('');
+}
 
 // ── Key screen ──
 saveKeyBtn.addEventListener('click', () => {
@@ -985,12 +1107,6 @@ function avatarImgHtml(user, size) {
 }
 
 let loginMode = 'login'; // 'login' or 'register'
-let registerGrade = 1;
-let registerAvatarAnimal = ANIMAL_AVATARS[0].cp;
-let registerAvatarAccessory = '';
-
-const toggleLoginBtn = document.getElementById('toggle-login-btn');
-const toggleRegisterBtn = document.getElementById('toggle-register-btn');
 
 function setLoginMode(mode) {
   loginMode = mode;
@@ -1000,26 +1116,31 @@ function setLoginMode(mode) {
   const loginSubtitle = document.getElementById('login-subtitle');
   const loginSubmitBtn = document.getElementById('login-submit-btn');
   const loginError = document.getElementById('login-error');
+  const authSwitchText = document.getElementById('auth-switch-text');
+  const authSwitchBtn = document.getElementById('auth-switch-btn');
+  const emailLabel = document.getElementById('login-email-label');
 
   loginError.style.display = 'none';
 
   if (mode === 'login') {
-    toggleLoginBtn.classList.add('active');
-    toggleRegisterBtn.classList.remove('active');
     registerNameSection.style.display = 'none';
     registerConfirmSection.style.display = 'none';
     loginTitle.textContent = 'Welcome Back!';
     loginSubtitle.textContent = 'Log in to continue your math journey! 🌟';
     loginSubmitBtn.textContent = 'Log In 🚀';
+    if (emailLabel) emailLabel.textContent = 'Email';
+    if (authSwitchText) authSwitchText.textContent = 'New here?';
+    if (authSwitchBtn) authSwitchBtn.textContent = 'Create an account';
     document.getElementById('login-password').autocomplete = 'current-password';
   } else {
-    toggleLoginBtn.classList.remove('active');
-    toggleRegisterBtn.classList.add('active');
     registerNameSection.style.display = 'block';
     registerConfirmSection.style.display = 'block';
     loginTitle.textContent = 'New Account';
     loginSubtitle.textContent = 'Create your parent account to get started! 🌟';
     loginSubmitBtn.textContent = 'Create Account 🚀';
+    if (emailLabel) emailLabel.textContent = 'Email';
+    if (authSwitchText) authSwitchText.textContent = 'Already have an account?';
+    if (authSwitchBtn) authSwitchBtn.textContent = 'Log in';
     document.getElementById('login-password').autocomplete = 'new-password';
   }
 }
@@ -1107,91 +1228,180 @@ function ensureAvatarPicker() {
   updatePreview();
 }
 
-toggleLoginBtn.addEventListener('click', () => setLoginMode('login'));
-toggleRegisterBtn.addEventListener('click', () => setLoginMode('register'));
-
-// Register grade buttons
-document.querySelectorAll('#register-grade-section .grade-select-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('#register-grade-section .grade-select-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    registerGrade = btn.dataset.grade === 'K' ? 'K' : parseInt(btn.dataset.grade);
-  });
-});
+// ── Login screen bindings ──
+const authSwitchBtn = document.getElementById('auth-switch-btn');
+if (authSwitchBtn) authSwitchBtn.addEventListener('click', () => setLoginMode(loginMode === 'login' ? 'register' : 'login'));
 
 const loginSubmitBtn = document.getElementById('login-submit-btn');
-loginSubmitBtn.addEventListener('click', handleLoginSubmit);
+if (loginSubmitBtn) loginSubmitBtn.addEventListener('click', handleLoginSubmit);
+document.getElementById('login-password') && document.getElementById('login-password').addEventListener('keydown', e => { if (e.key === 'Enter') handleLoginSubmit(); });
+document.getElementById('login-confirm') && document.getElementById('login-confirm').addEventListener('keydown', e => { if (e.key === 'Enter') handleLoginSubmit(); });
 
-document.getElementById('login-password').addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleLoginSubmit();
+// Google / Apple SSO
+const googleSigninBtn = document.getElementById('google-signin-btn');
+if (googleSigninBtn) googleSigninBtn.addEventListener('click', () => handleOAuthSignIn('google'));
+const appleSigninBtn = document.getElementById('apple-signin-btn');
+if (appleSigninBtn) appleSigninBtn.addEventListener('click', () => handleOAuthSignIn('apple'));
+
+// Forgot password
+const forgotPwLink = document.getElementById('forgot-pw-link');
+if (forgotPwLink) forgotPwLink.addEventListener('click', () => {
+  document.getElementById('forgot-error').style.display = 'none';
+  document.getElementById('forgot-success').style.display = 'none';
+  document.getElementById('forgot-email').value = '';
+  const forgotSubmitBtn = document.getElementById('forgot-submit-btn');
+  if (forgotSubmitBtn) forgotSubmitBtn.disabled = false;
+  showScreen(forgotPasswordScreen);
 });
-document.getElementById('login-confirm') && document.getElementById('login-confirm').addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleLoginSubmit();
+const forgotBackBtn = document.getElementById('forgot-back-btn');
+if (forgotBackBtn) forgotBackBtn.addEventListener('click', () => showScreen(loginScreen));
+const forgotSubmitBtn = document.getElementById('forgot-submit-btn');
+if (forgotSubmitBtn) forgotSubmitBtn.addEventListener('click', handleForgotPassword);
+
+// Student direct login (Netflix PIN flow)
+const studentLoginBtn = document.getElementById('student-login-btn');
+if (studentLoginBtn) studentLoginBtn.addEventListener('click', () => {
+  renderStudentDirectLogin();
+  showScreen(studentLoginScreen);
 });
+const studentLoginBackBtn = document.getElementById('student-login-back-btn');
+if (studentLoginBackBtn) studentLoginBackBtn.addEventListener('click', () => showScreen(loginScreen));
+
+// Parent management button on picker screen
+const parentMgmtBtn = document.getElementById('parent-mgmt-btn');
+if (parentMgmtBtn) parentMgmtBtn.addEventListener('click', () => {
+  if (_parentAuthed) {
+    // Already authed — just ensure management controls are visible
+    const children = getAllChildren();
+    renderStudentPickerNetflix(children);
+  } else {
+    showScreen(loginScreen);
+  }
+});
+
+async function handleOAuthSignIn(provider) {
+  const auth = getSupabaseAuth();
+  if (!auth) { showLoginError('SSO is not configured yet. Use email/password instead.'); return; }
+  const redirectTo = window.location.origin + window.location.pathname;
+  const { error } = await auth.signInWithOAuth({ provider, options: { redirectTo } });
+  if (error) showLoginError(provider + ' sign-in failed: ' + error.message);
+  // On success the browser redirects away; onAuthStateChange handles the return
+}
+
+async function handleForgotPassword() {
+  const email = document.getElementById('forgot-email').value.trim();
+  const errorEl = document.getElementById('forgot-error');
+  const successEl = document.getElementById('forgot-success');
+  errorEl.style.display = 'none';
+  if (!email) { errorEl.textContent = 'Please enter your email address.'; errorEl.style.display = 'block'; return; }
+
+  const auth = getSupabaseAuth();
+  if (!auth) { errorEl.textContent = 'Password reset requires email sign-in (SSO not configured).'; errorEl.style.display = 'block'; return; }
+
+  const { error } = await auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + window.location.pathname });
+  if (error) { errorEl.textContent = error.message; errorEl.style.display = 'block'; return; }
+  successEl.style.display = 'block';
+  document.getElementById('forgot-submit-btn').disabled = true;
+}
 
 async function handleLoginSubmit() {
   const loginError = document.getElementById('login-error');
-  const usernameRaw = document.getElementById('login-username').value.trim();
+  const emailRaw = (document.getElementById('login-email') || {}).value || '';
+  const email = emailRaw.trim();
   const password = document.getElementById('login-password').value;
-  const username = usernameRaw.toLowerCase();
 
   loginError.style.display = 'none';
 
-  if (!username || !password) {
-    showLoginError('Please fill in all fields.');
-    return;
-  }
+  if (!email || !password) { showLoginError('Please fill in all fields.'); return; }
+
+  const auth = getSupabaseAuth();
+  const isEmail = email.includes('@');
 
   if (loginMode === 'register') {
     const displayName = document.getElementById('register-displayname').value.trim();
     const confirm = document.getElementById('login-confirm').value;
-
-    if (!displayName) { showLoginError('Please enter a display name.'); return; }
-    if (password.length < 4) { showLoginError('Password must be at least 4 characters.'); return; }
+    if (!displayName) { showLoginError('Please enter your name.'); return; }
+    if (password.length < 6) { showLoginError('Password must be at least 6 characters.'); return; }
     if (password !== confirm) { showLoginError('Passwords do not match.'); return; }
 
-    const users = getUsers();
-    if (users[username]) { showLoginError('That username is already taken. Try another!'); return; }
-
-    const passwordHash = await hashPassword(password);
-    const newUser = {
-      displayName,
-      passwordHash,
-      isParent: true,
-    };
-    users[username] = newUser;
-    saveUsers(users);
-
-    const sessionUser = { username, displayName, isParent: true, parentUsername: username };
-    setCurrentUser(sessionUser);
-    renderStudentPicker(username);
-    showScreen(studentPickerScreen);
-  } else {
-    const users = getUsers();
-    const user = users[username];
-    if (!user) { showLoginError('Username not found. Did you mean to register?'); return; }
-
-    const passwordHash = await hashPassword(password);
-    if (passwordHash !== user.passwordHash) { showLoginError('Incorrect password. Try again!'); return; }
-
-    if (user.isParent) {
-      const sessionUser = { username, displayName: user.displayName, isParent: true, parentUsername: username };
-      setCurrentUser(sessionUser);
-      renderStudentPicker(username);
-      showScreen(studentPickerScreen);
+    if (isEmail && auth) {
+      // Supabase email registration
+      const { error } = await auth.signUp({ email, password, options: { data: { full_name: displayName } } });
+      if (error) { showLoginError(error.message); return; }
+      // onAuthStateChange handles the rest after Supabase processes the signup
+      showLoginError(''); 
+      document.getElementById('login-error').textContent = '';
+      // Show a friendly message
+      const errEl = document.getElementById('login-error');
+      errEl.style.color = '#16a34a';
+      errEl.textContent = 'Account created! Check your email to confirm, then log in.';
+      errEl.style.display = 'block';
     } else {
-      const sessionUser = { username, ...user };
+      // Legacy username registration
+      const username = email.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+      const users = getUsers();
+      if (users[username]) { showLoginError('That username is already taken.'); return; }
+      const passwordHash = await hashPassword(password);
+      users[username] = { displayName, passwordHash, isParent: true, authMethod: 'legacy' };
+      saveUsers(users);
+      const sessionUser = { username, displayName, isParent: true, parentUsername: username, authMethod: 'legacy' };
       setCurrentUser(sessionUser);
-      setupStudentHeader(sessionUser);
-      showScreen(setupScreen);
+      _parentAuthed = true;
+      const children = getAllChildren();
+      renderStudentPickerNetflix(children);
+      showScreen(studentPickerScreen);
+    }
+  } else {
+    // Login
+    if (isEmail && auth) {
+      const { error } = await auth.signInWithPassword({ email, password });
+      if (error) { showLoginError(error.message); return; }
+      // onAuthStateChange handles the rest
+    } else {
+      // Legacy username login
+      const username = email.toLowerCase();
+      const users = getUsers();
+      const user = users[username];
+      if (!user) { showLoginError('Username not found. Did you mean to register?'); return; }
+      const passwordHash = await hashPassword(password);
+      if (passwordHash !== user.passwordHash) { showLoginError('Incorrect password. Try again!'); return; }
+      const sessionUser = { username, displayName: user.displayName, isParent: true, parentUsername: username, authMethod: 'legacy' };
+      setCurrentUser(sessionUser);
+      _parentAuthed = true;
+      // Re-render picker with management controls
+      const children = getAllChildren();
+      renderStudentPickerNetflix(children);
+      showScreen(studentPickerScreen);
     }
   }
 }
 
 function showLoginError(msg) {
   const loginError = document.getElementById('login-error');
+  loginError.style.color = '';
   loginError.textContent = msg;
-  loginError.style.display = 'block';
+  loginError.style.display = msg ? 'block' : 'none';
+}
+
+function renderStudentDirectLogin() {
+  const children = getAllChildren().filter(c => c.pinHash);
+  const container = document.getElementById('student-login-cards');
+  if (!container) return;
+  if (children.length === 0) {
+    container.innerHTML = '<div class="student-login-empty">No students have PINs set yet.<br>Ask a parent to add you a PIN in the student editor.</div>';
+    return;
+  }
+  container.innerHTML = children.map(child => {
+    const avatarHtml = child.avatarAnimal
+      ? '<img src="' + twemojiUrl(child.avatarAnimal) + '" width="44" height="44" alt="avatar" />'
+      : '<span style="font-size:2em">👤</span>';
+    const gradeLabel = String(child.grade) === 'K' ? 'Kindergarten' : 'Grade ' + child.grade;
+    return '<div class="student-login-card" onclick="startPinFlow(\'' + child.parentKey + '\',\'' + child.key + '\')">' +
+      '<div class="student-card-avatar">' + avatarHtml + '</div>' +
+      '<div class="student-card-info"><div class="student-card-name">' + escapeHtml(child.displayName) + '</div>' +
+      '<div class="student-card-grade">' + gradeLabel + '</div></div>' +
+      '<span style="font-size:1.2em">🔐</span></div>';
+  }).join('');
 }
 
 // ── Student Picker ──
@@ -1238,15 +1448,101 @@ function renderStudentPicker(parentUsername) {
   }).join('');
 }
 
-function selectChild(parentUsername, childKey) {
+function selectChild(parentKey, childKey) {
   const users = getUsers();
   const child = users[childKey];
   if (!child) return;
-  const sessionUser = { username: childKey, parentUsername, ...child };
+  if (child.pinHash) {
+    startPinFlow(parentKey, childKey);
+  } else {
+    activateChild(parentKey, childKey);
+  }
+}
+
+function startPinFlow(parentKey, childKey) {
+  const users = getUsers();
+  const child = users[childKey];
+  if (!child) return;
+  _pendingChild = { parentKey, childKey };
+  _pinDigits = [];
+  updatePinDots();
+  document.getElementById('pin-pad-title').textContent = child.displayName + "'s PIN";
+  document.getElementById('pin-pad-avatar').innerHTML = child.avatarAnimal
+    ? '<img src="' + twemojiUrl(child.avatarAnimal) + '" width="56" height="56" alt="avatar">'
+    : '🐱';
+  document.getElementById('pin-error').style.display = 'none';
+  showScreen(pinPadScreen);
+}
+
+function activateChild(parentKey, childKey) {
+  const users = getUsers();
+  const child = users[childKey];
+  if (!child) return;
+  const sessionUser = { username: childKey, parentUsername: parentKey, ...child };
   setCurrentUser(sessionUser);
   setupStudentHeader(sessionUser);
   showScreen(setupScreen);
 }
+
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('pin-dot-' + i);
+    if (dot) dot.classList.toggle('filled', i < _pinDigits.length);
+  }
+}
+
+function pinDigitPressed(d) {
+  if (_pinDigits.length >= 4) return;
+  _pinDigits.push(d);
+  updatePinDots();
+  if (_pinDigits.length === 4) setTimeout(verifyStudentPin, 140);
+}
+
+async function verifyStudentPin() {
+  if (!_pendingChild) return;
+  const { parentKey, childKey } = _pendingChild;
+  const child = getUsers()[childKey];
+  if (!child) return;
+  const hash = await hashPin(parentKey, _pinDigits.join(''));
+  if (hash === child.pinHash) {
+    _pendingChild = null;
+    _pinDigits = [];
+    activateChild(parentKey, childKey);
+  } else {
+    _pinDigits = [];
+    updatePinDots();
+    const errEl = document.getElementById('pin-error');
+    errEl.textContent = 'Wrong PIN — try again';
+    errEl.style.display = 'block';
+    const dotsEl = document.getElementById('pin-dots');
+    if (dotsEl) {
+      dotsEl.classList.add('pin-shake');
+      setTimeout(() => dotsEl.classList.remove('pin-shake'), 400);
+    }
+  }
+}
+
+// Bind pin pad buttons
+(function bindPinPad() {
+  document.querySelectorAll('.pin-key[data-digit]').forEach(btn => {
+    btn.addEventListener('click', () => pinDigitPressed(btn.dataset.digit));
+  });
+  const bsBtn = document.getElementById('pin-backspace-btn');
+  if (bsBtn) bsBtn.addEventListener('click', () => {
+    _pinDigits.pop();
+    updatePinDots();
+    const errEl = document.getElementById('pin-error');
+    if (errEl) errEl.style.display = 'none';
+  });
+  const cancelBtn = document.getElementById('pin-cancel-btn');
+  if (cancelBtn) cancelBtn.addEventListener('click', () => {
+    _pendingChild = null;
+    _pinDigits = [];
+    const children = getAllChildren();
+    renderStudentPickerNetflix(children);
+    showScreen(studentPickerScreen);
+  });
+})();
 
 // ── Student header ──
 
@@ -1306,25 +1602,34 @@ retestNowBtn.addEventListener('click', () => {
   startTestMode();
 });
 
-logoutBtn.addEventListener('click', () => {
+async function doLogout() {
   setCurrentUser(null);
+  _parentAuthed = false;
   studentHeader.style.display = 'none';
   genericHeader.style.display = 'block';
   const gradeSelectSection = document.getElementById('grade-select-section');
   if (gradeSelectSection) gradeSelectSection.style.display = 'block';
+  const auth = getSupabaseAuth();
+  if (auth) { try { await auth.signOut(); } catch(e) {} }
   showScreen(loginScreen);
-});
+}
+
+logoutBtn.addEventListener('click', doLogout);
 
 // ── Student picker bindings ──
 function bindStudentPicker() {
-  document.getElementById('picker-logout-btn').addEventListener('click', () => {
-    setCurrentUser(null);
-    showScreen(loginScreen);
-  });
-  document.getElementById('add-student-btn').addEventListener('click', () => {
+  // Add student button — only visible when parent is authed
+  const addStudentBtnEl = document.getElementById('add-student-btn');
+  if (addStudentBtnEl) addStudentBtnEl.addEventListener('click', () => {
+    // Use current parent session, or find first parent key from children
     const sess = getCurrentUser();
-    const parentUsername = sess && (sess.parentUsername || (sess.isParent ? sess.username : null));
-    if (parentUsername) openAddStudent(parentUsername);
+    let parentKey = sess && sess.isParent ? (sess.parentUsername || sess.username) : null;
+    if (!parentKey) {
+      // derive from first child
+      const children = getAllChildren();
+      parentKey = children.length > 0 ? children[0].parentKey : null;
+    }
+    if (parentKey) openAddStudent(parentKey);
   });
 }
 bindStudentPicker();
@@ -1333,14 +1638,25 @@ bindStudentPicker();
 const switchStudentBtn = document.getElementById('switch-student-btn');
 if (switchStudentBtn) {
   switchStudentBtn.addEventListener('click', () => {
-    const session = getCurrentUser();
-    const parentUsername = session && session.parentUsername;
-    if (parentUsername) {
-      renderStudentPicker(parentUsername);
-      showScreen(studentPickerScreen);
-    }
+    const children = getAllChildren();
+    renderStudentPickerNetflix(children);
+    showScreen(studentPickerScreen);
   });
 }
+
+// Supabase auth state listener (handles OAuth redirect returns and session restore)
+(function setupSupabaseListener() {
+  const auth = getSupabaseAuth();
+  if (!auth) return;
+  auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN' && session) {
+      handleSupabaseSession(session);
+    } else if (event === 'SIGNED_OUT') {
+      setCurrentUser(null);
+      _parentAuthed = false;
+    }
+  });
+})();
 
 // ── Add/Edit Student Screen ──
 let addStudentAvatarAnimal = ANIMAL_AVATARS[0].cp;
@@ -1363,6 +1679,8 @@ function openAddStudent(parentUsername) {
   });
   updateAddStudentAvatarDisplay();
   ensureAddStudentAvatarPicker();
+  renderPinStatus(null);
+  hidePinInlineEntry();
   showScreen(addStudentScreen);
 }
 
@@ -1382,8 +1700,96 @@ function openEditStudent(parentUsername, childKey) {
   });
   updateAddStudentAvatarDisplay();
   ensureAddStudentAvatarPicker();
+  renderPinStatus(child.pinHash || null);
+  hidePinInlineEntry();
   showScreen(addStudentScreen);
 }
+
+function renderPinStatus(pinHash) {
+  const statusEl = document.getElementById('student-pin-status');
+  if (!statusEl) return;
+  if (pinHash) {
+    statusEl.innerHTML =
+      '<span class="pin-set-badge">🔐 PIN set</span>' +
+      '<button class="pin-action-btn" id="set-pin-btn">Change PIN</button>' +
+      '<button class="pin-action-btn danger" id="remove-pin-btn">Remove PIN</button>';
+    document.getElementById('remove-pin-btn').addEventListener('click', async () => {
+      if (!editingChildKey) return;
+      const users = getUsers();
+      if (users[editingChildKey]) { delete users[editingChildKey].pinHash; saveUsers(users); }
+      renderPinStatus(null);
+      hidePinInlineEntry();
+    });
+  } else {
+    statusEl.innerHTML =
+      '<span style="color:var(--gray-400);font-size:13px">No PIN set</span>' +
+      '<button class="pin-action-btn" id="set-pin-btn">Set PIN</button>';
+  }
+  document.getElementById('set-pin-btn').addEventListener('click', () => {
+    showPinInlineEntry();
+  });
+}
+
+function showPinInlineEntry() {
+  const el = document.getElementById('pin-entry-inline');
+  if (el) {
+    el.style.display = 'block';
+    ['pin-d0','pin-d1','pin-d2','pin-d3','pin-c0','pin-c1','pin-c2','pin-c3'].forEach(id => {
+      const inp = document.getElementById(id);
+      if (inp) { inp.value = ''; }
+    });
+    document.getElementById('pin-entry-error') && (document.getElementById('pin-entry-error').style.display = 'none');
+    document.getElementById('pin-d0') && document.getElementById('pin-d0').focus();
+  }
+}
+
+function hidePinInlineEntry() {
+  const el = document.getElementById('pin-entry-inline');
+  if (el) el.style.display = 'none';
+}
+
+// Bind inline PIN save/cancel
+(function bindInlinePin() {
+  // Auto-advance digit inputs
+  ['pin-d0','pin-d1','pin-d2','pin-d3','pin-c0','pin-c1','pin-c2','pin-c3'].forEach((id, i) => {
+    const inp = document.getElementById(id);
+    if (!inp) return;
+    inp.addEventListener('input', () => {
+      inp.value = inp.value.replace(/[^0-9]/g, '').slice(-1);
+      const ids = ['pin-d0','pin-d1','pin-d2','pin-d3','pin-c0','pin-c1','pin-c2','pin-c3'];
+      if (inp.value && i < ids.length - 1) document.getElementById(ids[i+1]) && document.getElementById(ids[i+1]).focus();
+    });
+  });
+
+  const savePinBtn = document.getElementById('pin-save-btn');
+  if (savePinBtn) savePinBtn.addEventListener('click', async () => {
+    const pin1 = ['pin-d0','pin-d1','pin-d2','pin-d3'].map(id => (document.getElementById(id)||{}).value||'').join('');
+    const pin2 = ['pin-c0','pin-c1','pin-c2','pin-c3'].map(id => (document.getElementById(id)||{}).value||'').join('');
+    const errEl = document.getElementById('pin-entry-error');
+    if (pin1.length !== 4) { errEl.textContent = 'Please enter all 4 digits.'; errEl.style.display = 'block'; return; }
+    if (pin1 !== pin2) { errEl.textContent = 'PINs do not match. Try again.'; errEl.style.display = 'block'; return; }
+    // Save PIN hash to the child record (or stage for new students)
+    if (editingChildKey) {
+      const users = getUsers();
+      const child = users[editingChildKey];
+      if (child) {
+        child.pinHash = await hashPin(addStudentParentUsername, pin1);
+        saveUsers(users);
+        renderPinStatus(child.pinHash);
+        hidePinInlineEntry();
+      }
+    } else {
+      // For new students, store pin temporarily to save with the record
+      _pendingNewStudentPin = pin1;
+      renderPinStatus('pending');
+      hidePinInlineEntry();
+    }
+  });
+
+  const cancelInlineBtn = document.getElementById('pin-cancel-inline-btn');
+  if (cancelInlineBtn) cancelInlineBtn.addEventListener('click', hidePinInlineEntry);
+})();
+let _pendingNewStudentPin = null;
 
 function updateAddStudentAvatarDisplay() {
   const display = document.getElementById('add-student-avatar-display');
@@ -1459,14 +1865,26 @@ function bindAddStudentScreen() {
         retestSuggested: [],
         testHistory: [],
       };
-      saveChild(addStudentParentUsername, childKey, newChild);
+      if (_pendingNewStudentPin) {
+        // hashPin is async; save after hashing
+        hashPin(addStudentParentUsername, _pendingNewStudentPin).then(pinHash => {
+          newChild.pinHash = pinHash;
+          saveChild(addStudentParentUsername, childKey, newChild);
+        });
+        _pendingNewStudentPin = null;
+      } else {
+        saveChild(addStudentParentUsername, childKey, newChild);
+      }
     }
 
-    renderStudentPicker(addStudentParentUsername);
+    const children = getAllChildren();
+    renderStudentPickerNetflix(children);
     showScreen(studentPickerScreen);
   });
 
   document.getElementById('cancel-student-btn').addEventListener('click', () => {
+    const children = getAllChildren();
+    renderStudentPickerNetflix(children);
     showScreen(studentPickerScreen);
   });
 
@@ -1474,7 +1892,8 @@ function bindAddStudentScreen() {
     if (!editingChildKey) return;
     if (confirm('Remove this student? Their progress will be deleted.')) {
       deleteChild(editingChildKey);
-      renderStudentPicker(addStudentParentUsername);
+      const children = getAllChildren();
+      renderStudentPickerNetflix(children);
       showScreen(studentPickerScreen);
     }
   });
@@ -1503,6 +1922,25 @@ function openProfileScreen(user) {
   document.getElementById('profile-error').style.display = 'none';
   document.getElementById('profile-success').style.display = 'none';
 
+  // Parent-only sections
+  const parentSection = document.getElementById('parent-account-section');
+  const pwSection = document.getElementById('profile-pw-section');
+  if (user.isParent && parentSection) {
+    parentSection.style.display = 'block';
+    const emailEl = document.getElementById('parent-account-email');
+    const badgeEl = document.getElementById('parent-account-badge');
+    if (emailEl) emailEl.textContent = user.email || user.username || '';
+    if (badgeEl) {
+      badgeEl.textContent = user.authMethod === 'supabase' ? '🔵 Email/SSO' : '🔑 Username';
+      badgeEl.className = 'account-badge ' + (user.authMethod === 'supabase' ? 'badge-supabase' : 'badge-legacy');
+    }
+    // Supabase users change password via reset email, not in-app
+    if (pwSection) pwSection.style.display = user.authMethod === 'supabase' ? 'none' : 'block';
+  } else {
+    if (parentSection) parentSection.style.display = 'none';
+    if (pwSection) pwSection.style.display = 'block';
+  }
+
   const grade = user.grade || 4;
   ALL_GRADES.forEach(g => {
     const btn = document.getElementById(`profile-grade-${g}`);
@@ -1515,6 +1953,64 @@ function openProfileScreen(user) {
   buildProfileAvatarPicker();
   showScreen(profileScreen);
 }
+
+// ── Backup / Restore ──
+function downloadBackup() {
+  const user = getCurrentUser();
+  if (!user || !user.isParent) return;
+  const parentKey = user.parentUsername || user.username;
+  const users = getUsers();
+  const backup = {
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    parentKey,
+    parent: users[parentKey] || {},
+    children: {},
+  };
+  Object.keys(users).forEach(k => {
+    if (k.startsWith(parentKey + ':')) backup.children[k] = users[k];
+  });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'mathbuddy-backup-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function handleRestoreFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const backup = JSON.parse(e.target.result);
+      if (!backup.version || !backup.parentKey || !backup.children) throw new Error('Invalid backup file.');
+      if (!confirm('Restore backup? Existing children with the same IDs will be overwritten.')) return;
+      const users = getUsers();
+      if (backup.parent) users[backup.parentKey] = backup.parent;
+      Object.assign(users, backup.children);
+      saveUsers(users);
+      const children = getAllChildren();
+      renderStudentPickerNetflix(children);
+      showScreen(studentPickerScreen);
+    } catch (err) {
+      alert('Could not restore backup: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Bind backup/restore buttons
+(function bindBackupButtons() {
+  const dlBtn = document.getElementById('download-backup-btn');
+  if (dlBtn) dlBtn.addEventListener('click', downloadBackup);
+  const restoreBtn = document.getElementById('restore-backup-btn');
+  const fileInput = document.getElementById('restore-file-input');
+  if (restoreBtn && fileInput) {
+    restoreBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', e => { handleRestoreFile(e.target.files[0]); e.target.value = ''; });
+  }
+})();
 
 function refreshProfileAvatarDisplay() {
   document.getElementById('profile-avatar-display').innerHTML = animalAvatarHtml(profileAvatarAnimal, profileAvatarAccessory, 80);

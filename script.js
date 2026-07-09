@@ -477,26 +477,17 @@ Q3 (harder): Multi-step conversion problem (e.g., "A path is 2.35 km long. Expre
 ];
 
 // ── Build homework system prompt ──
-function buildSystemPrompt(module, lesson, grade) {
+function buildSystemPrompt(module, lesson, grade, topicHint) {
   grade = grade || 4;
-  const lessonMap = grade === 5 ? LESSON_MAP_G5 : LESSON_MAP;
-  const mod = lessonMap[module];
+  const gradeLabel = String(grade) === 'K' ? 'Kindergarten' : `Grade ${grade}`;
   let moduleText;
 
-  if (mod) {
-    const lessonDetail = lesson && mod.lessons && mod.lessons[lesson]
-      ? `\nTHIS SPECIFIC LESSON (Lesson ${lesson} of ${mod.totalLessons}):\n${mod.lessons[lesson]}`
-      : lesson
-        ? `\nLesson ${lesson} of ${mod.totalLessons}. Focus on concepts appropriate to this point in the module sequence.`
-        : '';
+  if (topicHint) {
+    moduleText = `The student is working on ${gradeLabel} math, specifically: "${topicHint}".
 
-    moduleText = `The student is working on Grade ${grade} Module ${module}: "${mod.name}"${lesson ? `, Lesson ${lesson}` : ''}.
-
-MODULE OVERVIEW AND PARENT GUIDANCE:
-${mod.moduleOverview}
-${lessonDetail}`;
+Focus all problems and explanations on this topic. Present a practice problem related to "${topicHint}" right away.`;
   } else {
-    moduleText = `The student is working on Grade ${grade} Eureka Math. No specific module was selected — ask the student what topic they are working on.`;
+    moduleText = `The student is working on ${gradeLabel} math. They haven't specified a topic — start with a warm greeting and ask "What are you working on today?" before presenting a problem.`;
   }
 
   return `You are a warm, encouraging, and patient Eureka Math tutor for a ${grade}th grade student (approximately ${grade + 5}-${grade + 6} years old). Your name is "Math Buddy."
@@ -1687,9 +1678,6 @@ function updateGradeUI(grade) {
     const btn = document.getElementById(`setup-grade-${g}`);
     if (btn) btn.classList.toggle('active', String(g) === gradeStr);
   });
-  moduleSelect.innerHTML = gradeStr === '5' ? G5_MODULE_OPTIONS : G4_MODULE_OPTIONS;
-  lessonInput.value = '';
-  document.getElementById('lesson-range-hint').textContent = '';
 }
 
 ALL_GRADES.forEach(g => {
@@ -1784,13 +1772,10 @@ startBtn.addEventListener('click', startSession);
 
 function startSession() {
   if (!getApiKey()) { showScreen(keyScreen); return; }
-  const moduleVal = moduleSelect.value;
-  if (moduleVal === 'skills-test') {
-    startTestMode();
-    return;
-  }
-  selectedModule = parseInt(moduleVal) || null;
-  selectedLesson = parseInt(lessonInput.value) || null;
+
+  const topicHint = (document.getElementById('topic-hint-input') || {}).value || '';
+  selectedModule = null;
+  selectedLesson = null;
 
   let initialUserMessage = null;
   let imageData = null;
@@ -1798,7 +1783,9 @@ function startSession() {
   if (inputMethod === 'type') {
     const text = document.getElementById('problem-text').value.trim();
     if (!text) { alert('Please type your math problem first! ✏️'); return; }
-    initialUserMessage = `I need help with this problem: ${text}`;
+    initialUserMessage = topicHint
+      ? `Topic: ${topicHint}\n\nI need help with this problem: ${text}`
+      : `I need help with this problem: ${text}`;
   } else if (inputMethod === 'photo') {
     if (!photoBase64) { alert('Please take or upload a photo of your problem first! 📷'); return; }
     imageData = { base64: photoBase64, mediaType: photoMediaType };
@@ -1808,19 +1795,9 @@ function startSession() {
   showScreen(chatScreen);
 
   const grade = selectedGrade || 4;
-  const moduleNamesG4 = {
-    1: 'Module 1 – Place Value', 2: 'Module 2 – Metric Measurement',
-    3: 'Module 3 – Multiplication & Division', 4: 'Module 4 – Angles & Shapes',
-    5: 'Module 5 – Fractions', 6: 'Module 6 – Decimals', 7: 'Module 7 – Measurement',
-  };
-  const moduleNamesG5 = {
-    1: 'Module 1 – Place Value & Decimals', 2: 'Module 2 – Multi-Digit Operations',
-    3: 'Module 3 – Adding/Subtracting Fractions', 4: 'Module 4 – Multiplying/Dividing Fractions',
-    5: 'Module 5 – Volume and Area', 6: 'Module 6 – Coordinate Plane',
-  };
-  const moduleNames = grade === 5 ? moduleNamesG5 : moduleNamesG4;
-  const modLabel = selectedModule ? moduleNames[selectedModule] : `Grade ${grade} Eureka Math`;
-  chatSubtitle.textContent = modLabel + (selectedLesson ? `, Lesson ${selectedLesson}` : '');
+  const gradeLabel = String(grade) === 'K' ? 'Kindergarten' : `Grade ${grade}`;
+  const topicLabel = topicHint ? ` – ${topicHint}` : '';
+  chatSubtitle.textContent = `${gradeLabel} Math${topicLabel}`;
 
   conversationHistory = [];
   chatMessages.innerHTML = '';
@@ -1960,7 +1937,7 @@ async function streamToAnthropic(messages, isImageRequest) {
         model: 'claude-opus-4-5',
         max_tokens: 1024,
         stream: true,
-        system: buildSystemPrompt(selectedModule, selectedLesson, selectedGrade),
+        system: buildSystemPrompt(selectedModule, selectedLesson, selectedGrade, (document.getElementById('topic-hint-input') || {}).value || ''),
         messages,
       }),
     });
@@ -2786,51 +2763,57 @@ function initVoiceInput(textareaId, btnId) {
   if (!SR || !btn) return;
 
   btn.style.display = 'flex';
-
-  const recognition = new SR();
-  recognition.continuous = false;
-  recognition.interimResults = true;
-  recognition.lang = 'en-US';
   let listening = false;
+  let recognition = null;
 
-  btn.addEventListener('click', () => {
-    if (listening) {
-      recognition.stop();
-    } else {
-      const ta = document.getElementById(textareaId);
-      if (ta) ta.value = '';
-      try { recognition.start(); } catch (e) {}
-    }
-  });
-
-  recognition.onstart = () => {
-    listening = true;
-    btn.textContent = '🔴';
-    btn.classList.add('voice-listening');
-    btn.title = 'Listening… tap to stop';
-  };
-
-  recognition.onresult = (e) => {
-    const ta = document.getElementById(textareaId);
-    if (!ta) return;
-    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
-    ta.value = transcript;
-    ta.style.height = 'auto';
-    ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
-  };
-
-  recognition.onend = () => {
+  function stopListening() {
+    if (recognition) { try { recognition.stop(); } catch(e) {} recognition = null; }
     listening = false;
     btn.textContent = '🎤';
     btn.classList.remove('voice-listening');
     btn.title = 'Speak your answer';
-  };
+  }
 
-  recognition.onerror = (e) => {
-    listening = false;
-    btn.textContent = '🎤';
-    btn.classList.remove('voice-listening');
-  };
+  function startListening() {
+    if (listening) { stopListening(); return; }
+    recognition = new SR();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+
+    const ta = document.getElementById(textareaId);
+    if (ta) ta.value = '';
+
+    recognition.onstart = () => {
+      listening = true;
+      btn.textContent = '🔴';
+      btn.classList.add('voice-listening');
+      btn.title = 'Listening… tap to stop';
+    };
+
+    recognition.onresult = (e) => {
+      const ta = document.getElementById(textareaId);
+      if (!ta) return;
+      const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+      ta.value = transcript;
+      ta.style.height = 'auto';
+      ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+    };
+
+    recognition.onend = () => stopListening();
+
+    recognition.onerror = (e) => {
+      stopListening();
+      if (e.error === 'not-allowed') {
+        const ta = document.getElementById(textareaId);
+        if (ta) ta.placeholder = 'Microphone access denied — please allow microphone in browser settings.';
+      }
+    };
+
+    try { recognition.start(); } catch(e) { stopListening(); }
+  }
+
+  btn.addEventListener('click', startListening);
 }
 
 initVoiceInput('chat-input', 'voice-btn');

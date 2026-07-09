@@ -176,11 +176,13 @@
           </div>
         </div>
         <div class="student-action-row">
-          <button class="student-action-btn" id="report-card-btn">📊 Report Card</button>
-          <button class="student-action-btn" id="take-test-btn">🎯 Take Test</button>
-          <button class="student-action-btn" id="leaderboard-btn">🏆 Leaderboard</button>
-          <button class="student-action-btn" id="switch-student-btn">👨‍👩‍👧‍👦 Switch</button>
-          <button class="student-action-btn logout-btn" id="logout-btn">🚪 Log Out</button>
+          <button class="student-action-btn primary-action-btn" id="report-card-btn">📊 Report Card</button>
+          <button class="student-action-btn primary-action-btn" id="take-test-btn">🎯 Skills Test</button>
+        </div>
+        <div class="student-action-row secondary-action-row">
+          <button class="student-action-btn secondary-action-btn" id="leaderboard-btn">🏆 Leaderboard</button>
+          <button class="student-action-btn secondary-action-btn" id="switch-student-btn">👨‍👩‍👧‍👦 Switch</button>
+          <button class="student-action-btn secondary-action-btn logout-btn" id="logout-btn">🚪 Log Out</button>
         </div>
         <div id="retest-banner" class="retest-banner" style="display:none">
           <span id="retest-banner-text"></span>
@@ -195,7 +197,7 @@
         <p class="buddy-subtitle">Let's do some math together! 🌟</p>
       </div>
 
-      <!-- Grade selection -->
+      <!-- Grade selection (shown only when not logged in) -->
       <div class="setup-section" id="grade-select-section">
         <label class="setup-label">Which grade are you in?</label>
         <div class="grade-btn-row">
@@ -211,30 +213,20 @@
         </div>
       </div>
 
-      <div class="setup-section">
-        <label class="setup-label">Which module are you working on?</label>
-        <select id="module-select" class="setup-select">
-          <option value="">-- Pick your module --</option>
-          <option value="skills-test">🎯 Skill Assessment (Grade-Level)</option>
-          <option value="1">Module 1 – Place Value &amp; Addition/Subtraction (19 lessons)</option>
-          <option value="2">Module 2 – Metric Measurement (5 lessons)</option>
-          <option value="3">Module 3 – Multiplication &amp; Division (43 lessons)</option>
-          <option value="4">Module 4 – Angles &amp; Shapes (16 lessons)</option>
-          <option value="5">Module 5 – Fractions (41 lessons)</option>
-          <option value="6">Module 6 – Decimals (7 lessons)</option>
-          <option value="7">Module 7 – Measurement with Multiplication (4 lessons)</option>
-        </select>
-      </div>
+      <!-- Hidden fields kept for JS compat -->
+      <select id="module-select" style="display:none"><option value="homework">homework</option></select>
+      <input type="number" id="lesson-input" style="display:none" />
+      <span id="lesson-range-hint" style="display:none"></span>
 
       <div class="setup-section">
-        <label class="setup-label">Which lesson? <span id="lesson-range-hint" class="lesson-range-hint"></span></label>
+        <label class="setup-label">What are you working on? <span class="setup-hint">(optional)</span></label>
         <input
-          type="number"
-          id="lesson-input"
+          type="text"
+          id="topic-hint-input"
           class="setup-input"
-          placeholder="e.g. 5"
-          min="1"
-          max="43"
+          placeholder="e.g. fractions, long division, word problems…"
+          autocomplete="off"
+          spellcheck="false"
         />
       </div>
 

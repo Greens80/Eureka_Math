@@ -420,12 +420,22 @@
             <div class="chat-subtitle" id="test-subtitle">Grade 4 Assessment</div>
           </div>
         </div>
-        <div class="test-timer" id="test-timer">⏱ 15:00</div>
+        <div class="test-timer" id="test-timer">⏱ 25:00</div>
+        <button class="pause-test-btn" id="pause-test-btn" title="Pause test">⏸</button>
         <button class="new-problem-btn finish-test-btn" id="finish-test-btn">Finish Test ✅</button>
       </div>
 
       <div class="chat-messages" id="test-messages">
         <!-- Test messages appear here -->
+      </div>
+
+      <div class="test-pause-overlay" id="test-pause-overlay" style="display:none">
+        <div class="test-pause-card">
+          <div class="test-pause-icon">⏸</div>
+          <div class="test-pause-title">Test Paused</div>
+          <div class="test-pause-sub">Timer is stopped. Resume when ready.</div>
+          <button class="start-btn" id="resume-test-btn">▶ Resume Test</button>
+        </div>
       </div>
 
       <div class="chat-input-area">

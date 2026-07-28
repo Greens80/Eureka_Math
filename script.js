@@ -2593,6 +2593,9 @@ function startTestMode() {
   testConversationHistory = [];
   testMessages.innerHTML = '';
   testSubtitle.textContent = `${gradeLabel} Skills Assessment`;
+  testPaused = false;
+  if (pauseOverlay) pauseOverlay.style.display = 'none';
+  if (pauseTestBtn) { pauseTestBtn.textContent = '⏸'; pauseTestBtn.title = 'Pause test'; }
 
   showScreen(testScreen);
   startTestTimer();
@@ -2613,6 +2616,58 @@ testBackBtn.addEventListener('click', () => {
   stopTestTimer();
   showScreen(setupScreen);
 });
+
+// ── Pause / Resume ──
+let testPaused = false;
+const pauseTestBtn = document.getElementById('pause-test-btn');
+const pauseOverlay = document.getElementById('test-pause-overlay');
+const resumeTestBtn = document.getElementById('resume-test-btn');
+
+function pauseTest() {
+  if (isTestStreaming || testPaused) return;
+  testPaused = true;
+  clearInterval(testTimerInterval);
+  testTimerInterval = null;
+  const floatEl = document.getElementById('floating-timer');
+  if (floatEl) floatEl.style.display = 'none';
+  if (pauseOverlay) pauseOverlay.style.display = 'flex';
+  if (pauseTestBtn) { pauseTestBtn.textContent = '▶'; pauseTestBtn.title = 'Resume test'; }
+}
+
+function resumeTest() {
+  if (!testPaused) return;
+  testPaused = false;
+  if (pauseOverlay) pauseOverlay.style.display = 'none';
+  if (pauseTestBtn) { pauseTestBtn.textContent = '⏸'; pauseTestBtn.title = 'Pause test'; }
+  // Restart ticking from wherever testSecondsLeft is
+  const timerEl = document.getElementById('test-timer');
+  const floatEl = document.getElementById('floating-timer');
+  if (floatEl) floatEl.style.display = 'block';
+  function tick() {
+    const m = Math.floor(testSecondsLeft / 60);
+    const s = testSecondsLeft % 60;
+    const display = `⏱ ${m}:${String(s).padStart(2, '0')}`;
+    if (timerEl) timerEl.textContent = display;
+    if (floatEl) floatEl.textContent = display;
+    if (testSecondsLeft <= 120) {
+      if (timerEl) timerEl.classList.add('timer-warning');
+      if (floatEl) floatEl.classList.add('timer-warning');
+    }
+    if (testSecondsLeft <= 0) {
+      stopTestTimer();
+      if (timerEl) timerEl.textContent = '⏱ 0:00';
+      appendTestBuddyMessage("⏰ Time's up! Let me wrap up your results...");
+      finishTestBtn.click();
+      return;
+    }
+    testSecondsLeft--;
+  }
+  tick();
+  testTimerInterval = setInterval(tick, 1000);
+}
+
+if (pauseTestBtn) pauseTestBtn.addEventListener('click', () => testPaused ? resumeTest() : pauseTest());
+if (resumeTestBtn) resumeTestBtn.addEventListener('click', resumeTest);
 
 finishTestBtn.addEventListener('click', async () => {
   if (isTestStreaming) return;

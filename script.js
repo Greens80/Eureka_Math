@@ -627,7 +627,7 @@ function buildTestSystemPrompt(grade, skillsToTest) {
       `${i + 1}. [${s.section}] ${s.skill}`
     ).join('\n');
     const exampleResults = skillsToTest.map(s =>
-      `{"sectionIndex":${s.sectionIndex},"skillIndex":${s.skillIndex},"section":${JSON.stringify(s.section)},"skill":${JSON.stringify(s.skill.substring(0, 60))},"mastered":true}`
+      `{"sectionIndex":${s.sectionIndex},"skillIndex":${s.skillIndex},"section":${JSON.stringify(s.section)},"skill":${JSON.stringify(s.skill.substring(0, 60))},"mastered":false}`
     ).join(',');
 
     return `You are Math Buddy, a friendly math tutor testing a ${gradeLabel} student on specific curriculum skills from the Core Knowledge Sequence.
@@ -655,12 +655,12 @@ After each skill is tested, say something like "Great, let's try the next one! �
 WHEN ALL ${skillsToTest.length} SKILLS ARE TESTED:
 Say: "Awesome job! 🎉 Let me tally your results..."
 
-Then output EXACTLY this block:
+Then output EXACTLY this block — every "mastered" value starts as false; change each one to true ONLY if the student demonstrated mastery (answered at least 1 question correctly without a hint). Set xpEarned = 10 × (count of mastered skills).
 ===SKILLS_REPORT_START===
 {"grade":${JSON.stringify(String(grade))},"results":[${exampleResults}],"xpEarned":0}
 ===SKILLS_REPORT_END===
 
-Fill in the ACTUAL true/false for "mastered" for each skill. Set xpEarned = 10 × (number of mastered skills).
+IMPORTANT: The JSON above is your output template. You MUST change "mastered":false to "mastered":true for each skill the student actually passed. Do NOT copy the template verbatim with all false values.
 
 Start by greeting the student warmly and jumping right into Skill #1!`;
   }
@@ -2779,11 +2779,62 @@ async function generateReportCardNow() {
   testSendBtn.disabled = true;
   finishTestBtn.disabled = true;
 
-  const finishMsg = "The student has clicked 'Finish Test'. Please evaluate all answers given so far and output the complete report card JSON now, even if not all questions were asked. Output the ===REPORT_CARD_START=== ... ===REPORT_CARD_END=== block.";
-
-  const messages = [...testConversationHistory, { role: 'user', content: finishMsg }];
-
   appendTestBuddyMessage("Generating your report card... 📊");
+
+  // Skills-based path (new curriculum test)
+  if (currentTestSkills.length > 0) {
+    const skillsBlock = currentTestSkills.map(s =>
+      `{"sectionIndex":${s.sectionIndex},"skillIndex":${s.skillIndex},"mastered":false}`
+    ).join(',');
+    const finishMsg = `The student has finished. Evaluate each skill based on their answers and output EXACTLY this block — set "mastered":true for each skill the student demonstrated, false for each they did not:\n===SKILLS_REPORT_START===\n{"grade":"${grade}","results":[${skillsBlock}],"xpEarned":0}\n===SKILLS_REPORT_END===`;
+    const messages = [...testConversationHistory, { role: 'user', content: finishMsg }];
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 1024,
+          stream: false,
+          system: buildTestSystemPrompt(grade, currentTestSkills),
+          messages,
+        }),
+      });
+      if (!response.ok) { appendTestBuddyMessage("Could not generate report card. Please try again."); return; }
+      const data = await response.json();
+      const fullText = data.content?.[0]?.text || '';
+      console.log('[FinishTest skills report]', fullText);
+      const report = extractSkillsReport(fullText);
+      if (report) {
+        const masteredKeys = report.results.filter(r => r.mastered).map(r => `${r.sectionIndex}:${r.skillIndex}`);
+        if (masteredKeys.length > 0) markSkillsMastered(user.username, report.grade, masteredKeys);
+        const xp = masteredKeys.length * 10;
+        setTimeout(() => {
+          appendTestBuddyMessage(`🎉 Done! You mastered **${masteredKeys.length}** of ${report.results.length} skills and earned **${xp} XP**!`);
+          showReportScreen();
+        }, 500);
+      } else {
+        appendTestBuddyMessage("I had trouble tallying your results. Please try taking the full test!");
+      }
+    } catch (err) {
+      appendTestBuddyMessage("Oops! Something went wrong generating your report card.");
+      console.error(err);
+    } finally {
+      isTestStreaming = false;
+      testSendBtn.disabled = false;
+      finishTestBtn.disabled = false;
+    }
+    return;
+  }
+
+  // Legacy module-based path (grades 4-5 without specific skills)
+  const finishMsg = "The student has clicked 'Finish Test'. Please evaluate all answers given so far and output the complete report card JSON now, even if not all questions were asked. Output the ===REPORT_CARD_START=== ... ===REPORT_CARD_END=== block.";
+  const messages = [...testConversationHistory, { role: 'user', content: finishMsg }];
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {

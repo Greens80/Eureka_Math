@@ -2526,21 +2526,26 @@ async function streamToAnthropic(messages, isImageRequest) {
 // ── Test mode ──
 function startTestTimer() {
   const timerEl = document.getElementById('test-timer');
+  const floatEl = document.getElementById('floating-timer');
   testSecondsLeft = 25 * 60;
   clearInterval(testTimerInterval);
+
+  if (floatEl) { floatEl.style.display = 'block'; floatEl.classList.remove('timer-warning'); }
 
   function tick() {
     const m = Math.floor(testSecondsLeft / 60);
     const s = testSecondsLeft % 60;
     const display = `⏱ ${m}:${String(s).padStart(2, '0')}`;
-    timerEl.textContent = display;
+    if (timerEl) timerEl.textContent = display;
+    if (floatEl) floatEl.textContent = display;
 
-    if (testSecondsLeft <= 60) {
-      timerEl.classList.add('timer-warning');
+    if (testSecondsLeft <= 120) {
+      if (timerEl) timerEl.classList.add('timer-warning');
+      if (floatEl) floatEl.classList.add('timer-warning');
     }
     if (testSecondsLeft <= 0) {
       stopTestTimer();
-      timerEl.textContent = '⏱ 0:00';
+      if (timerEl) timerEl.textContent = '⏱ 0:00';
       appendTestBuddyMessage("⏰ Time's up! Let me wrap up your results...");
       finishTestBtn.click();
       return;
@@ -2556,7 +2561,9 @@ function stopTestTimer() {
   clearInterval(testTimerInterval);
   testTimerInterval = null;
   const timerEl = document.getElementById('test-timer');
+  const floatEl = document.getElementById('floating-timer');
   if (timerEl) timerEl.classList.remove('timer-warning');
+  if (floatEl) { floatEl.style.display = 'none'; floatEl.classList.remove('timer-warning'); }
 }
 
 // Skills being tested in the current session

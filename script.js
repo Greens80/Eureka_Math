@@ -2526,7 +2526,7 @@ async function streamToAnthropic(messages, isImageRequest) {
 // ── Test mode ──
 function startTestTimer() {
   const timerEl = document.getElementById('test-timer');
-  testSecondsLeft = 15 * 60;
+  testSecondsLeft = 25 * 60;
   clearInterval(testTimerInterval);
 
   function tick() {

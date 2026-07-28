@@ -2793,8 +2793,28 @@ async function generateReportCardNow() {
     const skillsBlock = currentTestSkills.map(s =>
       `{"sectionIndex":${s.sectionIndex},"skillIndex":${s.skillIndex},"mastered":false}`
     ).join(',');
-    const finishMsg = `The student has finished. Evaluate each skill based on their answers and output EXACTLY this block — set "mastered":true for each skill the student demonstrated, false for each they did not:\n===SKILLS_REPORT_START===\n{"grade":"${grade}","results":[${skillsBlock}],"xpEarned":0}\n===SKILLS_REPORT_END===`;
-    const messages = [...testConversationHistory, { role: 'user', content: finishMsg }];
+
+    // Use a dedicated system prompt focused only on producing the report JSON.
+    // Prime the conversation with an assistant turn so the model is in "reporting" mode.
+    const reportSystemPrompt = `You are finishing a Grade ${grade} math skills assessment. Based on the conversation history, determine which skills the student demonstrated mastery of.
+
+Output ONLY the following JSON block — no other text before or after it:
+===SKILLS_REPORT_START===
+{"grade":"${grade}","results":[${skillsBlock}],"xpEarned":0}
+===SKILLS_REPORT_END===
+
+Rules:
+- Change "mastered":false to "mastered":true for each skill the student answered correctly (at least one question right without a hint).
+- Skills not yet reached in the conversation = mastered:false.
+- Set xpEarned = 10 × (number of mastered skills).
+- Output ONLY the block above. No greeting, no summary, no extra text.`;
+
+    const messages = [
+      ...testConversationHistory,
+      { role: 'assistant', content: "Let me tally your results now..." },
+      { role: 'user', content: 'Output the skills report JSON block now.' },
+    ];
+
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
@@ -2808,11 +2828,15 @@ async function generateReportCardNow() {
           model: 'claude-sonnet-4-6',
           max_tokens: 1024,
           stream: false,
-          system: buildTestSystemPrompt(grade, currentTestSkills),
+          system: reportSystemPrompt,
           messages,
         }),
       });
-      if (!response.ok) { appendTestBuddyMessage("Could not generate report card. Please try again."); return; }
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        appendTestBuddyMessage(`Could not generate report card (${response.status}). Please try again.`);
+        return;
+      }
       const data = await response.json();
       const fullText = data.content?.[0]?.text || '';
       console.log('[FinishTest skills report]', fullText);
@@ -2821,15 +2845,14 @@ async function generateReportCardNow() {
         const masteredKeys = report.results.filter(r => r.mastered).map(r => `${r.sectionIndex}:${r.skillIndex}`);
         if (masteredKeys.length > 0) markSkillsMastered(user.username, report.grade, masteredKeys);
         const xp = masteredKeys.length * 10;
-        setTimeout(() => {
-          appendTestBuddyMessage(`🎉 Done! You mastered **${masteredKeys.length}** of ${report.results.length} skills and earned **${xp} XP**!`);
-          showReportScreen();
-        }, 500);
+        appendTestBuddyMessage(`🎉 Done! You mastered **${masteredKeys.length}** of ${report.results.length} skills and earned **${xp} XP**!`);
+        setTimeout(() => showReportScreen(), 800);
       } else {
-        appendTestBuddyMessage("I had trouble tallying your results. Please try taking the full test!");
+        console.warn('[FinishTest] Could not parse skills report from:', fullText);
+        appendTestBuddyMessage("Hmm, I had trouble reading your results. You can keep going or try finishing again!");
       }
     } catch (err) {
-      appendTestBuddyMessage("Oops! Something went wrong generating your report card.");
+      appendTestBuddyMessage("Oops! Something went wrong. You can keep going or try finishing again!");
       console.error(err);
     } finally {
       isTestStreaming = false;

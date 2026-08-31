@@ -1653,9 +1653,11 @@ function appendTestBuddyMessage(text, streaming = false) {
   const el = document.createElement('div');
   el.className = 'message buddy';
   el.innerHTML = `<div class="message-avatar">🦉</div><div class="message-bubble">${streaming ? '' : formatMessage(text)}</div>`;
+  const bubble = el.querySelector('.message-bubble');
+  attachReportButton(el, bubble);
   testMessages.appendChild(el);
   scrollToBottom(testMessages);
-  return el.querySelector('.message-bubble');
+  return bubble;
 }
 
 // ── UI helpers ──
@@ -1685,9 +1687,11 @@ function appendBuddyMessage(text, streaming = false, container) {
   const el = document.createElement('div');
   el.className = 'message buddy';
   el.innerHTML = `<div class="message-avatar">🦉</div><div class="message-bubble">${streaming ? '' : formatMessage(text)}</div>`;
+  const bubble = el.querySelector('.message-bubble');
+  attachReportButton(el, bubble);
   container.appendChild(el);
   scrollToBottom(container);
-  return el.querySelector('.message-bubble');
+  return bubble;
 }
 
 function appendTypingIndicator(container) {
@@ -1730,3 +1734,120 @@ function scrollToBottom(container) {
   container = container || chatMessages;
   container.scrollTop = container.scrollHeight;
 }
+
+// ── Report a mistake ────────────────────────────────────────────────────────
+// Mistakes in this app come from Math Buddy's generated replies, so the report
+// button lives on each tutor message and captures that conversation turn.
+
+let pendingReportContext = null;
+
+const reportDialog = document.getElementById('report-dialog');
+const reportCategory = document.getElementById('report-category');
+const reportDescription = document.getElementById('report-description');
+const reportContextEl = document.getElementById('report-context');
+const reportStatus = document.getElementById('report-status');
+
+// The button is attached to the message WRAPPER, never inside .message-bubble:
+// streaming reassigns bubble.innerHTML on every chunk and would wipe it out.
+function attachReportButton(wrapperEl, bubbleEl) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'report-msg-btn';
+  btn.title = 'Report a mistake in this answer';
+  btn.textContent = '⚠️ Report';
+  // Read the reply at click time - while streaming the bubble starts empty.
+  btn.addEventListener('click', () => openReportDialog(bubbleEl));
+  wrapperEl.appendChild(btn);
+}
+
+function lastStudentMessage() {
+  const history = currentMode === 'test' ? testConversationHistory : conversationHistory;
+  for (let i = history.length - 1; i >= 0; i--) {
+    const msg = history[i];
+    if (msg.role !== 'user') continue;
+    if (typeof msg.content === 'string') return msg.content;
+    return '(a photo of the homework)';
+  }
+  return '(nothing yet)';
+}
+
+function buildReportContext(bubbleEl) {
+  const user = getCurrentUser();
+  return {
+    student: user?.name || '(not logged in)',
+    grade: selectedGrade,
+    module: selectedModule,
+    lesson: selectedLesson,
+    mode: currentMode,
+    tutorialMode: isTutorialMode,
+    precedingStudentMessage: lastStudentMessage(),
+    tutorReply: (bubbleEl?.textContent || '').trim() || '(empty reply)',
+    reportedAt: new Date().toISOString(),
+  };
+}
+
+function formatReportContext(ctx) {
+  return [
+    `Student: ${ctx.student}`,
+    `Grade ${ctx.grade} · Module ${ctx.module ?? '-'} · Lesson ${ctx.lesson ?? '-'}`,
+    `Mode: ${ctx.mode}${ctx.tutorialMode ? ' (tutorial)' : ''}`,
+    '',
+    'You asked:',
+    ctx.precedingStudentMessage,
+    '',
+    'Math Buddy replied:',
+    ctx.tutorReply,
+  ].join('\n');
+}
+
+function openReportDialog(bubbleEl) {
+  pendingReportContext = buildReportContext(bubbleEl);
+  // textContent, never innerHTML - this holds model and reporter text.
+  reportContextEl.textContent = formatReportContext(pendingReportContext);
+  reportDescription.value = '';
+  reportStatus.textContent = '';
+  reportStatus.className = 'report-status';
+  document.getElementById('report-send-btn').disabled = false;
+  reportDialog.showModal();
+}
+
+async function submitReport() {
+  if (!pendingReportContext) return;
+
+  const sendBtn = document.getElementById('report-send-btn');
+  sendBtn.disabled = true;
+  reportStatus.className = 'report-status';
+  reportStatus.textContent = 'Sending…';
+
+  try {
+    const response = await fetch('/api/report-mistake', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        category: reportCategory.value,
+        description: reportDescription.value,
+        context: pendingReportContext,
+      }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      reportStatus.className = 'report-status error';
+      reportStatus.textContent = data.error || 'Could not send the report. Please try again.';
+      sendBtn.disabled = false;
+      return;
+    }
+
+    reportStatus.className = 'report-status success';
+    reportStatus.textContent = '✅ Thank you! Your report was sent.';
+    setTimeout(() => reportDialog.close(), 1200);
+  } catch (err) {
+    reportStatus.className = 'report-status error';
+    reportStatus.textContent = 'Could not reach the server. Please try again.';
+    sendBtn.disabled = false;
+  }
+}
+
+document.getElementById('report-send-btn')?.addEventListener('click', submitReport);
+document.getElementById('report-cancel-btn')?.addEventListener('click', () => reportDialog.close());

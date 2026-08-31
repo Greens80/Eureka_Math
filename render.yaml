@@ -7,3 +7,8 @@ services:
     envVars:
       - key: ANTHROPIC_API_KEY
         sync: false
+      # Token used to file "Report a mistake" submissions as GitHub issues.
+      # Needs `issues: write` on the report repo. Set the value in the Render
+      # dashboard - reporting returns a clear error until it is present.
+      - key: GITHUB_TOKEN
+        sync: false

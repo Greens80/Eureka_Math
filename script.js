@@ -720,6 +720,16 @@ function showScreen(screen) {
   }
 })();
 
+// Declared here rather than beside getAvatarForUser further down: `const` is in
+// the temporal dead zone until its declaration runs, so the top-level
+// `AVATARS[0]` below threw a ReferenceError that aborted the rest of this file.
+const AVATARS = [
+  '🦉', '🐐', '🦊', '🐼', '🦁', '🐯', '🐸', '🦋',
+  '🐬', '🦄', '🐙', '🦅', '🐻', '🐨', '🦖', '🐲',
+  '🐧', '🦜', '🦩', '🐺', '🦝', '🐮', '🐷', '🐸',
+  '🦔', '🐢', '🦈', '🐳', '🦭', '🦕',
+];
+
 // ── Login screen ──
 let loginMode = 'login'; // 'login' or 'register'
 let registerGrade = 4;
@@ -869,13 +879,6 @@ function showLoginError(msg) {
 }
 
 // ── Student header ──
-const AVATARS = [
-  '🦉', '🐐', '🦊', '🐼', '🦁', '🐯', '🐸', '🦋',
-  '🐬', '🦄', '🐙', '🦅', '🐻', '🐨', '🦖', '🐲',
-  '🐧', '🦜', '🦩', '🐺', '🦝', '🐮', '🐷', '🐸',
-  '🦔', '🐢', '🦈', '🐳', '🦭', '🦕',
-];
-
 function getAvatarForUser(user) {
   if (user && user.avatar) return user.avatar;
   // fallback: deterministic pick from username

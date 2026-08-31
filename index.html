@@ -279,6 +279,41 @@
     </div>
   </div>
 
+  <!-- REPORT A MISTAKE -->
+  <dialog id="report-dialog" class="report-dialog">
+    <h2 class="report-dialog-title">⚠️ Report a mistake</h2>
+    <p class="report-dialog-intro">
+      Did Math Buddy get something wrong? Tell us what happened and we'll fix it.
+    </p>
+
+    <label class="report-label" for="report-category">What kind of mistake?</label>
+    <select id="report-category" class="report-select">
+      <option>Wrong answer</option>
+      <option>Wrong explanation</option>
+      <option>Confusing wording</option>
+      <option>Not the right lesson</option>
+      <option>Something else</option>
+    </select>
+
+    <label class="report-label" for="report-description">What looks wrong?</label>
+    <textarea
+      id="report-description"
+      class="report-textarea"
+      maxlength="1000"
+      placeholder="For example: it said 3/4 + 1/4 = 4/8, but that isn't right..."
+    ></textarea>
+
+    <label class="report-label">This gets sent with your report:</label>
+    <pre id="report-context" class="report-context"></pre>
+
+    <p id="report-status" class="report-status"></p>
+
+    <div class="report-actions">
+      <button type="button" class="report-cancel-btn" id="report-cancel-btn">Cancel</button>
+      <button type="button" class="report-send-btn" id="report-send-btn">Send report</button>
+    </div>
+  </dialog>
+
   <script src="script.js"></script>
 </body>
 </html>

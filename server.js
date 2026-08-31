@@ -376,6 +376,94 @@ app.post('/api/report', async (req, res) => {
   }
 });
 
+// Mistake reports become GitHub issues. Note this is distinct from /api/report
+// above, which generates the AI report card.
+const REPORT_REPO = process.env.REPORT_REPO || 'Greens80/Eureka_Math';
+const reportHits = new Map();
+const REPORT_WINDOW_MS = 60 * 60 * 1000;
+const REPORT_MAX_PER_WINDOW = 10;
+
+function capText(value, max) {
+  return String(value ?? '').slice(0, max);
+}
+
+app.post('/api/report-mistake', async (req, res) => {
+  const { category, description, context } = req.body || {};
+
+  if (!context || typeof context !== 'object') {
+    return res.status(400).json({ error: 'context required' });
+  }
+
+  // This endpoint is public and writes into a GitHub repo, so rate limit it.
+  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || req.ip || 'unknown';
+  const now = Date.now();
+  const hits = (reportHits.get(ip) || []).filter((t) => now - t < REPORT_WINDOW_MS);
+  if (hits.length >= REPORT_MAX_PER_WINDOW) {
+    return res.status(429).json({ error: 'Too many reports right now. Please try again later.' });
+  }
+  hits.push(now);
+  reportHits.set(ip, hits);
+
+  if (!process.env.GITHUB_TOKEN) {
+    // Fail loudly - a report that silently vanishes is worse than no button.
+    console.error('Mistake report received but GITHUB_TOKEN is not set. Report dropped.');
+    return res.status(503).json({ error: 'Reporting is not set up yet. Please tell a grown-up!' });
+  }
+
+  const title =
+    `Math mistake: Grade ${capText(context.grade, 8)} ` +
+    `Module ${capText(context.module, 8)} Lesson ${capText(context.lesson, 8)}`;
+
+  const body = [
+    `**Kind of mistake:** ${capText(category, 60) || 'Not specified'}`,
+    '',
+    '**What the reporter said:**',
+    capText(description, 1000).trim() || '_(no description given)_',
+    '',
+    '---',
+    `**Student:** ${capText(context.student, 60)}`,
+    `**Grade:** ${capText(context.grade, 8)} · **Module:** ${capText(context.module, 8)} · ` +
+      `**Lesson:** ${capText(context.lesson, 8)} · **Mode:** ${capText(context.mode, 20)}` +
+      (context.tutorialMode ? ' (tutorial)' : ''),
+    `**Reported at:** ${capText(context.reportedAt, 40)}`,
+    '',
+    '**Student asked:**',
+    '```',
+    capText(context.precedingStudentMessage, 2000),
+    '```',
+    '',
+    '**Math Buddy replied:**',
+    '```',
+    capText(context.tutorReply, 4000),
+    '```',
+  ].join('\n');
+
+  try {
+    const gh = await fetch(`https://api.github.com/repos/${REPORT_REPO}/issues`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'eureka-math-report',
+      },
+      body: JSON.stringify({ title, body, labels: ['reported-mistake'] }),
+    });
+
+    if (!gh.ok) {
+      // Never echo the GitHub response to the client - it can leak token details.
+      console.error('GitHub issue creation failed with status', gh.status);
+      return res.status(502).json({ error: 'Could not send the report. Please try again.' });
+    }
+
+    const issue = await gh.json();
+    res.json({ ok: true, number: issue.number });
+  } catch (err) {
+    console.error('Report-mistake error:', err.message);
+    res.status(500).json({ error: 'Could not send the report. Please try again.' });
+  }
+});
+
 app.post('/api/analyze-image', async (req, res) => {
   const { imageBase64, mediaType, module, lesson } = req.body;
 
